@@ -9,3 +9,7 @@ mmbcd_gaussian_cpp <- function(X, Y, groups, unique_groups, group_weights, weigh
     .Call(`_personalized2part_mmbcd_gaussian_cpp`, X, Y, groups, unique_groups, group_weights, weights, lambda, nlambda, lambda_min_ratio, maxit, tol, intercept)
 }
 
+mmbcd_twopart_cpp <- function(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, maxit, tol, intercept, penalty) {
+    .Call(`_personalized2part_mmbcd_twopart_cpp`, X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, maxit, tol, intercept, penalty)
+}
+

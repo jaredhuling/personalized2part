@@ -217,9 +217,6 @@ Rcpp::List mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
         }
     }
 
-
-
-
     return List::create(Named("beta")       = beta_mat,
                         Named("niter")      = niter,
                         Named("lambda")     = lambda,

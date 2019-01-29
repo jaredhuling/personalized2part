@@ -52,10 +52,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mmbcd_twopart_cpp
+Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Z, const Eigen::Map<Eigen::MatrixXd>& Xs, const Eigen::Map<Eigen::VectorXd>& S, const Eigen::Map<Eigen::VectorXi>& groups, const Eigen::Map<Eigen::VectorXi>& unique_groups, Eigen::VectorXd& group_weights, Eigen::VectorXd& weights, Eigen::VectorXd& weights_s, Eigen::VectorXd& lambda, const int& nlambda, const double& lambda_min_ratio, const int& maxit, const double& tol, const bool& intercept, std::vector<std::string>& penalty);
+RcppExport SEXP _personalized2part_mmbcd_twopart_cpp(SEXP XSEXP, SEXP ZSEXP, SEXP XsSEXP, SEXP SSEXP, SEXP groupsSEXP, SEXP unique_groupsSEXP, SEXP group_weightsSEXP, SEXP weightsSEXP, SEXP weights_sSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP interceptSEXP, SEXP penaltySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type Xs(XsSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXi>& >::type groups(groupsSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXi>& >::type unique_groups(unique_groupsSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type group_weights(group_weightsSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights_s(weights_sSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nlambda(nlambdaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type lambda_min_ratio(lambda_min_ratioSEXP);
+    Rcpp::traits::input_parameter< const int& >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< const double& >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type intercept(interceptSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type penalty(penaltySEXP);
+    rcpp_result_gen = Rcpp::wrap(mmbcd_twopart_cpp(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, maxit, tol, intercept, penalty));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_personalized2part_mmbcd_cpp", (DL_FUNC) &_personalized2part_mmbcd_cpp, 14},
     {"_personalized2part_mmbcd_gaussian_cpp", (DL_FUNC) &_personalized2part_mmbcd_gaussian_cpp, 12},
+    {"_personalized2part_mmbcd_twopart_cpp", (DL_FUNC) &_personalized2part_mmbcd_twopart_cpp, 16},
     {NULL, NULL, 0}
 };
 

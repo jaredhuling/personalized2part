@@ -93,13 +93,36 @@ Eigen::VectorXd compute_eigs(std::vector<MatrixXd > xtx_list)
             ncv = xtx_list[g].cols();
         }
 
-        SymEigsSolver< double, LARGEST_ALGE, DenseSymMatProd<double> > eigs(&op, 1, ncv);
+        if (xtx_list[g].cols() > 1)
+        {
+            SymEigsSolver< double, LARGEST_ALGE, DenseSymMatProd<double> > eigs(&op, 1, ncv);
 
-        eigs.init();
-        eigs.compute(10000, 1e-10);
-        VectorXd eigenvals = eigs.eigenvalues();
+            eigs.init();
+            eigs.compute(10000, 1e-10);
+            VectorXd eigenvals = eigs.eigenvalues();
 
-        eigvec(g) = eigenvals[0] * 1.0025; // multiply by an increasing factor to be safe
+            eigvec(g) = eigenvals[0] * 1.0025; // multiply by an increasing factor to be safe
+        } else
+        {
+            eigvec(g) = xtx_list[g](0,0);
+        }
+    }
+
+    return(eigvec);
+}
+
+Eigen::VectorXd compute_eigs_twopart(const Eigen::Map<Eigen::MatrixXd> & X,
+                                     const Eigen::Map<Eigen::MatrixXd> & Xs)
+{
+    int nc = X.cols();
+    VectorXd eigvec(nc);
+
+    for (int c = 0; c < nc; ++c)
+    {
+        double x_sq_1 = X.col(c).squaredNorm();
+        double x_sq_2 = Xs.col(c).squaredNorm();
+
+        eigvec(c) = std::max(x_sq_1, x_sq_2);
     }
 
     return(eigvec);
@@ -166,6 +189,72 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
     return(lambda_base);
 }
 
+
+
+Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
+                             const Eigen::Map<Eigen::MatrixXd> & Xs,
+                             const Eigen::Map<Eigen::VectorXd> & Z,
+                             const Eigen::Map<Eigen::VectorXd> & S,
+                             Eigen::VectorXd & weights,
+                             Eigen::VectorXd & weights_s,
+                             Eigen::VectorXd & group_weights,
+                             double b0, double b0_s,
+                             U_tp_func_ptr & U_func,
+                             const int & nlambda,
+                             const double & lambda_min_ratio,
+                             std::string & penalty,
+                             double & alpha)
+{
+    //Eigen::VectorXd xty = X.transpose() * Y;
+    int n = X.rows();
+    int n_s = Xs.rows();
+    int p = X.cols();
+
+    VectorXd beta_init(p+1);
+    beta_init(0) = b0;
+
+    VectorXd beta_s_init(p+1);
+    beta_s_init(0) = b0_s;
+
+
+
+    int ngroups = group_weights.size();
+
+    VectorXd xbeta_cur   = VectorXd::Constant(n, b0);
+    VectorXd xbeta_s_cur = VectorXd::Constant(n_s, b0_s);
+
+    VectorXd norms(ngroups);
+    norms.setZero();
+
+    for (int g = 0; g < ngroups; ++g)
+    {
+
+        // calculate U vector
+        VectorXd U_vec = U_func(X.col(g), Xs.col(g), Z, S, weights, weights_s,
+                                xbeta_cur, xbeta_s_cur, n, n_s).array();
+
+        if (group_weights(g) > 0)
+        {
+            norms(g) = U_vec.norm() / group_weights(g);
+        }
+
+    }
+
+    double lmax = norms.cwiseAbs().maxCoeff();
+
+
+    //double lmax = xty.cwiseAbs().maxCoeff() / double(n);
+    double lmin = lambda_min_ratio * lmax;
+
+    VectorXd lambda_base(nlambda);
+
+    lambda_base.setLinSpaced(nlambda, std::log(lmax), std::log(lmin));
+    lambda_base = lambda_base.array().exp();
+
+    return(lambda_base);
+}
+
+
 Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              const Eigen::Map<Eigen::VectorXd> & Y,
                              Eigen::VectorXd & weights,
@@ -179,7 +268,7 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
 {
     Eigen::VectorXd xty = X.transpose() * (weights.array() * Y.array()).matrix();
     int n = X.rows();
-    int p = X.rows();
+    int p = X.cols();
 
 
     double lmax = xty.cwiseAbs().maxCoeff() / double(n);

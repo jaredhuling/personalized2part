@@ -10,6 +10,7 @@ VectorXd block_soft_thresh(VectorXd & a, double & lambda, double &gamma, double 
     return(retval);
 }
 
+// phi_j(v) function for cooperative lasso
 VectorXd phi_j_v(VectorXd & v, int & j)
 {
     int vlen = v.size();

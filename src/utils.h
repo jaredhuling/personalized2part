@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "calc_U.h"
+#include "calc_U_twopart.h"
 
 using namespace Rcpp;
 
@@ -24,6 +25,9 @@ std::vector<MatrixXd > make_x_list(const Eigen::Map<Eigen::MatrixXd> & X,
 
 Eigen::VectorXd compute_eigs(std::vector<MatrixXd > xtx_list);
 
+Eigen::VectorXd compute_eigs_twopart(const Eigen::Map<Eigen::MatrixXd> & X,
+                                     const Eigen::Map<Eigen::MatrixXd> & Xs);
+
 Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              std::vector<MatrixXd > & x_list,
                              const Eigen::Map<Eigen::VectorXd> & Y,
@@ -33,6 +37,21 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              Eigen::VectorXd & group_weights,
                              double b0,
                              U_func_ptr & U_func,
+                             const int & nlambda,
+                             const double & lambda_min_ratio,
+                             std::string & penalty,
+                             double & alpha);
+
+
+Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
+                             const Eigen::Map<Eigen::MatrixXd> & Xs,
+                             const Eigen::Map<Eigen::VectorXd> & Z,
+                             const Eigen::Map<Eigen::VectorXd> & S,
+                             Eigen::VectorXd & weights,
+                             Eigen::VectorXd & weights_s,
+                             Eigen::VectorXd & group_weights,
+                             double b0, double b0_s,
+                             U_tp_func_ptr & U_func,
                              const int & nlambda,
                              const double & lambda_min_ratio,
                              std::string & penalty,
