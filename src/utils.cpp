@@ -226,6 +226,11 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
     VectorXd norms(ngroups);
     norms.setZero();
 
+    VectorXd norms_z = norms;
+    VectorXd norms_p = norms;
+
+    MatrixXd U_mat(ngroups, 2);
+
     for (int g = 0; g < ngroups; ++g)
     {
 
@@ -233,12 +238,32 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
         VectorXd U_vec = U_func(X.col(g), Xs.col(g), Z, S, weights, weights_s,
                                 xbeta_cur, xbeta_s_cur, n, n_s).array();
 
-        if (group_weights(g) > 0)
-        {
-            norms(g) = U_vec.norm() / group_weights(g);
-        }
+        norms_z(g) = std::abs(U_vec(0)) / group_weights(g);
+        norms_p(g) = std::abs(U_vec(1)) / group_weights(g);
+
+        U_mat.row(g) = U_vec;
 
     }
+
+
+    double lmax_z = norms_z.cwiseAbs().maxCoeff();
+    double lmax_p = norms_p.cwiseAbs().maxCoeff();
+
+    VectorXd penalty_adjust(2);
+
+    penalty_adjust(0) = lmax_z / (lmax_z + lmax_p);
+    penalty_adjust(1) = lmax_p / (lmax_z + lmax_p);
+
+    //penalty_adjust.array() /= penalty_adjust.cwiseAbs().minCoeff();
+
+    for (int g = 0; g < ngroups; ++g)
+    {
+        if (group_weights(g) > 0)
+        {
+            norms(g) = U_mat.row(g).norm() / group_weights(g);
+        }
+    }
+
 
     double lmax = norms.cwiseAbs().maxCoeff();
 
@@ -251,7 +276,10 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
     lambda_base.setLinSpaced(nlambda, std::log(lmax), std::log(lmin));
     lambda_base = lambda_base.array().exp();
 
-    return(lambda_base);
+    VectorXd lambda_plus_adjust(nlambda + 2);
+    lambda_plus_adjust << penalty_adjust, lambda_base;
+
+    return(lambda_plus_adjust);
 }
 
 

@@ -18,3 +18,5 @@ VectorXd block_soft_thresh(VectorXd & a, double & penalty, double &gamma, double
 VectorXd coop_block_soft_thresh(VectorXd & a, double & penalty, double &gamma, double &l2, double &denom);
 
 double soft_thresh(double & a, double & penalty);
+
+VectorXd phi_j_v(VectorXd & v, int & j);
