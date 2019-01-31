@@ -81,16 +81,19 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     double b0_s = 0.0;
     if (intercept)
     {
-        double zbar = ( (1.0 + ZZ.array()) * 0.5 ).matrix().sum() / double(nobs);
+        double zbar = ( (ZZ.array() * weights.array()) ).matrix().sum() /  weights.sum(); // double(nobs);
         b0 = log(zbar / (1.0 - zbar));
 
-        double sbar = S.sum() / double(nobs_s);
+        double sbar = (S.array() * weights_s.array()).matrix().sum() / weights_s.sum(); // double(nobs_s);
+        //double sbar = S.sum() / double(nobs_s);
         b0_s = log(sbar);
     }
 
     //b0 = Y.sum() / double(nobs);
     double b0_old = b0;
     double b0_s_old = b0_s;
+
+    std::cout << "int Z " << b0 << " int S " << b0_s << std::endl;
 
     // calculate X^TWX within each group
     //std::vector<MatrixXd > x_list   = make_x_list(X, groups, ngroups, grp_idx);
@@ -111,7 +114,11 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                                                   b0, b0_s, U_func,
                                                   nlambda, lambda_min_ratio, penalty[0], alpha);
 
+
         penalty_adjustment = lambda_and_adjust.head(2);
+
+        std::cout << penalty_adjustment.transpose() << std::endl;
+
         lambda             = lambda_and_adjust.tail(nlambda);
 
     }
