@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // irls_mmbcd_cpp
-Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Y, const Eigen::Map<Eigen::VectorXi>& groups, const Eigen::Map<Eigen::VectorXi>& unique_groups, Eigen::VectorXd& group_weights, Eigen::VectorXd& weights, Eigen::VectorXd& lambda, const int& nlambda, const double& lambda_min_ratio, const int& maxit, const double& tol, const bool& intercept, std::vector<std::string>& family, std::vector<std::string>& penalty);
-RcppExport SEXP _personalized2part_irls_mmbcd_cpp(SEXP XSEXP, SEXP YSEXP, SEXP groupsSEXP, SEXP unique_groupsSEXP, SEXP group_weightsSEXP, SEXP weightsSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP interceptSEXP, SEXP familySEXP, SEXP penaltySEXP) {
+Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Y, const Eigen::Map<Eigen::VectorXi>& groups, const Eigen::Map<Eigen::VectorXi>& unique_groups, Eigen::VectorXd& group_weights, Eigen::VectorXd& weights, Eigen::VectorXd& lambda, const int& nlambda, const double& lambda_min_ratio, const int& maxit, const double& tol, const int& maxit_irls, const double& tol_irls, const bool& intercept, std::vector<std::string>& family, std::vector<std::string>& penalty);
+RcppExport SEXP _personalized2part_irls_mmbcd_cpp(SEXP XSEXP, SEXP YSEXP, SEXP groupsSEXP, SEXP unique_groupsSEXP, SEXP group_weightsSEXP, SEXP weightsSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP maxit_irlsSEXP, SEXP tol_irlsSEXP, SEXP interceptSEXP, SEXP familySEXP, SEXP penaltySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,10 +23,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double& >::type lambda_min_ratio(lambda_min_ratioSEXP);
     Rcpp::traits::input_parameter< const int& >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< const double& >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< const int& >::type maxit_irls(maxit_irlsSEXP);
+    Rcpp::traits::input_parameter< const double& >::type tol_irls(tol_irlsSEXP);
     Rcpp::traits::input_parameter< const bool& >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string>& >::type family(familySEXP);
     Rcpp::traits::input_parameter< std::vector<std::string>& >::type penalty(penaltySEXP);
-    rcpp_result_gen = Rcpp::wrap(irls_mmbcd_cpp(X, Y, groups, unique_groups, group_weights, weights, lambda, nlambda, lambda_min_ratio, maxit, tol, intercept, family, penalty));
+    rcpp_result_gen = Rcpp::wrap(irls_mmbcd_cpp(X, Y, groups, unique_groups, group_weights, weights, lambda, nlambda, lambda_min_ratio, maxit, tol, maxit_irls, tol_irls, intercept, family, penalty));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -105,7 +107,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_personalized2part_irls_mmbcd_cpp", (DL_FUNC) &_personalized2part_irls_mmbcd_cpp, 14},
+    {"_personalized2part_irls_mmbcd_cpp", (DL_FUNC) &_personalized2part_irls_mmbcd_cpp, 16},
     {"_personalized2part_mmbcd_cpp", (DL_FUNC) &_personalized2part_mmbcd_cpp, 14},
     {"_personalized2part_mmbcd_gaussian_cpp", (DL_FUNC) &_personalized2part_mmbcd_gaussian_cpp, 13},
     {"_personalized2part_mmbcd_twopart_cpp", (DL_FUNC) &_personalized2part_mmbcd_twopart_cpp, 16},

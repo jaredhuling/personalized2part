@@ -16,6 +16,8 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                               const double &lambda_min_ratio,
                               const int &maxit,
                               const double &tol,
+                              const int &maxit_irls,
+                              const double &tol_irls,
                               const bool &intercept,
                               std::vector<std::string> &family,
                               std::vector<std::string> &penalty)
@@ -94,7 +96,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     nlambda_vec = lambda.size();
 
 
-    VectorXi niter = VectorXi::Constant(nlambda_vec, maxit);
+    VectorXi niter = VectorXi::Constant(nlambda_vec, maxit_irls);
 
 
 
@@ -130,7 +132,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
         double lam = lambda(l);
 
         // irls iters
-        for (int ii = 0; ii < std::min(maxit, 10); ++ii)
+        for (int ii = 0; ii < maxit_irls; ++ii)
         {
             beta_irls_old = beta;
 
@@ -294,7 +296,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
             } // end BCD iter loop
 
-            if (converged(beta, beta_irls_old, tol))
+            if (converged(beta, beta_irls_old, tol_irls))
             {
                 niter(l) = ii + 1;
                 break;
@@ -314,5 +316,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     return List::create(Named("beta")      = beta_mat,
                         Named("niter")     = niter,
                         Named("lambda")    = lambda,
-                        Named("eigenvals") = eigenvals);
+                        Named("eigenvals") = eigenvals,
+                        Named("family")    = family[0],
+                        Named("penalty")   = penalty[0]);
 }

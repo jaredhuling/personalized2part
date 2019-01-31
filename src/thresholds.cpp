@@ -73,6 +73,7 @@ thresh_func_ptr set_threshold_func(std::string & penalty)
         thresh_func = block_soft_thresh;
     } else if (penalty == "coop.lasso")
     {
+        std::cout << "hello" << std::endl;
         thresh_func = coop_block_soft_thresh;
     } else
     {

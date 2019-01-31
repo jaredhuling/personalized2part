@@ -12,6 +12,8 @@ mmbcd <- function(x, y,
                   lambda_min_ratio = 1e-3,
                   maxit = 500,
                   tol = 1e-5,
+                  maxit.irls = 25,
+                  tol.irls = 1e-5,
                   intercept = TRUE)
 {
     p <- NCOL(x)
@@ -66,7 +68,9 @@ mmbcd <- function(x, y,
                               group_weights = group_weights,
                               weights = weights, lambda = lambda, nlambda = nlambda,
                               lambda_min_ratio = lambda_min_ratio,
-                              maxit = maxit, tol = tol, intercept = intercept,
+                              maxit = maxit, tol = tol,
+                              maxit_irls = maxit.irls, tol_irls = tol.irls,
+                              intercept = intercept,
                               penalty = penalty, family = family)
     } else
     {
@@ -76,7 +80,8 @@ mmbcd <- function(x, y,
                                   group_weights = group_weights,
                                   weights = weights, lambda = lambda, nlambda = nlambda,
                                   lambda_min_ratio = lambda_min_ratio,
-                                  maxit = maxit, tol = tol, intercept = intercept,
+                                  maxit = maxit, tol = tol,
+                                  intercept = intercept,
                                   penalty = penalty)
     }
 
