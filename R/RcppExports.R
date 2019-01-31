@@ -5,6 +5,10 @@ irls_mmbcd_cpp <- function(X, Y, groups, unique_groups, group_weights, weights, 
     .Call(`_personalized2part_irls_mmbcd_cpp`, X, Y, groups, unique_groups, group_weights, weights, lambda, nlambda, lambda_min_ratio, maxit, tol, maxit_irls, tol_irls, intercept, family, penalty)
 }
 
+irls_mmbcd_twopart_cpp <- function(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, maxit, tol, maxit_irls, tol_irls, intercept, penalty) {
+    .Call(`_personalized2part_irls_mmbcd_twopart_cpp`, X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, maxit, tol, maxit_irls, tol_irls, intercept, penalty)
+}
+
 mmbcd_cpp <- function(X, Y, groups, unique_groups, group_weights, weights, lambda, nlambda, lambda_min_ratio, maxit, tol, intercept, family, penalty) {
     .Call(`_personalized2part_mmbcd_cpp`, X, Y, groups, unique_groups, group_weights, weights, lambda, nlambda, lambda_min_ratio, maxit, tol, intercept, family, penalty)
 }

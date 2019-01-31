@@ -28,6 +28,11 @@ Eigen::VectorXd compute_eigs(std::vector<MatrixXd > xtx_list);
 Eigen::VectorXd compute_eigs_twopart(const Eigen::Map<Eigen::MatrixXd> & X,
                                      const Eigen::Map<Eigen::MatrixXd> & Xs);
 
+Eigen::VectorXd compute_eigs_twopart(const Eigen::Map<Eigen::MatrixXd> & X,
+                                     const Eigen::Map<Eigen::MatrixXd> & Xs,
+                                     Eigen::VectorXd & weights,
+                                     Eigen::VectorXd & weights_s);
+
 Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              std::vector<MatrixXd > & x_list,
                              const Eigen::Map<Eigen::VectorXd> & Y,

@@ -117,12 +117,41 @@ Eigen::VectorXd compute_eigs_twopart(const Eigen::Map<Eigen::MatrixXd> & X,
     int nc = X.cols();
     VectorXd eigvec(nc);
 
+    int n  = X.rows();
+    int ns = Xs.rows();
+
     for (int c = 0; c < nc; ++c)
     {
         double x_sq_1 = X.col(c).squaredNorm();
         double x_sq_2 = Xs.col(c).squaredNorm();
 
-        eigvec(c) = std::max(x_sq_1, x_sq_2);
+        eigvec(c) = std::max(x_sq_1 / double(n), x_sq_2 / double(ns));
+        //eigvec(c) = std::max(x_sq_1, x_sq_2);
+    }
+
+    return(eigvec);
+}
+
+Eigen::VectorXd compute_eigs_twopart(const Eigen::Map<Eigen::MatrixXd> & X,
+                                     const Eigen::Map<Eigen::MatrixXd> & Xs,
+                                     Eigen::VectorXd & weights,
+                                     Eigen::VectorXd & weights_s)
+{
+    int nc = X.cols();
+    VectorXd eigvec(nc);
+
+    int n  = X.rows();
+    int ns = Xs.rows();
+
+    VectorXd weights_sqrt = weights.array().sqrt();
+    VectorXd weights_s_sqrt = weights_s.array().sqrt();
+
+    for (int c = 0; c < nc; ++c)
+    {
+        double x_sq_1 = (X.col(c).array() * weights_sqrt.array()).matrix().squaredNorm();
+        double x_sq_2 = (Xs.col(c).array() * weights_s_sqrt.array()).matrix().squaredNorm();
+
+        eigvec(c) = std::max(x_sq_1 / double(n), x_sq_2 / double(ns));
     }
 
     return(eigvec);

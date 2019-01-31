@@ -183,7 +183,7 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
             beta_old   = beta;
             beta_s_old = beta_s;
 
-            H_factor = (S.array() / xbeta_s_cur.array().exp()).maxCoeff() * 0.05;
+            H_factor = (S.array() / xbeta_s_cur.array().exp()).maxCoeff();
 
             if (H_factor_binom > H_factor)
             {
