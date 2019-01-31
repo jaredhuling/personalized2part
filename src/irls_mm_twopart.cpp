@@ -93,8 +93,6 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     double b0_old = b0;
     double b0_s_old = b0_s;
 
-    std::cout << "int Z " << b0 << " int S " << b0_s << std::endl;
-
     // calculate X^TWX within each group
     //std::vector<MatrixXd > x_list   = make_x_list(X, groups, ngroups, grp_idx);
     //std::vector<MatrixXd > xtx_list(ngroups); // = compute_xtx_list(x_list, groups, ngroups, grp_idx, weights);

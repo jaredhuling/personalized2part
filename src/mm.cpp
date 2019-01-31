@@ -76,14 +76,14 @@ Rcpp::List mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     {
         if (family[0] == "gaussian")
         {
-            b0 = Y.sum() / double(nobs);
+            b0 = (weights.array() * Y.array()).matrix().sum() / weights.sum();
         } else if (family[0] == "binomial")
         {
-            double ybar = ( (1.0 + Y.array()) * 0.5 ).matrix().sum() / double(nobs);
+            double ybar = ( ((1.0 + Y.array()) * 0.5) * weights.array() ).matrix().sum() / weights.sum();
             b0 = log(ybar / (1.0 - ybar));
         } else if (family[0] == "gamma")
         {
-            double ybar = Y.sum() / double(nobs);
+            double ybar = (weights.array() * Y.array()).matrix().sum() / weights.sum();
             b0 = log(ybar);
         }
     }
