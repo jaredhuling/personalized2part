@@ -128,7 +128,10 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     VectorXd resid_cur(nobs);
     VectorXd W(nobs);
 
+    VectorXd deviance_vec(nlambda_vec);
+
     double deviance, deviance_old, weights_sum;
+
 
     if (intercept)
     {
@@ -142,12 +145,13 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     for (int l = 0; l < nlambda_vec; ++l)
     {
         double lam = lambda(l);
+        deviance = 1e30;
 
         // irls iters
         for (int ii = 0; ii < maxit_irls; ++ii)
         {
             beta_irls_old = beta;
-
+            deviance_old  = deviance;
 
             // -------------------------------------------------- //
             //                update quad approx                  //
@@ -174,6 +178,37 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                         W(k) = 1e-5;
                     }
                 }
+
+                // update deviance
+                deviance = 0.0;
+                for (int ii = 0; ii < nobs; ++ii)
+                {
+                    if (Y(ii) == 1)
+                    {
+                        if (p(ii) > 1e-5)
+                        {
+                            deviance -= std::log(p(ii));
+                        } else
+                        {
+                            // don't divide by zero
+                            deviance -= std::log(1e-5);
+                        }
+
+                    } else
+                    {
+                        if (p(ii) <= 1.0 - 1e-5)
+                        {
+                            deviance -= std::log((1.0 - p(ii)));
+                        } else
+                        {
+                            // don't divide by zero
+                            deviance -= std::log(1.0 - 1e-5);
+                        }
+
+                    }
+                }
+
+                deviance *= 2.0;
 
 
                 // here we update the residuals and multiply by user-specified weights, which
@@ -202,8 +237,16 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                         W(k) = 1e5;
                     }
                 }
+
+                deviance = (Y.array().log() - xbeta_cur.array() - p.array() + 1.0).matrix().sum();
+                deviance *= -2.0;
             }
 
+            if (converged_irls(deviance, deviance_old, tol_irls))
+            {
+                niter(l) = ii;
+                break;
+            }
 
 
 
@@ -262,9 +305,18 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                         beta_subs(k) = beta(grp_idx[g][k]);
                     }
 
+                    /*
                     VectorXd U_plus_beta = (x_list[g].transpose() *
                             ( W.array() * resid_cur.array()  ).matrix()).array() / double(nobs) +
                             eigenvals(g) * beta_subs.array();
+                    */
+
+                    VectorXd U_plus_beta(gr_size);
+                    for (int k = 0; k < gr_size; ++k)
+                    {
+                        U_plus_beta(k) = ( X.col(grp_idx[g][k]).array() * W.array() * resid_cur.array()  ).matrix().sum() /
+                            double(nobs) + eigenvals(g) * beta_subs(k);
+                    }
 
                     double l1 = group_weights(g) * lam * alpha;
                     double l2 = group_weights(g) * lam * (1.0 - alpha);
@@ -295,8 +347,14 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                     // update residual if any estimate changed
                     if (anychanged)
                     {
-                        xbeta_cur += (x_list[g] * (beta_new.array() - beta_subs.array()).matrix());
-                        resid_cur -= (x_list[g] * (beta_new.array() - beta_subs.array()).matrix());
+                        //xbeta_cur += (x_list[g] * (beta_new.array() - beta_subs.array()).matrix());
+                        //resid_cur -= (x_list[g] * (beta_new.array() - beta_subs.array()).matrix());
+
+                        for (int k = 0; k < gr_size; ++k)
+                        {
+                            xbeta_cur.array() += (X.col(grp_idx[g][k]).array() * (beta_new(k) - beta_subs(k)));
+                            resid_cur.array() -= (X.col(grp_idx[g][k]).array() * (beta_new(k) - beta_subs(k)));
+                        }
                     }
 
                 }
@@ -308,13 +366,19 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
             } // end BCD iter loop
 
-            if (converged(beta, beta_irls_old, tol_irls))
+            // if (converged_irls(deviance, deviance_old, tol_irls))
+            // {
+            //     niter(l) = ii + 1;
+            //     break;
+            // }
+            if (converged(beta, beta_irls_old, tol))
             {
                 niter(l) = ii + 1;
                 break;
             }
         } // end irls loop
 
+        deviance_vec(l) = deviance;
         beta_mat.col(l).tail(nvars) = beta;
         if (intercept)
         {
@@ -328,6 +392,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     return List::create(Named("beta")      = beta_mat,
                         Named("niter")     = niter,
                         Named("lambda")    = lambda,
+                        Named("deviance")  = deviance_vec,
                         Named("eigenvals") = eigenvals,
                         Named("family")    = family[0],
                         Named("penalty")   = penalty[0]);

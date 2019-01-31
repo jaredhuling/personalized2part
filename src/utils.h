@@ -75,3 +75,5 @@ std::vector<std::vector<int> > get_group_indexes(const VectorXi &groups,
                                                  const int &nvars);
 
 bool converged(const VectorXd& cur, const VectorXd& prev, const double& tolerance);
+
+bool converged_irls(double deviance, double deviance_prev, const double& tolerance);

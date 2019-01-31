@@ -28,6 +28,14 @@ mmbcd <- function(x, y,
         groups <- 1:p
     }
 
+    if (is.null(weights))
+    {
+        weights <- rep(1, n)
+    }
+
+    stopifnot(length(groups) == p)
+    stopifnot(length(weights) == n)
+
     if (is.null(group_weights))
     {
         group_weights <- numeric(0)
@@ -42,6 +50,11 @@ mmbcd <- function(x, y,
     groups <- as.integer(groups)
 
     unique_groups    <- unique(groups)
+
+    if (length(group_weights) > 0)
+    {
+        stopifnot(length(group_weights) == length(unique_groups))
+    }
 
     group_weights    <- as.double(group_weights)
     weights          <- as.double(weights)

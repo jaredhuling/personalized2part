@@ -296,7 +296,7 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
 {
     Eigen::VectorXd xty = X.transpose() * (weights.array() * Y.array()).matrix();
     int n = X.rows();
-    int p = X.cols();
+    //int p = X.cols();
 
     int ngroups = group_weights.size();
 
@@ -385,9 +385,23 @@ bool converged(const VectorXd& cur, const VectorXd& prev, const double& toleranc
             return 0;
         }
         if (std::abs(cur(i)) > 1e-13 && std::abs(prev(i)) > 1e-13 &&
-            std::abs( (cur(i) - prev(i)) / prev(i)) > tolerance) {
+            std::pow( (cur(i) - prev(i)) / prev(i), 2) > tolerance) {
             return 0;
         }
     }
     return 1;
+}
+
+bool converged_irls(double deviance, double deviance_prev, const double& tolerance)
+{
+    //return (stopRule(beta, beta_prev_irls, tol_irls));
+
+    if (std::abs(deviance - deviance_prev) / (0.1 + std::abs(deviance)) < tolerance)
+    {
+        return true;
+    } else
+    {
+        return false;
+    }
+
 }
