@@ -72,17 +72,20 @@ Rcpp::List mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     double b0 = 0.0;
 
-    if (family[0] == "gaussian")
+    if (intercept)
     {
-        b0 = Y.sum() / double(nobs);
-    } else if (family[0] == "binomial")
-    {
-        double ybar = ( (1.0 + Y.array()) * 0.5 ).matrix().sum() / double(nobs);
-        b0 = log(ybar / (1.0 - ybar));
-    } else if (family[0] == "gamma")
-    {
-        double ybar = Y.sum() / double(nobs);
-        b0 = log(ybar);
+        if (family[0] == "gaussian")
+        {
+            b0 = Y.sum() / double(nobs);
+        } else if (family[0] == "binomial")
+        {
+            double ybar = ( (1.0 + Y.array()) * 0.5 ).matrix().sum() / double(nobs);
+            b0 = log(ybar / (1.0 - ybar));
+        } else if (family[0] == "gamma")
+        {
+            double ybar = Y.sum() / double(nobs);
+            b0 = log(ybar);
+        }
     }
 
     double b0_old = b0;

@@ -65,12 +65,24 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     //double b0 = Y.sum() / double(nobs);
 
-    VectorXd YY = (Y.array() + 1) / 2;
+    VectorXd YY(nobs);
+    if (family[0] == "binomial")
+    {
+        YY = (Y.array() + 1) / 2;
+    }
+
     double b0 = 0;
     if (intercept)
     {
-        double ybar = ( YY ).matrix().sum() / double(nobs);
-        b0 = log(ybar / (1.0 - ybar));
+        if (family[0] == "binomial")
+        {
+            double ybar = ( YY ).matrix().sum() / double(nobs);
+            b0 = log(ybar / (1.0 - ybar));
+        } else if (family[0] == "gamma")
+        {
+            double ybar = Y.sum() / double(nobs);
+            b0 = log(ybar);
+        }
     }
 
     //b0 = Y.sum() / double(nobs);
@@ -141,62 +153,60 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
             //                update quad approx                  //
 
 
-            // calculate mean function
-            p = 1.0 / (1.0 + (-1.0 * xbeta_cur.array()).exp() );
-
-            //std::cout << "min prob" << p.minCoeff() << std::endl;
-
-
-            // make sure no weights are too small
-            for (int k = 0; k < nobs; ++k)
+            if (family[0] == "binomial")
             {
-                if (W(k) < 1e-5)
+                // calculate mean function
+                p = 1.0 / (1.0 + (-1.0 * xbeta_cur.array()).exp() );
+
+                //std::cout << "min prob" << p.minCoeff() << std::endl;
+
+
+                // construct weights and multiply by user-specified weights
+                //W = weights.array() * p.array() * (1.0 - p.array());
+                VectorXd var_vec = p.array() * (1.0 - p.array());
+                W = weights.array() * var_vec.array();
+
+                // make sure no weights are too small
+                for (int k = 0; k < nobs; ++k)
                 {
-                    W(k) = 1e-5;
+                    if (W(k) < 1e-5)
+                    {
+                        W(k) = 1e-5;
+                    }
+                }
+
+
+                // here we update the residuals and multiply by user-specified weights, which
+                // will be multiplied by X. ie X'resid_cur = X'Wz, where z is the working response from IRLS
+                //resid_cur = weights.array() * (YY.array() - p.array()); // + xbeta_cur.array() * W.array().sqrt();
+                resid_cur = (YY.array() - p.array()) / var_vec.array(); // + xbeta_cur.array() * W.array().sqrt();
+
+
+            } else if (family[0] == "gamma")
+            {
+                p = Y.array() * (-1.0 * xbeta_cur.array()).exp();
+                W = weights.array() * p.array();
+
+                resid_cur = (p.array() - 1.0) / p.array();
+
+                //std::cout << "W " << W.head(5).transpose() << std::endl;
+
+                // make sure no weights are too small or too big
+                for (int k = 0; k < nobs; ++k)
+                {
+                    if (W(k) < 1e-5)
+                    {
+                        W(k) = 1e-5;
+                    } else if (W(k) > 1e5)
+                    {
+                        W(k) = 1e5;
+                    }
                 }
             }
 
-            // update deviance
-            deviance = 0.0;
-            for (int ii = 0; ii < nobs; ++ii)
-            {
-                if (Y(ii) == 1)
-                {
-                    if (p(ii) > 1e-5)
-                    {
-                        deviance -= std::log(p(ii));
-                    } else
-                    {
-                        p(ii) = 1e-5;
-                        // don't divide by zero
-                        deviance -= std::log(1e-5);
-                    }
-
-                } else
-                {
-                    if (p(ii) <= 1.0 - 1e-5)
-                    {
-                        deviance -= std::log((1.0 - p(ii)));
-                    } else
-                    {
-                        // don't divide by zero
-                        deviance -= std::log(1.0 - 1e-5);
-                    }
-
-                }
-            }
 
 
-            // construct weights and multiply by user-specified weights
-            //W = weights.array() * p.array() * (1.0 - p.array());
-            VectorXd var_vec = p.array() * (1.0 - p.array());
-            W = weights.array() * var_vec.array();
 
-
-            // here we update the residuals and multiply by user-specified weights, which
-            // will be multiplied by X. ie X'resid_cur = X'Wz, where z is the working response from IRLS
-            //resid_cur = weights.array() * (YY.array() - p.array()); // + xbeta_cur.array() * W.array().sqrt();
-            resid_cur = (YY.array() - p.array()) / var_vec.array(); // + xbeta_cur.array() * W.array().sqrt();
 
 
             //Xsq = (W.array().sqrt().matrix().asDiagonal() * datX).array().square().colwise().sum();
@@ -217,7 +227,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
             // compute largest eigenvalues within each group
             eigenvals = compute_eigs(xtx_list);
 
-            //std::cout << "eigs" << eigenvals.head(5).transpose() << std::endl;
+            // std::cout << "eigs " << eigenvals.head(5).transpose() << std::endl;
 
             //                                                    //
             // -------------------------------------------------- //
@@ -261,6 +271,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
                     VectorXd beta_new = thresh_func(U_plus_beta, l1, gamma, l2, eigenvals(g));
 
+
                     /*
                     if (g == 0)
                     {
@@ -268,6 +279,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                         std::cout << "beta update " << beta_new.transpose() << std::endl;
                     }
                      */
+
 
                     bool anychanged = false;
                     for (int k = 0; k < gr_size; ++k)
