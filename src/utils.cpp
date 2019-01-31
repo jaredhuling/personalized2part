@@ -298,8 +298,33 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
     int n = X.rows();
     int p = X.cols();
 
+    int ngroups = group_weights.size();
 
-    double lmax = xty.cwiseAbs().maxCoeff() / double(n);
+    VectorXd norms(ngroups);
+    norms.setZero();
+
+
+    for (int g = 0; g < ngroups; ++g)
+    {
+        if (group_weights(g) > 0)
+        {
+            std::vector<int> gr_idx = grp_idx[g];
+
+            int numelem = gr_idx.size();
+
+            double norm_cur = 0.0;
+
+            for (std::vector<int>::size_type v = 0; v < numelem; ++v)
+            {
+                int c_idx = gr_idx[v];
+                norm_cur += std::pow(xty(c_idx), 2);
+            }
+
+            norms(g) = std::sqrt(norm_cur) / group_weights(g);
+        }
+    }
+
+    double lmax = norms.cwiseAbs().maxCoeff() / double(n);
     double lmin = lambda_min_ratio * lmax;
 
     VectorXd lambda_base(nlambda);

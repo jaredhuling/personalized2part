@@ -16,7 +16,8 @@ Rcpp::List mmbcd_gaussian_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                               const double &lambda_min_ratio,
                               const int &maxit,
                               const double &tol,
-                              const bool &intercept)
+                              const bool &intercept,
+                              std::vector<std::string> &penalty)
 {
 
 
@@ -43,13 +44,9 @@ Rcpp::List mmbcd_gaussian_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     // END - set up groups
 
-    // setup threshold function
-
+    // set up threshold function
     thresh_func_ptr thresh_func;
-
-    std::string penalty_val = "grp.lasso";
-
-    thresh_func = set_threshold_func(penalty_val);
+    thresh_func = set_threshold_func(penalty[0]);
 
     double gamma = 0.0;
     double alpha = 1.0;
@@ -57,8 +54,11 @@ Rcpp::List mmbcd_gaussian_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     // set up default lambda sequence if no sequence provided
     if (nlambda_vec < 1)
     {
-        lambda = setup_lambda(X, Y, weights, groups, grp_idx, group_weights, nlambda, lambda_min_ratio,
-                              penalty_val, alpha);
+        lambda = setup_lambda(X, Y, weights,
+                              groups, grp_idx,
+                              group_weights, nlambda,
+                              lambda_min_ratio,
+                              penalty[0], alpha);
     }
     // END - set up default lambda
 
@@ -70,7 +70,6 @@ Rcpp::List mmbcd_gaussian_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     // compute largest eigenvalues within each group
     VectorXd eigenvals = compute_eigs(xtx_list);
-
 
 
     VectorXi niter = VectorXi::Constant(nlambda_vec, maxit);

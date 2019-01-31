@@ -6,6 +6,7 @@ mmbcd <- function(x, y,
                   weights = rep(1, NROW(x)),
                   penalty = c("grp.lasso", "coop.lasso"),
                   family = c("gaussian", "binomial", "gamma"),
+                  algorithm = c("mm", "irls", "gaussian"),
                   lambda = NULL,
                   nlambda = 100L,
                   lambda_min_ratio = 1e-3,
@@ -16,8 +17,9 @@ mmbcd <- function(x, y,
     p <- NCOL(x)
     n <- NROW(x)
 
-    penalty <- match.arg(penalty)
-    family  <- match.arg(family)
+    penalty   <- match.arg(penalty)
+    family    <- match.arg(family)
+    algorithm <- match.arg(algorithm)
 
     if (is.null(groups))
     {
@@ -37,24 +39,46 @@ mmbcd <- function(x, y,
 
     groups <- as.integer(groups)
 
-    unique_groups <- unique(groups)
+    unique_groups    <- unique(groups)
 
-    group_weights <- as.double(group_weights)
-    weights <- as.double(weights)
-    lambda <- as.double(lambda)
-    nlambda <- as.integer(nlambda)
-    maxit <- as.integer(maxit)
-    tol <- as.double(tol)
+    group_weights    <- as.double(group_weights)
+    weights          <- as.double(weights)
+    lambda           <- as.double(lambda)
+    nlambda          <- as.integer(nlambda)
+    maxit            <- as.integer(maxit)
+    tol              <- as.double(tol)
     lambda_min_ratio <- as.double(lambda_min_ratio)
-    intercept <- as.logical(intercept)
+    intercept        <- as.logical(intercept)
 
-    res <- mmbcd_cpp(X = x, Y = y, groups = groups,
-                     unique_groups = unique_groups,
-                     group_weights = group_weights,
-                     weights = weights, lambda = lambda, nlambda = nlambda,
-                     lambda_min_ratio = lambda_min_ratio,
-                     maxit = maxit, tol = tol, intercept = intercept,
-                     penalty = penalty, family = family)
+    if (algorithm == "mm")
+    {
+        res <- mmbcd_cpp(X = x, Y = y, groups = groups,
+                         unique_groups = unique_groups,
+                         group_weights = group_weights,
+                         weights = weights, lambda = lambda, nlambda = nlambda,
+                         lambda_min_ratio = lambda_min_ratio,
+                         maxit = maxit, tol = tol, intercept = intercept,
+                         penalty = penalty, family = family)
+    } else if (algorithm == "irls")
+    {
+        res <- irls_mmbcd_cpp(X = x, Y = y, groups = groups,
+                              unique_groups = unique_groups,
+                              group_weights = group_weights,
+                              weights = weights, lambda = lambda, nlambda = nlambda,
+                              lambda_min_ratio = lambda_min_ratio,
+                              maxit = maxit, tol = tol, intercept = intercept,
+                              penalty = penalty, family = family)
+    } else
+    {
+        stopifnot(family == "gaussian")
+        res <- mmbcd_gaussian_cpp(X = x, Y = y, groups = groups,
+                                  unique_groups = unique_groups,
+                                  group_weights = group_weights,
+                                  weights = weights, lambda = lambda, nlambda = nlambda,
+                                  lambda_min_ratio = lambda_min_ratio,
+                                  maxit = maxit, tol = tol, intercept = intercept,
+                                  penalty = penalty)
+    }
 
     res
 }
