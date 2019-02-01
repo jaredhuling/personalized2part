@@ -160,5 +160,6 @@ mmbcd_2part <- function(x, z,
                                       penalty = penalty)
     }
 
-    class(res) <- "two_part"
+    class(res) <- "2part"
+    res
 }
