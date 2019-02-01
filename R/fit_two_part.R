@@ -15,6 +15,8 @@
 #' @param s a length n_s vector of responses taking strictly positive values
 #' @param weights a length n vector of observation weights for the zero part data
 #' @param weights_s a length n_s vector of observation weights for the positive part data
+#' @param offset a length n vector of offset terms for the zero part data
+#' @param offset_s a length n_s vector of offset terms for the positive part data
 #' @param penalty either \code{"grp.lasso"} for the group lasso penalty or \code{"coop.lasso"} for the
 #' cooperative lasso penalty
 #' @param penalty_factor a length p vector of penalty adjustment factors corresponding to each covariate.
@@ -41,21 +43,23 @@
 #'
 #' library(personalized2part)
 #'
-mmbcd_2part <- function(x, z,
-                        x_s, s,
-                        weights          = rep(1, NROW(x)),
-                        weights_s        = rep(1, NROW(x_s)),
-                        penalty          = c("grp.lasso", "coop.lasso"),
-                        penalty_factor   = NULL,
-                        algorithm        = c("irls", "mm"),
-                        nlambda          = 100L,
-                        lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
-                        lambda           = NULL,
-                        intercept        = TRUE,
-                        maxit_irls       = 50,
-                        tol_irls         = 1e-5,
-                        maxit_mm         = 500,
-                        tol_mm           = 1e-5)
+hd2part <- function(x, z,
+                    x_s, s,
+                    weights          = rep(1, NROW(x)),
+                    weights_s        = rep(1, NROW(x_s)),
+                    offset           = NULL,
+                    offset_s         = NULL,
+                    penalty          = c("grp.lasso", "coop.lasso"),
+                    penalty_factor   = NULL,
+                    algorithm        = c("irls", "mm"),
+                    nlambda          = 100L,
+                    lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
+                    lambda           = NULL,
+                    intercept        = TRUE,
+                    maxit_irls       = 50,
+                    tol_irls         = 1e-5,
+                    maxit_mm         = 500,
+                    tol_mm           = 1e-5)
 {
     p <- NCOL(x)
     n <- NROW(x)
@@ -75,6 +79,36 @@ mmbcd_2part <- function(x, z,
     {
         stop("'weights_s' must be same length as number of observations in 'x_s'")
     }
+
+    is.offset   <- !is.null(offset)
+    is.offset.s <- !is.null(offset_s)
+
+    if (is.offset)
+    {
+        offset <- drop(as.double(offset))
+    } else
+    {
+        offset <- rep(0, n)
+    }
+
+    if (is.offset.s)
+    {
+        offset_s <- drop(as.double(offset_s))
+    } else
+    {
+        offset_s <- rep(0, n_s)
+    }
+
+    if (length(offset) != n)
+    {
+        stop("'offset' must be same length as number of observations in 'x'")
+    }
+
+    if (length(offset_s) != n_s)
+    {
+        stop("'offset_s' must be same length as number of observations in 'x_s'")
+    }
+
 
 
     algorithm <- match.arg(algorithm)
@@ -160,6 +194,9 @@ mmbcd_2part <- function(x, z,
                                       penalty = penalty)
     }
 
-    class(res) <- "2part"
+    res$offset   <- is.offset
+    res$offset_s <- is.offset.s
+
+    class(res)   <- "hd2part"
     res
 }
