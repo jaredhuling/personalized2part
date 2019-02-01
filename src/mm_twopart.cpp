@@ -108,7 +108,7 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
         penalty_adjustment = lambda_and_adjust.head(2);
 
-        std::cout << penalty_adjustment.transpose() << std::endl;
+        //std::cout << penalty_adjustment.transpose() << std::endl;
 
         lambda             = lambda_and_adjust.tail(nlambda);
 
