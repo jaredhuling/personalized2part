@@ -37,15 +37,21 @@ predict.hd2part <- function(object, newx, s = NULL,
         if(!match(type, c("coefficients", "nonzero"), FALSE)) stop("A value for 'newx' must be supplied")
     }
 
-    if (is.null(newoffset))
+    if (!match(type, c("coefficients", "nonzero"), FALSE))
     {
-        newoffset <- rep(0, NROW(newx))
+
+        if (is.null(newoffset))
+        {
+            newoffset <- rep(0, NROW(newx))
+        }
+
+        if (NROW(newx) != NROW(newoffset))
+        {
+            stop("newoffset must be same length as the number of observations in newx")
+        }
     }
 
-    if (NROW(newx) != NROW(newoffset))
-    {
-        stop("newoffset must be same length as the number of observations in newx")
-    }
+
 
     if (type != "response")
     {
