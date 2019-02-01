@@ -14,6 +14,7 @@
 #' \code{type = "response"} gives the combined response prediction across the two models using the full unconditional expected
 #' value of the response. When \code{type = "response"}, argument \code{"model"} is unused.
 #' \code{type = "coefficients"} computes the coefficients at the requested values for \code{s}.
+#' @param newoffset f an offset is used in the fit, then one must be supplied for making predictions
 #' @param ... not used
 #' @return An object depending on the type argument
 #' @export
@@ -24,7 +25,9 @@ predict.hd2part <- function(object, newx, s = NULL,
                                      "model_response",
                                      "response",
                                      "coefficients",
-                                     "nonzero"), ...)
+                                     "nonzero"),
+                            newoffset = NULL,
+                            ...)
 {
     type  <- match.arg(type)
     model <- match.arg(model)
@@ -32,6 +35,16 @@ predict.hd2part <- function(object, newx, s = NULL,
     if(missing(newx))
     {
         if(!match(type, c("coefficients", "nonzero"), FALSE)) stop("A value for 'newx' must be supplied")
+    }
+
+    if (is.null(newoffset))
+    {
+        newoffset <- rep(0, NROW(newx))
+    }
+
+    if (NROW(newx) != NROW(newoffset))
+    {
+        stop("newoffset must be same length as the number of observations in newx")
     }
 
     if (type != "response")
@@ -71,6 +84,7 @@ predict.hd2part <- function(object, newx, s = NULL,
         }
 
         eta <- as.matrix(newx %*% nbeta)
+        eta <- eta + array(newoffset, dim = dim(eta))
         if (type == "link")
         {
             return(eta)
@@ -108,6 +122,9 @@ predict.hd2part <- function(object, newx, s = NULL,
 
         eta_z <- as.matrix(newx %*% nbeta_z)
         eta_s <- as.matrix(newx %*% nbeta_s)
+
+        eta_z <- eta_z + array(newoffset, dim = dim(eta_z))
+        eta_s <- eta_s + array(newoffset, dim = dim(eta_s))
 
         return(exp(eta_s) * as.vector(  (1 / (1 + exp(-eta_z)))  )  )
     }
