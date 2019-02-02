@@ -1,11 +1,76 @@
 
-
+#' Fitting subgroup identification models for semicontinuous positive outcomes
+#'
+#' @description Fits subgroup identification models
+#'
+#' @param x The design matrix (not including intercept term)
+#' @param y The nonnegative response vector
+#' @param trt treatment vector with each element equal to a 0 or a 1, with 1 indicating
+#'            treatment status is active.
+#' @param propensity_func function that inputs the design matrix x and the treatment vector trt and outputs
+#' the propensity score, ie Pr(trt = 1 | X = x). Function should take two arguments 1) x and 2) trt. See example below.
+#' For a randomized controlled trial this can simply be a function that returns a constant equal to the proportion
+#' of patients assigned to the treatment group, i.e.:
+#' \code{propensity.func = function(x, trt) 0.5}.
+#' @param match_id a (character, factor, or integer) vector with length equal to the number of observations in \code{x}
+#' indicating using integers or levels of a factor vector which patients are
+#' in which matched groups. Defaults to \code{NULL} and assumes the samples are not from a matched cohort. Matched
+#' case-control groups can be created using any method (propensity score matching, optimal matching, etc). If each case
+#' is matched with a control or multiple controls, this would indicate which case-control pairs or groups go together.
+#' If \code{match_id} is supplied, then it is unecessary to specify a function via the \code{propensity_func} argument.
+#' A quick usage example: if the first patient is a case and the second and third are controls matched to it, and the
+#' fouth patient is a case and the fifth through seventh patients are matched with it, then the user should specify
+#' \code{match.id = c(1,1,1,2,2,2,2)} or \code{match.id = c(rep("Grp1", 3),rep("Grp2", 4)) }
+#' @param augment_func_zero function which inputs the zero part response (ie an indicator of whether or not \code{y} is positive),
+#' the covariates \code{x}, and \code{trt} and outputs predicted values (on the probability scale) for the response using a model
+#' constructed with \code{x}. \code{augment_func_zero()} can also be simply
+#' a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
+#' When the form of the augmentation function is correct, it can provide efficient estimation of the subgroups. Some examples of possible
+#' augmentation functions are:
+#'
+#' Example 1: \code{augment.func <- function(x, y) {lmod <- glm(y ~ x, family = binomial()); return(fitted(lmod))}}
+#'
+#' Example 2:
+#' \preformatted{
+#' augment.func <- function(x, y, trt) {
+#'     data <- data.frame(x, y, trt)
+#'     lmod <- glm(y ~ x * trt, family = binomial())
+#'     ## get predictions when trt = 1
+#'     data$trt <- 1
+#'     preds_1  <- predict(lmod, data, type = "response")
+#'
+#'     ## get predictions when trt = -1
+#'     data$trt <- -1
+#'     preds_n1 <- predict(lmod, data, type = "response")
+#'
+#'     ## return predictions averaged over trt
+#'     return(0.5 * (preds_1 + preds_n1))
+#' }
+#' }
+#'
+#' @param augment_func_positive (similar to augment_func_zero) function which inputs the positive part response
+#'  (ie all observations in \code{y} which are strictly positive),
+#'  the covariates \code{x}, and \code{trt} and outputs predicted values (on the link scale) for the response using a model
+#'  constructed with \code{x}. \code{augment_func_positive()} can also be simply
+#'  a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
+#' @param cutpoint numeric value for patients with benefit scores above which
+#'  (or below which if \code{larger.outcome.better = FALSE})
+#'  will be recommended to be in the treatment group. Defaults to 1, since the benefit score is a risk ratio
+#' @param larger_outcome_better boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
+#'  if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.
+#' @param y_eps positive value above which observations in \code{y} will be considered positive
+#' @param ... options to be passed to \code{\link[personalized2part]{cv.hd2part}}
+#' @export
+#'
+#' @examples
+#'
+#' set.seed(1)
+#'
 fit_subgroup_2part <- function(x,
                                y,
                                trt,
                                propensity_func = NULL,
                                match_id = NULL,
-                               penalty          = c("grp.lasso", "coop.lasso"),
                                augment_func_zero = NULL,
                                augment_func_positive = NULL,
                                cutpoint              = 1,
@@ -13,7 +78,6 @@ fit_subgroup_2part <- function(x,
                                y_eps = 1e-6,
                                ...)
 {
-    penalty <- match.arg(penalty)
     dims    <- dim(x)
     if (is.null(dims)) stop("x must be a matrix object.")
 
@@ -22,6 +86,11 @@ fit_subgroup_2part <- function(x,
 
     p   <- NCOL(x)
     n   <- NROW(x)
+
+    if (any(y < 0))
+    {
+        stop("y must be nonnegative")
+    }
 
     if (is.null(vnames))
     {
@@ -335,7 +404,6 @@ fit_subgroup_2part <- function(x,
                                      x.tilde.s, s,  ## positive part data
                                      weights   = wts * (abs(resid_outcome)), ## observation weights for zero part
                                      weights_s = wts_s, ## observation weights for positive part
-                                     penalty   = penalty,
                                      algorithm = "irls",
                                      intercept = FALSE, ...)
 
