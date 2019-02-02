@@ -61,8 +61,8 @@ hd2part <- function(x, z,
                     maxit_mm         = 500,
                     tol_mm           = 1e-5)
 {
-    p <- NCOL(x)
-    n <- NROW(x)
+    p   <- NCOL(x)
+    n   <- NROW(x)
     n_s <- NROW(x_s)
 
     if (p != ncol(x_s))
@@ -109,6 +109,18 @@ hd2part <- function(x, z,
         stop("'offset_s' must be same length as number of observations in 'x_s'")
     }
 
+    vnames <- colnames(x)
+
+    if (is.null(vnames))
+    {
+        if (!is.null(colnames(x_s)))
+        {
+            vnames <- colnames(x_s)
+        } else
+        {
+            vnames <- paste0("V", 1:p)
+        }
+    }
 
 
     algorithm <- match.arg(algorithm)
@@ -193,6 +205,9 @@ hd2part <- function(x, z,
                                       intercept = intercept,
                                       penalty = penalty)
     }
+
+    rownames(res$beta_z) <- c("(Intercept)", vnames)
+    rownames(res$beta_s) <- c("(Intercept)", vnames)
 
     res$offset    <- is.offset
     res$offset_s  <- is.offset.s

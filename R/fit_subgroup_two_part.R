@@ -8,17 +8,25 @@ fit_subgroup_2part <- function(x,
                                penalty          = c("grp.lasso", "coop.lasso"),
                                augment_func_zero = NULL,
                                augment_func_positive = NULL,
-                               cutpoint              = 0,
+                               cutpoint              = 1,
                                larger_outcome_better = TRUE,
                                y_eps = 1e-6,
                                ...)
 {
     penalty <- match.arg(penalty)
-    dims   <- dim(x)
+    dims    <- dim(x)
     if (is.null(dims)) stop("x must be a matrix object.")
 
-    y      <- drop(y)
-    vnames <- colnames(x)
+    y       <- drop(y)
+    vnames  <- colnames(x)
+
+    p   <- NCOL(x)
+    n   <- NROW(x)
+
+    if (is.null(vnames))
+    {
+        vnames <- paste0("V", 1:p)
+    }
 
     # check to make sure arguments of augment_func are correct
     if (!is.null(augment_func_zero))
@@ -315,32 +323,29 @@ fit_subgroup_2part <- function(x,
     all.cnames <- c( trt.name.cur[1],
                      vnames )
 
-    if (grepl("owl_", loss) & n.trts > 2)
-    {
-        all.cnames[1] <- "Trt"
-    }
-
-
     colnames(x.tilde.s) <- all.cnames
     colnames(x_z)       <- all.cnames
 
-    fitted.model <- cv.hd2part(x_z, z,  ## zero part data
-                               x.tilde.s, s, ## positive part data
-                               weights   = wts,           ## observation weights for zero part
-                               weights_s = wts_s, ## observation weights for positive part
-                               penalty   = penalty,
-                               algorithm = "irls",
-                               intercept = TRUE, ...)
+    fitted.model <- list()
 
-    fitted.model$propensity_func       <- propensity_func
+    fitted.model$model <- cv.hd2part(x_z, z,  ## zero part data
+                                     x.tilde.s, s, ## positive part data
+                                     weights   = wts,           ## observation weights for zero part
+                                     weights_s = wts_s, ## observation weights for positive part
+                                     penalty   = penalty,
+                                     algorithm = "irls",
+                                     intercept = TRUE, ...)
+
+    fitted.model$call                  <- this.call
+    fitted.model$propensity.func       <- propensity_func
     fitted.model$augment_func_zero     <- augment_func_zero
     fitted.model$augment_func_positive <- augment_func_positive
-    fitted.model$larger_outcome_better <- larger_outcome_better
+    fitted.model$larger.outcome.better <- larger_outcome_better
     fitted.model$cutpoint              <- cutpoint
     fitted.model$var.names             <- vnames
     fitted.model$n.trts                <- n.trts
     fitted.model$comparison.trts       <- comparison.trts
-    fitted.model$reference.trt         <- reference.trt
+    fitted.model$reference.trt         <- 0
     fitted.model$trts                  <- unique.trts
     fitted.model$trt.received          <- trt
     fitted.model$pi.x                  <- pi.x
@@ -352,18 +357,20 @@ fit_subgroup_2part <- function(x,
 
     pred_func <- function(x)
     {
-        xbeta_zero <- predict(fitted.model, newx = cbind(1,x), model = "zero")
-        xbeta_pos  <- predict(fitted.model, newx = cbind(1,x), model = "positive" )
+        xbeta_zero <- predict(fitted.model$model, newx = cbind(1, x), model = "zero")
+        xbeta_pos  <- predict(fitted.model$model, newx = cbind(1, x), model = "positive" )
 
         risk_ratio_estimate <- exp(2 * xbeta_pos + 1 * xbeta_zero)
 
         risk_ratio_estimate
     }
 
+    fitted.model$predict <- pred_func
+
     bene.scores <- fitted.model$predict(x)
 
     attr(bene.scores, "comparison.trts") <- comparison.trts
-    attr(bene.scores, "reference.trt")   <- reference.trt
+    attr(bene.scores, "reference.trt")   <- 0
     attr(bene.scores, "trts")            <- unique.trts
 
     fitted.model$benefit.scores          <- bene.scores
@@ -374,10 +381,12 @@ fit_subgroup_2part <- function(x,
                 when applied to the whole sample. Please check predict function.")
     }
 
-    fitted.model$recommended.trts      <- predict.subgroup_fitted(fitted.model,
-                                                                  newx = x,
-                                                                  type = "trt.group",
-                                                                  cutpoint = cutpoint)
+    fitted.model$loss   <- "2part"
+    fitted.model$family <- "2part"
+    fitted.model$recommended.trts      <- personalized:::predict.subgroup_fitted(fitted.model,
+                                                                                 newx = x,
+                                                                                 type = "trt.group",
+                                                                                 cutpoint = cutpoint)
 
     # calculate sizes of subgroups and the
     # subgroup treatment effects based on the
@@ -386,8 +395,8 @@ fit_subgroup_2part <- function(x,
                                                           y, trt,
                                                           pi.x,
                                                           cutpoint,
-                                                          larger.outcome.better,
-                                                          reference.trt = reference.trt)
+                                                          larger_outcome_better,
+                                                          reference.trt = 0)
 
     class(fitted.model) <- "subgroup_fitted"
 
