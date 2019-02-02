@@ -328,7 +328,7 @@ fit_subgroup_2part <- function(x,
 
     fitted.model <- list()
 
-    resid_outcome <- z
+    resid_outcome <- z - extra.args.zero$offset
     trt_aug <- ifelse(resid_outcome >= 0, trt, 1 - trt)
 
     fitted.model$model <- cv.hd2part(x_z, trt_aug,  ## zero part data
@@ -338,6 +338,8 @@ fit_subgroup_2part <- function(x,
                                      penalty   = penalty,
                                      algorithm = "irls",
                                      intercept = FALSE, ...)
+
+
 
     fitted.model$call                  <- this.call
     fitted.model$propensity.func       <- propensity_func
@@ -391,6 +393,7 @@ fit_subgroup_2part <- function(x,
                                                                                  type = "trt.group",
                                                                                  cutpoint = cutpoint)
 
+
     # calculate sizes of subgroups and the
     # subgroup treatment effects based on the
     # benefit scores and specified benefit score cutpoint
@@ -400,6 +403,33 @@ fit_subgroup_2part <- function(x,
                                                           cutpoint,
                                                           larger_outcome_better,
                                                           reference.trt = 0)
+
+    treat.effects.2part <- function(benefit.scores, loss = "2part", method = "weighting", pi.x = NULL)
+    {
+        loss   <- match.arg(loss)
+        method <- match.arg(method)
+
+        benefit.scores <- drop(benefit.scores)
+        if (!is.null(pi.x))
+        {
+            pi.x <- drop(pi.x)
+        }
+
+        trt_eff_delta <- trt_eff_gamma <- NA
+
+        trt_eff_gamma <- benefit.scores
+
+        effects <- list(delta = trt_eff_delta,
+                        gamma = trt_eff_gamma)
+        class(effects) <- c("individual_treatment_effects", class(effects) )
+
+        effects
+    }
+
+    fitted.model$individual.trt.effects <- treat.effects.2part(fitted.model$benefit.scores,
+                                                               "2part",
+                                                               "weighting",
+                                                               pi.x)
 
     class(fitted.model) <- "subgroup_fitted"
 
