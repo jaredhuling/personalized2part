@@ -217,6 +217,68 @@ nonzeroCoef = function (beta, bystep = FALSE)
     }
 }
 
+#' Prediction function for fitted cross validation hd2part objects
+#'
+#' @param object fitted \code{"cv.hd2part"} model object
+#' @param newx Matrix of new values for \code{x} at which predictions are to be made. Must be a matrix; can be sparse as in the
+#' \code{CsparseMatrix} objects of the \pkg{Matrix} package
+#' This argument is not used for \code{type = c("coefficients","nonzero")}
+#' @param s Value(s) of the penalty parameter lambda at which predictions are required. Default is the entire sequence used to create
+#' the model. For \code{predict.cv.hd2part()}, can also specify \code{"lambda.1se"} or \code{"lambda.min"} for best lambdas estimated
+#' by cross validation.
+#' @param model either \code{"zero"} for the zero part model or \code{"positive"} for the positive part model
+#' @param type Type of prediction required. \code{type = "link"} gives the linear predictors;
+#' \code{type = "model_response"} gives the fitted probabilities for the zero part and fitted expected values for the positive part.
+#' \code{type = "response"} gives the combined response prediction across the two models using the full unconditional expected
+#' value of the response. When \code{type = "response"}, argument \code{"model"} is unused.
+#' \code{type = "coefficients"} computes the coefficients at the requested values for \code{s}.
+#' @para ... arguments to be passed to \code{\link[personalized2part]{predict.hd2part}}}
+#' @method predict cv.hd2part
+#' @export
+#' @examples
+#' set.seed(123)
+#'
+predict.cv.hd2part <- function(object, newx,
+                               model = c("zero", "positive"),
+                               s = c("lambda.min", "lambda.1se"),
+                               type = c("link",
+                                        "model_response",
+                                        "response",
+                                        "coefficients",
+                                        "nonzero"),
+                               ...)
+{
+    model <- match.arg(model)
+    type  <- match.arg(type)
+    if(is.numeric(s))
+    {
+        lambda=s
+    } else if(is.character(s))
+    {
+        s <- match.arg(s)
+
+        if (type != "response")
+        {
+            if (model == "zero")
+            {
+                s <- paste0(s, ".z")
+            } else
+            {
+                s <- paste0(s, ".s")
+            }
+        }
+
+        lambda <- object[[s]]
+    } else
+    {
+        stop("Invalid form for s")
+    }
+    predict(object$hd2part.fit,
+            newx,
+            s = lambda,
+            type = type, ...)
+}
+
 
 ## taken from glmnet
 
