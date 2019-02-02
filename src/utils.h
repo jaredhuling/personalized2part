@@ -45,7 +45,7 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              const int & nlambda,
                              const double & lambda_min_ratio,
                              std::string & penalty,
-                             double & alpha);
+                             const double & alpha);
 
 
 Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
@@ -60,7 +60,7 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              const int & nlambda,
                              const double & lambda_min_ratio,
                              std::string & penalty,
-                             double & alpha);
+                             const double & alpha);
 
 
 Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
@@ -72,7 +72,7 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              const int & nlambda,
                              const double & lambda_min_ratio,
                              std::string & penalty,
-                             double & alpha);
+                             const double & alpha);
 
 std::vector<std::vector<int> > get_group_indexes(const VectorXi &groups,
                                                  const VectorXi &unique_groups,

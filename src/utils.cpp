@@ -169,7 +169,7 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              const int & nlambda,
                              const double & lambda_min_ratio,
                              std::string & penalty,
-                             double & alpha)
+                             const double & alpha)
 {
     //Eigen::VectorXd xty = X.transpose() * Y;
     int n = X.rows();
@@ -232,7 +232,7 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              const int & nlambda,
                              const double & lambda_min_ratio,
                              std::string & penalty,
-                             double & alpha)
+                             const double & alpha)
 {
     //Eigen::VectorXd xty = X.transpose() * Y;
     int n = X.rows();
@@ -321,7 +321,7 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
                              const int & nlambda,
                              const double & lambda_min_ratio,
                              std::string & penalty,
-                             double & alpha)
+                             const double & alpha)
 {
     Eigen::VectorXd xty = X.transpose() * (weights.array() * Y.array()).matrix();
     int n = X.rows();

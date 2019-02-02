@@ -10,6 +10,7 @@ mmbcd <- function(x, y,
                   lambda = NULL,
                   nlambda = 100L,
                   lambda_min_ratio = ifelse(n < p, 0.05, 0.005),
+                  tau = 0,
                   maxit = 500,
                   tol = 1e-5,
                   maxit.irls = 25,
@@ -65,6 +66,20 @@ mmbcd <- function(x, y,
     lambda_min_ratio <- as.double(lambda_min_ratio)
     intercept        <- as.logical(intercept)
 
+    alpha <- 1
+    alpha <- as.double(alpha[1])
+    tau   <- as.double(tau[1])
+
+    if (alpha < 0 | alpha > 1)
+    {
+        stop("alpha must be between 0 and 1")
+    }
+
+    if (tau < 0 | tau > 1)
+    {
+        stop("tau must be between 0 and 1")
+    }
+
     if (algorithm == "mm")
     {
         res <- mmbcd_cpp(X = x, Y = y, groups = groups,
@@ -73,6 +88,7 @@ mmbcd <- function(x, y,
                          weights = weights,
                          lambda = lambda, nlambda = nlambda,
                          lambda_min_ratio = lambda_min_ratio,
+                         alpha = alpha, tau = tau,
                          maxit = maxit, tol = tol, intercept = intercept,
                          penalty = penalty, family = family)
     } else if (algorithm == "irls")
@@ -83,6 +99,7 @@ mmbcd <- function(x, y,
                               weights = weights,
                               lambda = lambda, nlambda = nlambda,
                               lambda_min_ratio = lambda_min_ratio,
+                              alpha = alpha, tau = tau,
                               maxit = maxit, tol = tol,
                               maxit_irls = maxit.irls, tol_irls = tol.irls,
                               intercept = intercept,
