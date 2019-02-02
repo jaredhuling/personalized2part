@@ -80,6 +80,9 @@ hd2part <- function(x, z,
         stop("'weights_s' must be same length as number of observations in 'x_s'")
     }
 
+    weights   <- weights / mean(weights)
+    weights_s <- weights_s / mean(weights_s)
+
     is.offset   <- !is.null(offset)
     is.offset.s <- !is.null(offset_s)
 
