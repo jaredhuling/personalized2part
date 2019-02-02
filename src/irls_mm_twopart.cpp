@@ -443,8 +443,8 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
             //     niter(l) = ii + 1;
             //     break;
             // }
-            if (converged(beta, beta_irls_old, tol) &&
-                converged(beta_s, beta_irls_s_old, tol))
+            if (converged(beta, beta_irls_old, tol_irls) &&
+                converged(beta_s, beta_irls_s_old, tol_irls))
             {
                 niter(l) = ii + 1;
                 break;
