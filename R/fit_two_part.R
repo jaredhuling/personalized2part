@@ -197,6 +197,9 @@ hd2part <- function(x, z,
     res$offset   <- is.offset
     res$offset_s <- is.offset.s
 
+    res$nonzero_z <- colSums(res$beta_z[-1,] != 0)
+    res$nonzero_s <- colSums(res$beta_s[-1,] != 0)
+
     class(res)   <- "hd2part"
     res
 }

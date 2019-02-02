@@ -305,8 +305,8 @@ cv.hd2part <- function (x,   z,
                cvsd_s   = cvsd_s,
                cvup_s   = cvm_s + cvsd_s,
                cvlo_s   = cvm_s - cvsd_s,
-               nzero_z  = nz_z,
-               nzero_s  = nz_s,
+               nonzero_z  = nz_z,
+               nonzero_s  = nz_s,
                name     = cvname,
                hd2part.fit = hd2part.object)
     if (keep)
