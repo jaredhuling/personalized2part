@@ -209,7 +209,16 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                 double l1 = group_weights(g) * lam * alpha;
                 double l2 = group_weights(g) * lam * (1.0 - alpha);
 
-                VectorXd beta_new = thresh_func(U_plus_beta, penalty_adjustment, l1, gamma, l2, stepsize);
+                //VectorXd beta_new = thresh_func(U_plus_beta, penalty_adjustment, l1, gamma, l2, stepsize);
+
+                VectorXd beta_new(2);
+                if (stepsize > 0.0)
+                {
+                    beta_new = thresh_func(U_plus_beta, penalty_adjustment, l1, gamma, l2, stepsize);
+                } else
+                {
+                    beta_new.setZero();
+                }
 
                 bool anychanged = false;
                 for (int k = 0; k < 2; ++k)
