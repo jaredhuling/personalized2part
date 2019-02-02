@@ -1,5 +1,37 @@
 
-
+#' Cross validation for hd2part models
+#'
+#' @param x an n x p matrix of covariates for the zero part data, where each row is an observation
+#' and each column is a predictor. MUST be ordered such that the first n_s rows align with the
+#' observations in x_s and s
+#' @param z a length n vector of responses taking values 1 and 0, where 1 indicates the response is positive
+#' and zero indicates the response has value 0. MUST be ordered such that the first n_s values align with the
+#' observations in x_s and s
+#' @param x_s an n_s x p matrix of covariates (which is a submatrix of x) for the positive part data, where
+#' each row is an observation and each column is a predictor
+#' @param s a length n_s vector of responses taking strictly positive values
+#' @param weights a length n vector of observation weights for the zero part data
+#' @param weights_s a length n_s vector of observation weights for the positive part data
+#' @param offset a length n vector of offset terms for the zero part data
+#' @param offset_s a length n_s vector of offset terms for the positive part data
+#' @param lambda A user supplied lambda sequence. By default, the program computes
+#' its own lambda sequence based on nlambda and lambda.min.ratio. Supplying
+#' a value of lambda overrides this.
+#' @param type.measure measure to evaluate for cross-validation. Will add more description later
+#' @param nfolds number of folds for cross-validation. default is 10. 3 is smallest value allowed.
+#' @param foldid an optional vector of values between 1 and nfold specifying which fold each observation belongs to.
+#' @param grouped Like in \pkg{glmnet}, this is an experimental argument, with default \code{TRUE}, and can be ignored by most users.
+#' For all models, this refers to computing nfolds separate statistics, and then using their mean and estimated standard
+#' error to describe the CV curve. If \code{grouped = FALSE}, an error matrix is built up at the observation level from the
+#' predictions from the \code{nfold} fits, and then summarized (does not apply to \code{type.measure = "auc"}).
+#' @param keep If \code{keep = TRUE}, a prevalidated list of arrasy is returned containing fitted values for each observation
+#' and each value of lambda for each model. This means these fits are computed with this observation and the rest of its
+#' fold omitted. The folid vector is also returned. Default is \code{keep = FALSE}
+#' @param parallel If TRUE, use parallel foreach to fit each fold. Must register parallel before hand, such as \pkg{doMC}.
+#' @param ... other parameters to be passed to \code{"oem"} function
+#' @export
+#' @examples
+#' set.seed(1)
 cv.hd2part <- function (x,   z,
                         x_s, s,
                         weights      = rep(1, NROW(x)),
