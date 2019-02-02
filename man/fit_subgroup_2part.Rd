@@ -4,9 +4,9 @@
 \alias{fit_subgroup_2part}
 \title{Fitting subgroup identification models for semicontinuous positive outcomes}
 \usage{
-fit_subgroup_2part(x, y, trt, propensity_func = NULL, match_id = NULL,
-  augment_func_zero = NULL, augment_func_positive = NULL,
-  cutpoint = 1, larger_outcome_better = TRUE, y_eps = 1e-06, ...)
+fit_subgroup_2part(x, y, trt, propensity.func = NULL, match.id = NULL,
+  augment.func.zero = NULL, augment.func.positive = NULL,
+  cutpoint = 1, larger.outcome.better = TRUE, y_eps = 1e-06, ...)
 }
 \arguments{
 \item{x}{The design matrix (not including intercept term)}
@@ -16,25 +16,23 @@ fit_subgroup_2part(x, y, trt, propensity_func = NULL, match_id = NULL,
 \item{trt}{treatment vector with each element equal to a 0 or a 1, with 1 indicating
 treatment status is active.}
 
-\item{propensity_func}{function that inputs the design matrix x and the treatment vector trt and outputs
+\item{propensity.func}{function that inputs the design matrix x and the treatment vector trt and outputs
 the propensity score, ie Pr(trt = 1 | X = x). Function should take two arguments 1) x and 2) trt. See example below.
 For a randomized controlled trial this can simply be a function that returns a constant equal to the proportion
 of patients assigned to the treatment group, i.e.:
 \code{propensity.func = function(x, trt) 0.5}.}
 
-\item{match_id}{a (character, factor, or integer) vector with length equal to the number of observations in \code{x}
+\item{match.id}{a (character, factor, or integer) vector with length equal to the number of observations in \code{x}
 indicating using integers or levels of a factor vector which patients are
 in which matched groups. Defaults to \code{NULL} and assumes the samples are not from a matched cohort. Matched
 case-control groups can be created using any method (propensity score matching, optimal matching, etc). If each case
 is matched with a control or multiple controls, this would indicate which case-control pairs or groups go together.
-If \code{match_id} is supplied, then it is unecessary to specify a function via the \code{propensity_func} argument.
+If \code{match.id} is supplied, then it is unecessary to specify a function via the \code{propensity.func} argument.
 A quick usage example: if the first patient is a case and the second and third are controls matched to it, and the
 fouth patient is a case and the fifth through seventh patients are matched with it, then the user should specify
-\code{match.id = c(1,1,1,2,2,2,2)} or \code{match.id = c(rep("Grp1", 3),rep("Grp2", 4)) }}
-
-\item{augment_func_zero}{function which inputs the zero part response (ie an indicator of whether or not \code{y} is positive),
+\code{match.id = c(1,1,1,2,2,2,2)} or \code{match.id = c(rep("Grp1", 3),rep("Grp2", 4)) }
 the covariates \code{x}, and \code{trt} and outputs predicted values (on the probability scale) for the response using a model
-constructed with \code{x}. \code{augment_func_zero()} can also be simply
+constructed with \code{x}. \code{augment.func.zero()} can also be simply
 a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
 When the form of the augmentation function is correct, it can provide efficient estimation of the subgroups. Some examples of possible
 augmentation functions are:
@@ -59,17 +57,17 @@ augment.func <- function(x, y, trt) {
 }
 }}
 
-\item{augment_func_positive}{(similar to augment_func_zero) function which inputs the positive part response
+\item{augment.func.positive}{(similar to augment.func.zero) function which inputs the positive part response
 (ie all observations in \code{y} which are strictly positive),
 the covariates \code{x}, and \code{trt} and outputs predicted values (on the link scale) for the response using a model
-constructed with \code{x}. \code{augment_func_positive()} can also be simply
+constructed with \code{x}. \code{augment.func.positive()} can also be simply
 a function of \code{x} and \code{y}. This function is used for efficiency augmentation.}
 
 \item{cutpoint}{numeric value for patients with benefit scores above which
 (or below which if \code{larger.outcome.better = FALSE})
 will be recommended to be in the treatment group. Defaults to 1, since the benefit score is a risk ratio}
 
-\item{larger_outcome_better}{boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
+\item{larger.outcome.better}{boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
 if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.}
 
 \item{y_eps}{positive value above which observations in \code{y} will be considered positive}

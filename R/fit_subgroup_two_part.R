@@ -7,23 +7,22 @@
 #' @param y The nonnegative response vector
 #' @param trt treatment vector with each element equal to a 0 or a 1, with 1 indicating
 #'            treatment status is active.
-#' @param propensity_func function that inputs the design matrix x and the treatment vector trt and outputs
+#' @param propensity.func function that inputs the design matrix x and the treatment vector trt and outputs
 #' the propensity score, ie Pr(trt = 1 | X = x). Function should take two arguments 1) x and 2) trt. See example below.
 #' For a randomized controlled trial this can simply be a function that returns a constant equal to the proportion
 #' of patients assigned to the treatment group, i.e.:
 #' \code{propensity.func = function(x, trt) 0.5}.
-#' @param match_id a (character, factor, or integer) vector with length equal to the number of observations in \code{x}
+#' @param match.id a (character, factor, or integer) vector with length equal to the number of observations in \code{x}
 #' indicating using integers or levels of a factor vector which patients are
 #' in which matched groups. Defaults to \code{NULL} and assumes the samples are not from a matched cohort. Matched
 #' case-control groups can be created using any method (propensity score matching, optimal matching, etc). If each case
 #' is matched with a control or multiple controls, this would indicate which case-control pairs or groups go together.
-#' If \code{match_id} is supplied, then it is unecessary to specify a function via the \code{propensity_func} argument.
+#' If \code{match.id} is supplied, then it is unecessary to specify a function via the \code{propensity.func} argument.
 #' A quick usage example: if the first patient is a case and the second and third are controls matched to it, and the
 #' fouth patient is a case and the fifth through seventh patients are matched with it, then the user should specify
 #' \code{match.id = c(1,1,1,2,2,2,2)} or \code{match.id = c(rep("Grp1", 3),rep("Grp2", 4)) }
-#' @param augment_func_zero function which inputs the zero part response (ie an indicator of whether or not \code{y} is positive),
 #' the covariates \code{x}, and \code{trt} and outputs predicted values (on the probability scale) for the response using a model
-#' constructed with \code{x}. \code{augment_func_zero()} can also be simply
+#' constructed with \code{x}. \code{augment.func.zero()} can also be simply
 #' a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
 #' When the form of the augmentation function is correct, it can provide efficient estimation of the subgroups. Some examples of possible
 #' augmentation functions are:
@@ -48,15 +47,15 @@
 #' }
 #' }
 #'
-#' @param augment_func_positive (similar to augment_func_zero) function which inputs the positive part response
+#' @param augment.func.positive (similar to augment.func.zero) function which inputs the positive part response
 #'  (ie all observations in \code{y} which are strictly positive),
 #'  the covariates \code{x}, and \code{trt} and outputs predicted values (on the link scale) for the response using a model
-#'  constructed with \code{x}. \code{augment_func_positive()} can also be simply
+#'  constructed with \code{x}. \code{augment.func.positive()} can also be simply
 #'  a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
 #' @param cutpoint numeric value for patients with benefit scores above which
 #'  (or below which if \code{larger.outcome.better = FALSE})
 #'  will be recommended to be in the treatment group. Defaults to 1, since the benefit score is a risk ratio
-#' @param larger_outcome_better boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
+#' @param larger.outcome.better boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
 #'  if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.
 #' @param y_eps positive value above which observations in \code{y} will be considered positive
 #' @param ... options to be passed to \code{\link[personalized2part]{cv.hd2part}}
@@ -69,12 +68,12 @@
 fit_subgroup_2part <- function(x,
                                y,
                                trt,
-                               propensity_func = NULL,
-                               match_id = NULL,
-                               augment_func_zero = NULL,
-                               augment_func_positive = NULL,
+                               propensity.func = NULL,
+                               match.id = NULL,
+                               augment.func.zero = NULL,
+                               augment.func.positive = NULL,
                                cutpoint              = 1,
-                               larger_outcome_better = TRUE,
+                               larger.outcome.better = TRUE,
                                y_eps = 1e-6,
                                ...)
 {
@@ -98,9 +97,9 @@ fit_subgroup_2part <- function(x,
     }
 
     # check to make sure arguments of augment_func are correct
-    if (!is.null(augment_func_zero))
+    if (!is.null(augment.func.zero))
     {
-        augmentfunc.names <- sort(names(formals(augment_func_zero)))
+        augmentfunc.names <- sort(names(formals(augment.func.zero)))
         if (length(augmentfunc.names) == 3)
         {
             if (any(augmentfunc.names != c("trt", "x", "y")))
@@ -113,17 +112,17 @@ fit_subgroup_2part <- function(x,
             {
                 stop("arguments of augment.func() should be 'x' and 'y'")
             }
-            augment.func2 <- augment_func_zero
-            augment_func_zero  <- function(trt, x, y) augment.func2(x = x, y = y)
+            augment.func2 <- augment.func.zero
+            augment.func.zero  <- function(trt, x, y) augment.func2(x = x, y = y)
         } else
         {
-            stop("augment_func_zero() should only have either two arguments: 'x' and 'y', or three arguments:
+            stop("augment.func.zero() should only have either two arguments: 'x' and 'y', or three arguments:
                  'trt', 'x', and 'y'")
         }
     }
-    if (!is.null(augment_func_positive))
+    if (!is.null(augment.func.positive))
     {
-        augmentfunc.names <- sort(names(formals(augment_func_positive)))
+        augmentfunc.names <- sort(names(formals(augment.func.positive)))
         if (length(augmentfunc.names) == 3)
         {
             if (any(augmentfunc.names != c("trt", "x", "y")))
@@ -136,11 +135,11 @@ fit_subgroup_2part <- function(x,
             {
                 stop("arguments of augment.func() should be 'x' and 'y'")
             }
-            augment.func2 <- augment_func_positive
-            augment_func_positive  <- function(trt, x, y) augment.func2(x = x, y = y)
+            augment.func2 <- augment.func.positive
+            augment.func.positive  <- function(trt, x, y) augment.func2(x = x, y = y)
         } else
         {
-            stop("augment_func_positive() should only have either two arguments: 'x' and 'y', or three arguments:
+            stop("augment.func.positive() should only have either two arguments: 'x' and 'y', or three arguments:
                  'trt', 'x', and 'y'")
         }
     }
@@ -170,14 +169,14 @@ fit_subgroup_2part <- function(x,
 
     # defaults to constant propensity score within trt levels
     # the user will almost certainly want to change this
-    if (is.null(propensity_func))
+    if (is.null(propensity.func))
     {
-        if (is.null(match_id))
+        if (is.null(match.id))
         { # No propensity score supplied and no match.id supplied
             if (n.trts == 2)
             {
                 mean.trt <- mean(trt == 1)
-                propensity_func <- function(trt, x) rep(mean.trt, length(trt))
+                propensity.func <- function(trt, x) rep(mean.trt, length(trt))
             } else
             {
                 mean.trt <- numeric(n.trts)
@@ -185,7 +184,7 @@ fit_subgroup_2part <- function(x,
                 {
                     mean.trt[t] <- mean(trt == unique.trts[t])
                 }
-                propensity_func <- function(trt, x)
+                propensity.func <- function(trt, x)
                 {
                     pi.x <- numeric(length(trt))
                     for (t in 1:n.trts)
@@ -203,7 +202,7 @@ fit_subgroup_2part <- function(x,
                 # default to pct in treatment group
                 mean.trt <- mean(trt == 1)
                 pf <- function(trt, x, match.id) rep(mean.trt, NROW(trt))
-                propensity_func <- pf
+                propensity.func <- pf
             } else
             {
                 mean.trt <- numeric(n.trts)
@@ -221,53 +220,53 @@ fit_subgroup_2part <- function(x,
                     }
                     pi.x
                 }
-                propensity_func <- pf
+                propensity.func <- pf
             }
         }
     }
 
 
 
-    larger_outcome_better <- as.logical(larger_outcome_better[1])
+    larger.outcome.better <- as.logical(larger.outcome.better[1])
 
     this.call     <- mget(names(formals()), sys.frame(sys.nframe()))
     this.call$... <- NULL
     this.call     <- c(this.call, list(...))
 
 
-    # check to make sure arguments of propensity_func are correct
-    propfunc.names <- sort(names(formals(propensity_func)))
+    # check to make sure arguments of propensity.func are correct
+    propfunc.names <- sort(names(formals(propensity.func)))
     if (length(propfunc.names) == 3)
     {
         if (any(propfunc.names != c("match.id", "trt", "x")))
         {
-            stop("arguments of propensity_func() should be 'trt','x', and (optionally) 'match.id'")
+            stop("arguments of propensity.func() should be 'trt','x', and (optionally) 'match.id'")
         }
     } else if (length(propfunc.names) == 2)
     {
         if (any(propfunc.names != c("trt", "x")))
         {
-            stop("arguments of propensity_func() should be 'trt','x', and (optionally) 'match.id'")
+            stop("arguments of propensity.func() should be 'trt','x', and (optionally) 'match.id'")
         }
     } else
     {
-        stop("propensity_func() should only have two or three arguments: 'trt' and 'x', or: 'trt', 'x', and 'match.id'")
+        stop("propensity.func() should only have two or three arguments: 'trt' and 'x', or: 'trt', 'x', and 'match.id'")
     }
 
     # compute propensity scores
-    if (is.null(match_id) | length(propfunc.names) == 2)
+    if (is.null(match.id) | length(propfunc.names) == 2)
     {
-        pi.x <- drop(propensity_func(x = x, trt = trt))
+        pi.x <- drop(propensity.func(x = x, trt = trt))
     } else
     {
-        pi.x <- drop(propensity_func(x = x, trt = trt, match.id = match.id))
+        pi.x <- drop(propensity.func(x = x, trt = trt, match.id = match.id))
     }
 
     # make sure the resulting propensity scores are in the
     # acceptable range (ie 0-1)
     rng.pi <- range(pi.x)
 
-    if (rng.pi[1] <= 0 | rng.pi[2] >= 1) stop("propensity_func() should return values between 0 and 1")
+    if (rng.pi[1] <= 0 | rng.pi[2] >= 1) stop("propensity.func() should return values between 0 and 1")
 
     ## if returned propensity score
     ## is a matrix, then pick out the
@@ -284,7 +283,7 @@ fit_subgroup_2part <- function(x,
         {
             if (ncol(pi.x) != n.trts)
             {
-                stop("Number of columns in the matrix returned by propensity_func() is not the same
+                stop("Number of columns in the matrix returned by propensity.func() is not the same
                      as the number of levels of 'trt'.")
             }
             if (is.factor(trt))
@@ -306,7 +305,7 @@ fit_subgroup_2part <- function(x,
             pi.x <- pi.x[cbind(1:nrow(pi.x), match(values, levels.pi.mat))]
         } else
         {
-            stop("propensity_func() returns a multidimensional array; it can only return a vector or matrix.")
+            stop("propensity.func() returns a multidimensional array; it can only return a vector or matrix.")
         }
     }
 
@@ -348,13 +347,13 @@ fit_subgroup_2part <- function(x,
 
     extra.args <- NULL
     # check to make sure arguments of augment.func are correct
-    if (!is.null(augment_func_zero))
+    if (!is.null(augment.func.zero))
     {
-        B.x   <- unname(drop(augment_func_zero(trt = trt, x = x_z, y = z)))
+        B.x   <- unname(drop(augment.func.zero(trt = trt, x = x_z, y = z)))
 
         if (NROW(B.x) != NROW(y))
         {
-            stop("augment_func_zero() should return the same number of predictions as observations in y")
+            stop("augment.func.zero() should return the same number of predictions as observations in y")
         }
 
         extra.args.zero <- list(offset = B.x)
@@ -363,13 +362,13 @@ fit_subgroup_2part <- function(x,
     {
         extra.args.zero <- list(offset = rep(0, NROW(z)))
     }
-    if (!is.null(augment_func_positive))
+    if (!is.null(augment.func.positive))
     {
-        B.x   <- unname(drop(augment_func_positive(trt = trt_s, x = x_s, y = s)))
+        B.x   <- unname(drop(augment.func.positive(trt = trt_s, x = x_s, y = s)))
 
         if (NROW(B.x) != NROW(y))
         {
-            stop("augment_func_positive() should return the same number of predictions as observations in y")
+            stop("augment.func.positive() should return the same number of predictions as observations in y")
         }
 
         extra.args.pos <- list(offset = B.x)
@@ -410,10 +409,10 @@ fit_subgroup_2part <- function(x,
 
 
     fitted.model$call                  <- this.call
-    fitted.model$propensity.func       <- propensity_func
-    fitted.model$augment_func_zero     <- augment_func_zero
-    fitted.model$augment_func_positive <- augment_func_positive
-    fitted.model$larger.outcome.better <- larger_outcome_better
+    fitted.model$propensity.func       <- propensity.func
+    fitted.model$augment.func.zero     <- augment.func.zero
+    fitted.model$augment.func.positive <- augment.func.positive
+    fitted.model$larger.outcome.better <- larger.outcome.better
     fitted.model$cutpoint              <- cutpoint
     fitted.model$var.names             <- vnames
     fitted.model$n.trts                <- n.trts
@@ -469,7 +468,7 @@ fit_subgroup_2part <- function(x,
                                                           y, trt,
                                                           pi.x,
                                                           cutpoint,
-                                                          larger_outcome_better,
+                                                          larger.outcome.better,
                                                           reference.trt = 0)
 
     treat.effects.2part <- function(benefit.scores, loss = "2part", method = "weighting", pi.x = NULL)
