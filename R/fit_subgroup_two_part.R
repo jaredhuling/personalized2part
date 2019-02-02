@@ -328,13 +328,16 @@ fit_subgroup_2part <- function(x,
 
     fitted.model <- list()
 
-    fitted.model$model <- cv.hd2part(x_z, z,  ## zero part data
-                                     x.tilde.s, s, ## positive part data
-                                     weights   = wts,           ## observation weights for zero part
+    resid_outcome <- z
+    trt_aug <- ifelse(resid_outcome >= 0, trt, 1 - trt)
+
+    fitted.model$model <- cv.hd2part(x_z, trt_aug,  ## zero part data
+                                     x.tilde.s, s,  ## positive part data
+                                     weights   = wts * (abs(resid_outcome)), ## observation weights for zero part
                                      weights_s = wts_s, ## observation weights for positive part
                                      penalty   = penalty,
                                      algorithm = "irls",
-                                     intercept = TRUE, ...)
+                                     intercept = FALSE, ...)
 
     fitted.model$call                  <- this.call
     fitted.model$propensity.func       <- propensity_func
