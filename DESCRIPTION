@@ -2,13 +2,17 @@ Package: personalized2part
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.0.1
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Authors@R: c(
+    person("Jared", "Huling",  role = c("aut", "cre"), email = "jaredhuling@gmail.com",
+            comment = c(ORCID = "0000-0003-0670-4845"))
+    )
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
+Depends:
+    personalized
 LinkingTo: 
     Rcpp,
     RcppEigen

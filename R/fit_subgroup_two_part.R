@@ -5,6 +5,7 @@ fit_subgroup_2part <- function(x,
                                trt,
                                propensity_func = NULL,
                                match_id = NULL,
+                               penalty          = c("grp.lasso", "coop.lasso"),
                                augment_func_zero = NULL,
                                augment_func_positive = NULL,
                                cutpoint              = 0,
@@ -12,6 +13,7 @@ fit_subgroup_2part <- function(x,
                                y_eps = 1e-6,
                                ...)
 {
+    penalty <- match.arg(penalty)
     dims   <- dim(x)
     if (is.null(dims)) stop("x must be a matrix object.")
 
@@ -98,7 +100,7 @@ fit_subgroup_2part <- function(x,
             if (n.trts == 2)
             {
                 mean.trt <- mean(trt == 1)
-                propensity.func <- function(trt, x) rep(mean.trt, length(trt))
+                propensity_func <- function(trt, x) rep(mean.trt, length(trt))
             } else
             {
                 mean.trt <- numeric(n.trts)
@@ -106,7 +108,7 @@ fit_subgroup_2part <- function(x,
                 {
                     mean.trt[t] <- mean(trt == unique.trts[t])
                 }
-                propensity.func <- function(trt, x)
+                propensity_func <- function(trt, x)
                 {
                     pi.x <- numeric(length(trt))
                     for (t in 1:n.trts)
@@ -156,7 +158,7 @@ fit_subgroup_2part <- function(x,
     this.call     <- c(this.call, list(...))
 
 
-    # check to make sure arguments of propensity.func are correct
+    # check to make sure arguments of propensity_func are correct
     propfunc.names <- sort(names(formals(propensity_func)))
     if (length(propfunc.names) == 3)
     {
@@ -188,7 +190,7 @@ fit_subgroup_2part <- function(x,
     # acceptable range (ie 0-1)
     rng.pi <- range(pi.x)
 
-    if (rng.pi[1] <= 0 | rng.pi[2] >= 1) stop("propensity.func() should return values between 0 and 1")
+    if (rng.pi[1] <= 0 | rng.pi[2] >= 1) stop("propensity_func() should return values between 0 and 1")
 
     ## if returned propensity score
     ## is a matrix, then pick out the
@@ -231,12 +233,6 @@ fit_subgroup_2part <- function(x,
         }
     }
 
-    # construct observation weight vector
-    wts     <- create.weights(pi.x   = pi.x,
-                              trt    = trt,
-                              method = "weighting")
-
-
 
     ## indicator of zero
     z      <- as.integer(1*(y  > y_eps))
@@ -262,6 +258,15 @@ fit_subgroup_2part <- function(x,
     pi.x <- pi.x[reorder]
 
 
+    # construct observation weight vector
+    wts     <- create.weights(pi.x   = pi.x,
+                              trt    = trt,
+                              method = "weighting")
+
+    # construct observation weight vector
+    wts_s     <- create.weights(pi.x   = pi.x_s,
+                                trt    = trt_s,
+                                method = "weighting")
 
 
     extra.args <- NULL
@@ -318,6 +323,73 @@ fit_subgroup_2part <- function(x,
 
     colnames(x.tilde.s) <- all.cnames
     colnames(x_z)       <- all.cnames
+
+    fitted.model <- cv.hd2part(x_z, z,  ## zero part data
+                               x.tilde.s, s, ## positive part data
+                               weights   = wts,           ## observation weights for zero part
+                               weights_s = wts_s, ## observation weights for positive part
+                               penalty   = penalty,
+                               algorithm = "irls",
+                               intercept = TRUE, ...)
+
+    fitted.model$propensity_func       <- propensity_func
+    fitted.model$augment_func_zero     <- augment_func_zero
+    fitted.model$augment_func_positive <- augment_func_positive
+    fitted.model$larger_outcome_better <- larger_outcome_better
+    fitted.model$cutpoint              <- cutpoint
+    fitted.model$var.names             <- vnames
+    fitted.model$n.trts                <- n.trts
+    fitted.model$comparison.trts       <- comparison.trts
+    fitted.model$reference.trt         <- reference.trt
+    fitted.model$trts                  <- unique.trts
+    fitted.model$trt.received          <- trt
+    fitted.model$pi.x                  <- pi.x
+    fitted.model$pi.x_s                <- pi.x_s
+    fitted.model$y                     <- y
+    fitted.model$z                     <- z
+    fitted.model$s                     <- s
+
+
+    pred_func <- function(x)
+    {
+        xbeta_zero <- predict(fitted.model, newx = cbind(1,x), model = "zero")
+        xbeta_pos  <- predict(fitted.model, newx = cbind(1,x), model = "positive" )
+
+        risk_ratio_estimate <- exp(2 * xbeta_pos + 1 * xbeta_zero)
+
+        risk_ratio_estimate
+    }
+
+    bene.scores <- fitted.model$predict(x)
+
+    attr(bene.scores, "comparison.trts") <- comparison.trts
+    attr(bene.scores, "reference.trt")   <- reference.trt
+    attr(bene.scores, "trts")            <- unique.trts
+
+    fitted.model$benefit.scores          <- bene.scores
+
+    if (NROW(fitted.model$benefit.scores) != NROW(y))
+    {
+        warning("predict function returned a vector of predictions not equal to the number of observations
+                when applied to the whole sample. Please check predict function.")
+    }
+
+    fitted.model$recommended.trts      <- predict.subgroup_fitted(fitted.model,
+                                                                  newx = x,
+                                                                  type = "trt.group",
+                                                                  cutpoint = cutpoint)
+
+    # calculate sizes of subgroups and the
+    # subgroup treatment effects based on the
+    # benefit scores and specified benefit score cutpoint
+    fitted.model$subgroup.trt.effects <- subgroup.effects(fitted.model$benefit.scores,
+                                                          y, trt,
+                                                          pi.x,
+                                                          cutpoint,
+                                                          larger.outcome.better,
+                                                          reference.trt = reference.trt)
+
+    class(fitted.model) <- "subgroup_fitted"
 
     fitted.model
 

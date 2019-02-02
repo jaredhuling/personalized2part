@@ -35,3 +35,6 @@ An object depending on the type argument
 \description{
 Prediction method for two part fitted objects
 }
+\examples{
+set.seed(1)
+}

@@ -19,6 +19,7 @@
 #' @return An object depending on the type argument
 #' @export
 #' @examples
+#' set.seed(1)
 predict.hd2part <- function(object, newx, s = NULL,
                             model = c("zero", "positive"),
                             type = c("link",
