@@ -138,85 +138,6 @@ predict.hd2part <- function(object, newx, s = NULL,
 
 
 
-## taken from glmnet
-
-lambda.interp=function(lambda,s){
-    ### lambda is the index sequence that is produced by the model
-    ### s is the new vector at which evaluations are required.
-    ### the value is a vector of left and right indices, and a vector of fractions.
-    ### the new values are interpolated bewteen the two using the fraction
-    ### Note: lambda decreases. you take:
-    ### sfrac*left+(1-sfrac*right)
-
-    if(length(lambda)==1){# degenerate case of only one lambda
-        nums=length(s)
-        left=rep(1,nums)
-        right=left
-        sfrac=rep(1,nums)
-    }
-    else{
-        s[s > max(lambda)] = max(lambda)
-        s[s < min(lambda)] = min(lambda)
-        k=length(lambda)
-        sfrac <- (lambda[1]-s)/(lambda[1] - lambda[k])
-        lambda <- (lambda[1] - lambda)/(lambda[1] - lambda[k])
-        coord <- approx(lambda, seq(lambda), sfrac)$y
-        left <- floor(coord)
-        right <- ceiling(coord)
-        sfrac=(sfrac-lambda[right])/(lambda[left] - lambda[right])
-        sfrac[left==right]=1
-        sfrac[abs(lambda[left]-lambda[right])<.Machine$double.eps]=1
-
-    }
-    list(left=left,right=right,frac=sfrac)
-}
-
-## taken from glmnet
-
-nonzeroCoef = function (beta, bystep = FALSE)
-{
-    ### bystep = FALSE means which variables were ever nonzero
-    ### bystep = TRUE means which variables are nonzero for each step
-    nr=nrow(beta)
-    if (nr == 1) {#degenerate case
-        if (bystep)
-            apply(beta, 2, function(x) if (abs(x) > 0)
-                1
-                else NULL)
-        else {
-            if (any(abs(beta) > 0))
-                1
-            else NULL
-        }
-    }
-    else {
-        beta=abs(beta)>0 # this is sparse
-        which=seq(nr)
-        ones=rep(1,ncol(beta))
-        nz=as.vector((beta%*%ones)>0)
-        which=which[nz]
-        if (bystep) {
-            if(length(which)>0){
-                beta=as.matrix(beta[which,,drop=FALSE])
-                nzel = function(x, which) if (any(x))
-                    which[x]
-                else NULL
-                which=apply(beta, 2, nzel, which)
-                if(!is.list(which))which=data.frame(which)# apply can return a matrix!!
-                which
-            }
-            else{
-                dn=dimnames(beta)[[2]]
-                which=vector("list",length(dn))
-                names(which)=dn
-                which
-            }
-
-        }
-        else which
-    }
-}
-
 #' Prediction function for fitted cross validation hd2part objects
 #'
 #' @param object fitted \code{"cv.hd2part"} model object
@@ -232,7 +153,7 @@ nonzeroCoef = function (beta, bystep = FALSE)
 #' \code{type = "response"} gives the combined response prediction across the two models using the full unconditional expected
 #' value of the response. When \code{type = "response"}, argument \code{"model"} is unused.
 #' \code{type = "coefficients"} computes the coefficients at the requested values for \code{s}.
-#' @para ... arguments to be passed to \code{\link[personalized2part]{predict.hd2part}}}
+#' @param ... arguments to be passed to \code{\link[personalized2part]{predict.hd2part}}
 #' @method predict cv.hd2part
 #' @export
 #' @examples
@@ -322,3 +243,84 @@ deviance.2part <- function(object,...)
     nulldev <- object$deviance[1]
     (1 - dev) * nulldev
 }
+
+
+## taken from glmnet
+
+lambda.interp=function(lambda,s){
+    ### lambda is the index sequence that is produced by the model
+    ### s is the new vector at which evaluations are required.
+    ### the value is a vector of left and right indices, and a vector of fractions.
+    ### the new values are interpolated bewteen the two using the fraction
+    ### Note: lambda decreases. you take:
+    ### sfrac*left+(1-sfrac*right)
+
+    if(length(lambda)==1){# degenerate case of only one lambda
+        nums=length(s)
+        left=rep(1,nums)
+        right=left
+        sfrac=rep(1,nums)
+    }
+    else{
+        s[s > max(lambda)] = max(lambda)
+        s[s < min(lambda)] = min(lambda)
+        k=length(lambda)
+        sfrac <- (lambda[1]-s)/(lambda[1] - lambda[k])
+        lambda <- (lambda[1] - lambda)/(lambda[1] - lambda[k])
+        coord <- approx(lambda, seq(lambda), sfrac)$y
+        left <- floor(coord)
+        right <- ceiling(coord)
+        sfrac=(sfrac-lambda[right])/(lambda[left] - lambda[right])
+        sfrac[left==right]=1
+        sfrac[abs(lambda[left]-lambda[right])<.Machine$double.eps]=1
+
+    }
+    list(left=left,right=right,frac=sfrac)
+}
+
+## taken from glmnet
+
+nonzeroCoef = function (beta, bystep = FALSE)
+{
+    ### bystep = FALSE means which variables were ever nonzero
+    ### bystep = TRUE means which variables are nonzero for each step
+    nr=nrow(beta)
+    if (nr == 1) {#degenerate case
+        if (bystep)
+            apply(beta, 2, function(x) if (abs(x) > 0)
+                1
+                else NULL)
+        else {
+            if (any(abs(beta) > 0))
+                1
+            else NULL
+        }
+    }
+    else {
+        beta=abs(beta)>0 # this is sparse
+        which=seq(nr)
+        ones=rep(1,ncol(beta))
+        nz=as.vector((beta%*%ones)>0)
+        which=which[nz]
+        if (bystep) {
+            if(length(which)>0){
+                beta=as.matrix(beta[which,,drop=FALSE])
+                nzel = function(x, which) if (any(x))
+                    which[x]
+                else NULL
+                which=apply(beta, 2, nzel, which)
+                if(!is.list(which))which=data.frame(which)# apply can return a matrix!!
+                which
+            }
+            else{
+                dn=dimnames(beta)[[2]]
+                which=vector("list",length(dn))
+                names(which)=dn
+                which
+            }
+
+        }
+        else which
+    }
+}
+

@@ -26,6 +26,8 @@ by cross validation.}
 \code{type = "response"} gives the combined response prediction across the two models using the full unconditional expected
 value of the response. When \code{type = "response"}, argument \code{"model"} is unused.
 \code{type = "coefficients"} computes the coefficients at the requested values for \code{s}.}
+
+\item{...}{arguments to be passed to \code{\link[personalized2part]{predict.hd2part}}}
 }
 \description{
 Prediction function for fitted cross validation hd2part objects
