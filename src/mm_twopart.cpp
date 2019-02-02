@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "thresholds_twopart.h"
+#include "thresholds.h"
 #include "calc_U_twopart.h"
 
 
@@ -16,6 +17,7 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                              Eigen::VectorXd & lambda,
                              const int &nlambda,
                              const double &lambda_min_ratio,
+                             const double &tau,
                              const int &maxit,
                              const double &tol,
                              const bool &intercept,
@@ -114,7 +116,7 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     }
 
-    penalty_adjustment.array() = 1.15;
+    penalty_adjustment.array() = 1.01;
 
     // END - set up default lambda
 
@@ -206,15 +208,30 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                                               xbeta_cur, xbeta_s_cur, nobs, nobs_s).array() +
                     stepsize * beta_subs.array();
 
-                double l1 = group_weights(g) * lam * alpha;
-                double l2 = group_weights(g) * lam * (1.0 - alpha);
+                double l1 = group_weights(g) * lam * tau;
+                double lgr = group_weights(g) * lam * (1.0 - tau);
 
                 //VectorXd beta_new = thresh_func(U_plus_beta, penalty_adjustment, l1, gamma, l2, stepsize);
 
                 VectorXd beta_new(2);
-                if (stepsize > 0.0)
+                if (eigenvals(g) > 0.0)
                 {
-                    beta_new = thresh_func(U_plus_beta, penalty_adjustment, l1, gamma, l2, stepsize);
+                    //beta_new = thresh_func(U_plus_beta, penalty_adjustment, l1, gamma, l2, eigenvals(g));
+
+                    if (tau > 0.0)
+                    {
+                        VectorXd beta_tmp(2);
+                        for (int k = 0; k < 2; ++k)
+                        {
+                            double pencur = l1 * penalty_adjustment(k);
+                            beta_tmp(k) = soft_thresh(U_plus_beta(k), pencur);
+                        }
+
+                        beta_new = thresh_func(beta_tmp, penalty_adjustment, lgr, gamma, lgr, stepsize);
+                    } else
+                    {
+                        beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, gamma, lgr, stepsize);
+                    }
                 } else
                 {
                     beta_new.setZero();
@@ -263,6 +280,7 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                         Named("beta_s")     = beta_s_mat,
                         Named("niter")      = niter,
                         Named("lambda")     = lambda,
+                        Named("tau")       = tau,
                         Named("penalty_adjustment") = penalty_adjustment,
                         Named("eigenvals")  = eigenvals,
                         Named("penalty")    = penalty[0]);

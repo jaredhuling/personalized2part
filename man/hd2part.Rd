@@ -9,7 +9,7 @@ hd2part(x, z, x_s, s, weights = rep(1, NROW(x)), weights_s = rep(1,
   penalty = c("grp.lasso", "coop.lasso"), penalty_factor = NULL,
   algorithm = c("irls", "mm"), nlambda = 100L,
   lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005), lambda = NULL,
-  intercept = TRUE, maxit_irls = 50, tol_irls = 1e-05,
+  tau = 0, intercept = TRUE, maxit_irls = 50, tol_irls = 1e-05,
   maxit_mm = 500, tol_mm = 1e-05)
 }
 \arguments{
@@ -50,6 +50,9 @@ The default depends on the sample size relative to the number of variables.}
 
 \item{lambda}{a user supplied sequence of penalization tuning parameters. By default, the program automatically
 chooses a sequence of lambda values based on \code{nlambda} and \code{lambda_min_ratio}}
+
+\item{tau}{value between 0 and 1 for sparse group mixing penalty. 0 implies either group lasso or coop lasso and 1 implies
+lasso}
 
 \item{intercept}{whether or not to include an intercept in the model. Default is \code{TRUE}.}
 

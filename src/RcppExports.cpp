@@ -35,8 +35,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // irls_mmbcd_twopart_cpp
-Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Z, const Eigen::Map<Eigen::MatrixXd>& Xs, const Eigen::Map<Eigen::VectorXd>& S, const Eigen::Map<Eigen::VectorXi>& groups, const Eigen::Map<Eigen::VectorXi>& unique_groups, Eigen::VectorXd& group_weights, Eigen::VectorXd& weights, Eigen::VectorXd& weights_s, Eigen::VectorXd& lambda, const int& nlambda, const double& lambda_min_ratio, const int& maxit, const double& tol, const int& maxit_irls, const double& tol_irls, const bool& intercept, std::vector<std::string>& penalty);
-RcppExport SEXP _personalized2part_irls_mmbcd_twopart_cpp(SEXP XSEXP, SEXP ZSEXP, SEXP XsSEXP, SEXP SSEXP, SEXP groupsSEXP, SEXP unique_groupsSEXP, SEXP group_weightsSEXP, SEXP weightsSEXP, SEXP weights_sSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP maxit_irlsSEXP, SEXP tol_irlsSEXP, SEXP interceptSEXP, SEXP penaltySEXP) {
+Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Z, const Eigen::Map<Eigen::MatrixXd>& Xs, const Eigen::Map<Eigen::VectorXd>& S, const Eigen::Map<Eigen::VectorXi>& groups, const Eigen::Map<Eigen::VectorXi>& unique_groups, Eigen::VectorXd& group_weights, Eigen::VectorXd& weights, Eigen::VectorXd& weights_s, Eigen::VectorXd& lambda, const int& nlambda, const double& lambda_min_ratio, const double& tau, const int& maxit, const double& tol, const int& maxit_irls, const double& tol_irls, const bool& intercept, std::vector<std::string>& penalty);
+RcppExport SEXP _personalized2part_irls_mmbcd_twopart_cpp(SEXP XSEXP, SEXP ZSEXP, SEXP XsSEXP, SEXP SSEXP, SEXP groupsSEXP, SEXP unique_groupsSEXP, SEXP group_weightsSEXP, SEXP weightsSEXP, SEXP weights_sSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP tauSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP maxit_irlsSEXP, SEXP tol_irlsSEXP, SEXP interceptSEXP, SEXP penaltySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -52,13 +52,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const int& >::type nlambda(nlambdaSEXP);
     Rcpp::traits::input_parameter< const double& >::type lambda_min_ratio(lambda_min_ratioSEXP);
+    Rcpp::traits::input_parameter< const double& >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< const int& >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< const double& >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< const int& >::type maxit_irls(maxit_irlsSEXP);
     Rcpp::traits::input_parameter< const double& >::type tol_irls(tol_irlsSEXP);
     Rcpp::traits::input_parameter< const bool& >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string>& >::type penalty(penaltySEXP);
-    rcpp_result_gen = Rcpp::wrap(irls_mmbcd_twopart_cpp(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, maxit, tol, maxit_irls, tol_irls, intercept, penalty));
+    rcpp_result_gen = Rcpp::wrap(irls_mmbcd_twopart_cpp(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, tau, maxit, tol, maxit_irls, tol_irls, intercept, penalty));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -112,8 +113,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // mmbcd_twopart_cpp
-Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Z, const Eigen::Map<Eigen::MatrixXd>& Xs, const Eigen::Map<Eigen::VectorXd>& S, const Eigen::Map<Eigen::VectorXi>& groups, const Eigen::Map<Eigen::VectorXi>& unique_groups, Eigen::VectorXd& group_weights, Eigen::VectorXd& weights, Eigen::VectorXd& weights_s, Eigen::VectorXd& lambda, const int& nlambda, const double& lambda_min_ratio, const int& maxit, const double& tol, const bool& intercept, std::vector<std::string>& penalty);
-RcppExport SEXP _personalized2part_mmbcd_twopart_cpp(SEXP XSEXP, SEXP ZSEXP, SEXP XsSEXP, SEXP SSEXP, SEXP groupsSEXP, SEXP unique_groupsSEXP, SEXP group_weightsSEXP, SEXP weightsSEXP, SEXP weights_sSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP interceptSEXP, SEXP penaltySEXP) {
+Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Z, const Eigen::Map<Eigen::MatrixXd>& Xs, const Eigen::Map<Eigen::VectorXd>& S, const Eigen::Map<Eigen::VectorXi>& groups, const Eigen::Map<Eigen::VectorXi>& unique_groups, Eigen::VectorXd& group_weights, Eigen::VectorXd& weights, Eigen::VectorXd& weights_s, Eigen::VectorXd& lambda, const int& nlambda, const double& lambda_min_ratio, const double& tau, const int& maxit, const double& tol, const bool& intercept, std::vector<std::string>& penalty);
+RcppExport SEXP _personalized2part_mmbcd_twopart_cpp(SEXP XSEXP, SEXP ZSEXP, SEXP XsSEXP, SEXP SSEXP, SEXP groupsSEXP, SEXP unique_groupsSEXP, SEXP group_weightsSEXP, SEXP weightsSEXP, SEXP weights_sSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP tauSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP interceptSEXP, SEXP penaltySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -129,21 +130,22 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const int& >::type nlambda(nlambdaSEXP);
     Rcpp::traits::input_parameter< const double& >::type lambda_min_ratio(lambda_min_ratioSEXP);
+    Rcpp::traits::input_parameter< const double& >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< const int& >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< const double& >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< const bool& >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string>& >::type penalty(penaltySEXP);
-    rcpp_result_gen = Rcpp::wrap(mmbcd_twopart_cpp(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, maxit, tol, intercept, penalty));
+    rcpp_result_gen = Rcpp::wrap(mmbcd_twopart_cpp(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, tau, maxit, tol, intercept, penalty));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_personalized2part_irls_mmbcd_cpp", (DL_FUNC) &_personalized2part_irls_mmbcd_cpp, 18},
-    {"_personalized2part_irls_mmbcd_twopart_cpp", (DL_FUNC) &_personalized2part_irls_mmbcd_twopart_cpp, 18},
+    {"_personalized2part_irls_mmbcd_twopart_cpp", (DL_FUNC) &_personalized2part_irls_mmbcd_twopart_cpp, 19},
     {"_personalized2part_mmbcd_cpp", (DL_FUNC) &_personalized2part_mmbcd_cpp, 16},
     {"_personalized2part_mmbcd_gaussian_cpp", (DL_FUNC) &_personalized2part_mmbcd_gaussian_cpp, 13},
-    {"_personalized2part_mmbcd_twopart_cpp", (DL_FUNC) &_personalized2part_mmbcd_twopart_cpp, 16},
+    {"_personalized2part_mmbcd_twopart_cpp", (DL_FUNC) &_personalized2part_mmbcd_twopart_cpp, 17},
     {NULL, NULL, 0}
 };
 

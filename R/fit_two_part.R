@@ -30,6 +30,8 @@
 #' The default depends on the sample size relative to the number of variables.
 #' @param lambda a user supplied sequence of penalization tuning parameters. By default, the program automatically
 #' chooses a sequence of lambda values based on \code{nlambda} and \code{lambda_min_ratio}
+#' @param tau value between 0 and 1 for sparse group mixing penalty. 0 implies either group lasso or coop lasso and 1 implies
+#' lasso
 #' @param intercept whether or not to include an intercept in the model. Default is \code{TRUE}.
 #' @param maxit_irls maximum number of IRLS iterations
 #' @param tol_irls convergence tolerance for IRLS iterations
@@ -55,6 +57,7 @@ hd2part <- function(x, z,
                     nlambda          = 100L,
                     lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
                     lambda           = NULL,
+                    tau              = 0,
                     intercept        = TRUE,
                     maxit_irls       = 50,
                     tol_irls         = 1e-5,
@@ -164,12 +167,18 @@ hd2part <- function(x, z,
     tol_irls         <- as.double(tol_irls[1])
     lambda_min_ratio <- as.double(lambda_min_ratio[1])
     intercept        <- as.logical(intercept[1])
+    tau              <- as.double(tau[1])
 
     if (nlambda <= 0)     stop("'nlambda' must be a positive integer")
     if (maxit_mm <= 0)    stop("'maxit_mm' must be a positive integer")
     if (maxit_irls <= 0)  stop("'maxit_irls' must be a positive integer")
     if (tol_irls <= 0)    stop("'tol_irls' must be a strictly positive number")
     if (tol_mm <= 0)      stop("'tol_mm' must be a strictly positive number")
+
+    if (tau < 0 | tau > 1)
+    {
+        stop("tau must be between 0 and 1")
+    }
 
     if (length(lambda) > 0 && any(lambda) <= 0) stop("every value in 'lambda' must be a strictly positive number")
 
@@ -188,6 +197,7 @@ hd2part <- function(x, z,
                                  weights_s = weights_s,
                                  lambda = lambda, nlambda = nlambda,
                                  lambda_min_ratio = lambda_min_ratio,
+                                 tau = tau,
                                  maxit = maxit_mm, tol = tol_mm,
                                  intercept = intercept,
                                  penalty = penalty)
@@ -202,6 +212,7 @@ hd2part <- function(x, z,
                                       weights_s = weights_s,
                                       lambda = lambda, nlambda = nlambda,
                                       lambda_min_ratio = lambda_min_ratio,
+                                      tau = tau,
                                       maxit = maxit_mm, tol = tol_mm,
                                       maxit_irls = maxit_irls,
                                       tol_irls = tol_irls,
