@@ -414,6 +414,11 @@ fit_subgroup_2part <- function(x,
                                      opposite_signs = !larger.outcome.better,
                                      intercept = FALSE, ...)
 
+    if (!larger.outcome.better)
+    {
+        fitted.model$model$beta_z <- -fitted.model$model$beta_z
+    }
+
 
     fitted.model$call                  <- this.call
     fitted.model$propensity.func       <- propensity.func
