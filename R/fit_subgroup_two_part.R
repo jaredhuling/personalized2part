@@ -412,7 +412,6 @@ fit_subgroup_2part <- function(x,
                                      weights_s = wts_s, ## observation weights for positive part
                                      algorithm = "irls",
                                      opposite_signs = !larger.outcome.better,
-                                     flip_beta_zero = !larger.outcome.better,
                                      intercept = FALSE, ...)
 
 
