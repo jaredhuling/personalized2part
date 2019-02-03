@@ -9,7 +9,8 @@ hd2part(x, z, x_s, s, weights = rep(1, NROW(x)), weights_s = rep(1,
   penalty = c("grp.lasso", "coop.lasso"), penalty_factor = NULL,
   algorithm = c("irls", "mm"), nlambda = 100L,
   lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005), lambda = NULL,
-  tau = 0, intercept = TRUE, maxit_irls = 50, tol_irls = 1e-05,
+  tau = 0, opposite_signs = FALSE, flip_beta_zero = FALSE,
+  intercept = TRUE, maxit_irls = 50, tol_irls = 1e-05,
   maxit_mm = 500, tol_mm = 1e-05)
 }
 \arguments{
@@ -53,6 +54,12 @@ chooses a sequence of lambda values based on \code{nlambda} and \code{lambda_min
 
 \item{tau}{value between 0 and 1 for sparse group mixing penalty. 0 implies either group lasso or coop lasso and 1 implies
 lasso}
+
+\item{opposite_signs}{a boolean variable indicating whether the signs of coefficients across models should be encouraged to have
+opposite signs instead of the same signs. Default is \code{FALSE}. This variable has no effect for group lasso.}
+
+\item{flip_beta_zero}{should we flip the signs of the parameters for the zero part model? Defaults to \code{FALSE}. Should only
+be used for good reason}
 
 \item{intercept}{whether or not to include an intercept in the model. Default is \code{TRUE}.}
 

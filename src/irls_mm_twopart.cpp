@@ -24,7 +24,8 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                                   const int &maxit_irls,
                                   const double &tol_irls,
                                   const bool &intercept,
-                                  std::vector<std::string> &penalty)
+                                  std::vector<std::string> &penalty,
+                                  const bool &opposite_signs)
 {
 
 
@@ -166,6 +167,12 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     VectorXd deviance_s_vec(nlambda_vec);
 
     double deviance, deviance_old, weights_sum, weights_s_sum, deviance_s, deviance_s_old;
+
+    double mult_1 = 1.0;
+    if (opposite_signs)
+    {
+        mult_1 = -1.0;
+    }
 
 
     if (intercept)
@@ -364,6 +371,9 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                     U_plus_beta(1) = ( Xs.col(g).array() * W_s.array() * resid_s_cur.array()  ).matrix().sum() /
                         double(nobs_s) + eigenvals(g) * beta_subs(1);
 
+
+                    U_plus_beta(0) *= mult_1;
+
                     double l1 = group_weights(g) * lam * tau;
                     double lgr = group_weights(g) * lam * (1.0 - tau);
 
@@ -388,6 +398,8 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                         {
                             beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, gamma, lgr, eigenvals(g));
                         }
+
+                        beta_new(0) *= mult_1;
                     } else
                     {
                         beta_new.setZero();

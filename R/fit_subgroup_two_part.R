@@ -312,6 +312,13 @@ fit_subgroup_2part <- function(x,
 
     ## indicator of zero
     z      <- as.integer(1*(y  > y_eps))
+
+    ## flip meaning of z
+    if (!larger.outcome.better)
+    {
+        z <- 1 - z
+    }
+
     is_nz  <- y > y_eps
     s      <- y[is_nz]
     x_s    <- x[is_nz,]
@@ -404,8 +411,9 @@ fit_subgroup_2part <- function(x,
                                      weights   = wts * (abs(resid_outcome)), ## observation weights for zero part
                                      weights_s = wts_s, ## observation weights for positive part
                                      algorithm = "irls",
+                                     opposite_signs = !larger.outcome.better,
+                                     flip_beta_zero = !larger.outcome.better,
                                      intercept = FALSE, ...)
-
 
 
     fitted.model$call                  <- this.call

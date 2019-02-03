@@ -21,7 +21,8 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                              const int &maxit,
                              const double &tol,
                              const bool &intercept,
-                             std::vector<std::string> &penalty)
+                             std::vector<std::string> &penalty,
+                             const bool &opposite_signs)
 {
 
 
@@ -159,6 +160,13 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     beta_s_mat.setZero();
 
 
+    double mult_1 = 1.0;
+    if (opposite_signs)
+    {
+        mult_1 = -1.0;
+    }
+
+
     // loop over lamba values
     for (int l = 0; l < nlambda_vec; ++l)
     {
@@ -208,6 +216,8 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                                               xbeta_cur, xbeta_s_cur, nobs, nobs_s).array() +
                     stepsize * beta_subs.array();
 
+                U_plus_beta(0) *= mult_1;
+
                 double l1 = group_weights(g) * lam * tau;
                 double lgr = group_weights(g) * lam * (1.0 - tau);
 
@@ -232,6 +242,7 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                     {
                         beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, gamma, lgr, stepsize);
                     }
+                    beta_new(0) *= mult_1;
                 } else
                 {
                     beta_new.setZero();

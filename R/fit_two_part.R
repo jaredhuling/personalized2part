@@ -32,6 +32,10 @@
 #' chooses a sequence of lambda values based on \code{nlambda} and \code{lambda_min_ratio}
 #' @param tau value between 0 and 1 for sparse group mixing penalty. 0 implies either group lasso or coop lasso and 1 implies
 #' lasso
+#' @param opposite_signs a boolean variable indicating whether the signs of coefficients across models should be encouraged to have
+#' opposite signs instead of the same signs. Default is \code{FALSE}. This variable has no effect for group lasso.
+#' @param flip_beta_zero should we flip the signs of the parameters for the zero part model? Defaults to \code{FALSE}. Should only
+#' be used for good reason
 #' @param intercept whether or not to include an intercept in the model. Default is \code{TRUE}.
 #' @param maxit_irls maximum number of IRLS iterations
 #' @param tol_irls convergence tolerance for IRLS iterations
@@ -58,6 +62,8 @@ hd2part <- function(x, z,
                     lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
                     lambda           = NULL,
                     tau              = 0,
+                    opposite_signs   = FALSE,
+                    flip_beta_zero   = FALSE,
                     intercept        = TRUE,
                     maxit_irls       = 50,
                     tol_irls         = 1e-5,
@@ -168,6 +174,7 @@ hd2part <- function(x, z,
     lambda_min_ratio <- as.double(lambda_min_ratio[1])
     intercept        <- as.logical(intercept[1])
     tau              <- as.double(tau[1])
+    opposite_signs   <- as.logical(opposite_signs[1])
 
     if (nlambda <= 0)     stop("'nlambda' must be a positive integer")
     if (maxit_mm <= 0)    stop("'maxit_mm' must be a positive integer")
@@ -217,7 +224,13 @@ hd2part <- function(x, z,
                                       maxit_irls = maxit_irls,
                                       tol_irls = tol_irls,
                                       intercept = intercept,
-                                      penalty = penalty)
+                                      penalty = penalty,
+                                      opposite_signs = opposite_signs)
+    }
+
+    if (flip_beta_zero)
+    {
+        res$beta_z <- -res$beta_z
     }
 
     rownames(res$beta_z) <- c("(Intercept)", vnames)
