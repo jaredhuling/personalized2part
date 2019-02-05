@@ -43,6 +43,7 @@
 #' each IRLS iteration, so \code{maxit_mm} applies to the convergence of the inner iterations in this case.
 #' @param tol_mm convergence tolerance for MM iterations. Note that for \code{algorithm = "irls"}, MM is used within
 #' each IRLS iteration, so \code{tol_mm} applies to the convergence of the inner iterations in this case.
+#' @param strongrule should a strong rule be used?
 #' @export
 #'
 #' @examples
@@ -68,7 +69,8 @@ hd2part <- function(x, z,
                     maxit_irls       = 50,
                     tol_irls         = 1e-5,
                     maxit_mm         = 500,
-                    tol_mm           = 1e-5)
+                    tol_mm           = 1e-5,
+                    strongrule       = TRUE)
 {
     p   <- NCOL(x)
     n   <- NROW(x)
@@ -175,6 +177,7 @@ hd2part <- function(x, z,
     intercept        <- as.logical(intercept[1])
     tau              <- as.double(tau[1])
     opposite_signs   <- as.logical(opposite_signs[1])
+    strongrule       <- as.logical(strongrule[1])
 
     if (nlambda <= 0)     stop("'nlambda' must be a positive integer")
     if (maxit_mm <= 0)    stop("'maxit_mm' must be a positive integer")

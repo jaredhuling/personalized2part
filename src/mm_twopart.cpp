@@ -117,7 +117,7 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     }
 
-    penalty_adjustment.array() = 1.01;
+    penalty_adjustment.array() /= penalty_adjustment.maxCoeff();
 
     // END - set up default lambda
 

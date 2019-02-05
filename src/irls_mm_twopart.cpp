@@ -118,13 +118,29 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
         penalty_adjustment = lambda_and_adjust.head(2);
 
-        // std::cout << penalty_adjustment.transpose() << std::endl;
+        //std::cout << penalty_adjustment.transpose() << std::endl;
 
         lambda             = lambda_and_adjust.tail(nlambda);
 
     }
 
-    penalty_adjustment.array() = 1.01;
+    //double pamax = penalty_adjustment.maxCoeff();
+    //double pamin = penalty_adjustment.maxCoeff();
+    penalty_adjustment.array() /= penalty_adjustment.maxCoeff();
+
+    /*
+    if (penalty_adjustment(0) < penalty_adjustment(1))
+    {
+        penalty_adjustment(1) = 1.0;
+    } else
+    {
+        penalty_adjustment(0) = 1.0;
+    }
+     */
+
+
+
+    //penalty_adjustment.array() = 1.01;
     // END - set up default lambda
 
     nlambda_vec = lambda.size();
