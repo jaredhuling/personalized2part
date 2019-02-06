@@ -390,10 +390,10 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
                     U_plus_beta(0) *= mult_1;
 
-                    double l1 = group_weights(g) * lam * tau;
+                    double l1  = group_weights(g) * lam * tau;
                     double lgr = group_weights(g) * lam * (1.0 - tau);
 
-                    VectorXd beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, gamma, lgr, eigenvals(g));
+                    VectorXd beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, l1, eigenvals(g));
 
                     /*
                     if (g == 0)

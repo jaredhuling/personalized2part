@@ -322,7 +322,7 @@ Rcpp::List irls_mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                             double(nobs) + eigenvals(g) * beta_subs(k);
                     }
 
-                    double l1 = group_weights(g) * lam * tau;
+                    double l1  = group_weights(g) * lam * tau;
                     double lgr = group_weights(g) * lam * (1.0 - tau);
 
                     VectorXd beta_new(gr_size);

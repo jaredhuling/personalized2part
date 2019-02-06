@@ -58,8 +58,10 @@ VectorXd coop_block_soft_thresh(VectorXd & a, double & lambda, double &gamma, do
 
 double soft_thresh(double & a, double & lambda)
 {
-    double thresh_fact = std::max(0.0, 1.0 - lambda / std::abs(a) );
-    double retval = a * thresh_fact;
+    //double thresh_fact = std::max(0.0, 1.0 - lambda / std::abs(a) );
+    //double retval = a * thresh_fact;
+
+    double retval = a * std::max(0.0, 1.0 - lambda / std::abs(a) );
 
     return(retval);
 }
