@@ -3,6 +3,7 @@
 #include <RcppEigen.h>
 
 #include "utils.h"
+#include "thresholds.h"
 
 #include "Spectra/SymEigsSolver.h"
 #include "Spectra/MatOp/DenseSymMatProd.h"
@@ -193,9 +194,30 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
         // calculate U vector
         VectorXd U_vec = U_func(x_list[g], Y, weights, xbeta_cur, n).array();
 
-        if (group_weights(g) > 0)
+        if (penalty == "grp.lasso")
         {
-            norms(g) = U_vec.norm() / group_weights(g);
+            if (group_weights(g) > 0)
+            {
+                norms(g) = U_vec.norm() / group_weights(g);
+            }
+        } else if (penalty == "coop.lasso")
+        {
+            if (group_weights(g) > 0)
+            {
+                int numelem = U_vec.size();
+
+                VectorXd norms_phis(numelem);
+
+                VectorXd phi_j_vec(numelem);
+
+                for (int j = 0; j < numelem; ++j)
+                {
+                    phi_j_vec = phi_j_v(U_vec, j);
+                    norms_phis(j) = phi_j_vec.norm() / group_weights(g);
+                }
+
+                norms(g) = norms_phis.cwiseAbs().maxCoeff();
+            }
         }
 
     }
@@ -267,8 +289,24 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
         VectorXd U_vec = U_func(X.col(g), Xs.col(g), Z, S, weights, weights_s,
                                 xbeta_cur, xbeta_s_cur, n, n_s).array();
 
-        norms_z(g) = std::abs(U_vec(0)) / group_weights(g);
-        norms_p(g) = std::abs(U_vec(1)) / group_weights(g);
+        if (penalty == "grp.lasso")
+        {
+            norms_z(g) = std::abs(U_vec(0)) / group_weights(g);
+            norms_p(g) = std::abs(U_vec(1)) / group_weights(g);
+        } else if (penalty == "coop.lasso")
+        {
+            VectorXd norms_phis(2);
+            VectorXd phi_j_vec(2);
+
+            for (int j = 0; j < 2; ++j)
+            {
+                phi_j_vec = phi_j_v(U_vec, j);
+                norms_phis(j) = phi_j_vec.norm() / group_weights(g);
+            }
+
+            norms_z(g) = norms_phis(0);
+            norms_p(g) = norms_phis(1);
+        }
 
         U_mat.row(g) = U_vec;
 
@@ -278,10 +316,6 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
     double lmax_z = norms_z.cwiseAbs().maxCoeff();
     double lmax_p = norms_p.cwiseAbs().maxCoeff();
 
-    VectorXd penalty_adjust(2);
-
-    penalty_adjust(0) = lmax_z / (lmax_z + lmax_p);
-    penalty_adjust(1) = lmax_p / (lmax_z + lmax_p);
 
     //penalty_adjust.array() /= penalty_adjust.cwiseAbs().minCoeff();
 
@@ -295,6 +329,11 @@ Eigen::VectorXd setup_lambda(const Eigen::Map<Eigen::MatrixXd> & X,
 
 
     double lmax = norms.cwiseAbs().maxCoeff();
+
+    VectorXd penalty_adjust(2);
+
+    penalty_adjust(0) = lmax_z / (lmax_z + lmax_p);
+    penalty_adjust(1) = lmax_p / (lmax_z + lmax_p);
 
 
     //double lmax = xty.cwiseAbs().maxCoeff() / double(n);

@@ -210,7 +210,8 @@ hd2part <- function(x, z,
                                  tau = tau,
                                  maxit = maxit_mm, tol = tol_mm,
                                  intercept = intercept,
-                                 penalty = penalty)
+                                 penalty = penalty,
+                                 opposite_signs = opposite_signs)
     } else
     {
         res <- irls_mmbcd_twopart_cpp(X = x, Z = z,
