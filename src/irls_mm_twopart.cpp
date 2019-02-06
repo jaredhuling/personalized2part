@@ -393,33 +393,7 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                     double l1 = group_weights(g) * lam * tau;
                     double lgr = group_weights(g) * lam * (1.0 - tau);
 
-                    // VectorXd beta_new = thresh_func(U_plus_beta, l1, gamma, l2, eigenvals(g));
-
-                    VectorXd beta_new(2);
-                    if (eigenvals(g) > 0.0)
-                    {
-                        //beta_new = thresh_func(U_plus_beta, penalty_adjustment, l1, gamma, l2, eigenvals(g));
-
-                        if (tau > 0.0)
-                        {
-                            VectorXd beta_tmp(2);
-                            for (int k = 0; k < 2; ++k)
-                            {
-                                double pencur = l1 * penalty_adjustment(k);
-                                beta_tmp(k) = soft_thresh(U_plus_beta(k), pencur);
-                            }
-
-                            beta_new = thresh_func(beta_tmp, penalty_adjustment, lgr, gamma, lgr, eigenvals(g));
-                        } else
-                        {
-                            beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, gamma, lgr, eigenvals(g));
-                        }
-
-                        beta_new(0) *= mult_1;
-                    } else
-                    {
-                        beta_new.setZero();
-                    }
+                    VectorXd beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, gamma, lgr, eigenvals(g));
 
                     /*
                     if (g == 0)
