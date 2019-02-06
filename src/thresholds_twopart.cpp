@@ -24,10 +24,16 @@ VectorXd block_soft_thresh(VectorXd & a, VectorXd & penalty_factor, double & lam
     double anorm = beta_tmp.norm();
     double thresh_fact;
 
-    for (int j = 0; j < alen; ++j)
+    if (denom > 0.0)
     {
-        thresh_fact = std::max(0.0, 1.0 - lambda * penalty_factor(j) / anorm) / denom;
-        retval(j) = beta_tmp(j) * thresh_fact;
+        for (int j = 0; j < alen; ++j)
+        {
+            thresh_fact = std::max(0.0, 1.0 - lambda * penalty_factor(j) / anorm) / denom;
+            retval(j) = beta_tmp(j) * thresh_fact;
+        }
+    } else
+    {
+        retval.setZero();
     }
 
     return(retval);
@@ -54,11 +60,17 @@ VectorXd coop_block_soft_thresh(VectorXd & a, VectorXd & penalty_factor, double 
 
     double thresh_fact;
 
-    for (int j = 0; j < alen; ++j)
+    if (denom > 0.0)
     {
-        VectorXd phi_j_vec = phi_j_v(beta_tmp, j);
-        thresh_fact = std::max(0.0, 1.0 - lambda * penalty_factor(j) / phi_j_vec.norm());
-        retval(j) = beta_tmp(j) * thresh_fact / denom;
+        for (int j = 0; j < alen; ++j)
+        {
+            VectorXd phi_j_vec = phi_j_v(beta_tmp, j);
+            thresh_fact = std::max(0.0, 1.0 - lambda * penalty_factor(j) / phi_j_vec.norm());
+            retval(j) = beta_tmp(j) * thresh_fact / denom;
+        }
+    } else
+    {
+        retval.setZero();
     }
 
     return(retval);
