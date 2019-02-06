@@ -11,7 +11,7 @@ hd2part(x, z, x_s, s, weights = rep(1, NROW(x)), weights_s = rep(1,
   lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005), lambda = NULL,
   tau = 0, opposite_signs = FALSE, flip_beta_zero = FALSE,
   intercept = TRUE, maxit_irls = 50, tol_irls = 1e-05,
-  maxit_mm = 500, tol_mm = 1e-05)
+  maxit_mm = 500, tol_mm = 1e-05, strongrule = TRUE)
 }
 \arguments{
 \item{x}{an n x p matrix of covariates for the zero part data, where each row is an observation
@@ -72,6 +72,8 @@ each IRLS iteration, so \code{maxit_mm} applies to the convergence of the inner 
 
 \item{tol_mm}{convergence tolerance for MM iterations. Note that for \code{algorithm = "irls"}, MM is used within
 each IRLS iteration, so \code{tol_mm} applies to the convergence of the inner iterations in this case.}
+
+\item{strongrule}{should a strong rule be used?}
 }
 \description{
 This function fits penalized two part models with a logistic regression model
