@@ -137,7 +137,7 @@ Rcpp::List mmbcd_gaussian_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                 double l1 = group_weights(g) * lam * alpha;
                 double l2 = group_weights(g) * lam * (1.0 - alpha);
 
-                VectorXd beta_new = thresh_func(U_plus_beta, l1, gamma, l2, eigenvals(g));
+                VectorXd beta_new = thresh_func(U_plus_beta, l1, l2, eigenvals(g));
 
                 bool anychanged = false;
                 for (int k = 0; k < gr_size; ++k)

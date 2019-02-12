@@ -410,6 +410,7 @@ fit_subgroup_2part <- function(x,
                                      x.tilde.s, s,  ## positive part data
                                      weights   = wts * (abs(resid_outcome)), ## observation weights for zero part
                                      weights_s = wts_s, ## observation weights for positive part
+                                     offset_s  = extra.args.pos$offset,
                                      algorithm = "irls",
                                      opposite_signs = !larger.outcome.better,
                                      intercept = FALSE, ...)
