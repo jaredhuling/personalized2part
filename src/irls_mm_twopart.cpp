@@ -15,8 +15,6 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                                   Eigen::VectorXd & group_weights,
                                   Eigen::VectorXd & weights,
                                   Eigen::VectorXd & weights_s,
-                                  const Eigen::Map<Eigen::VectorXd> & offset,
-                                  const Eigen::Map<Eigen::VectorXd> & offset_s,
                                   Eigen::VectorXd & lambda,
                                   const int &nlambda,
                                   const double &lambda_min_ratio,
@@ -195,14 +193,12 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     if (intercept)
     {
-        xbeta_cur.array()   = b0   + offset.array();
-        xbeta_s_cur.array() = b0_s + offset_s.array();
+        xbeta_cur.array()   = b0;
+        xbeta_s_cur.array() = b0_s;
     } else
     {
-        //xbeta_cur.setZero();
-        //xbeta_s_cur.setZero();
-        xbeta_cur   = offset;
-        xbeta_s_cur = offset_s;
+        xbeta_cur.setZero();
+        xbeta_s_cur.setZero();
     }
 
     // loop over lamba values

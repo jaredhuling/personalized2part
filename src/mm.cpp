@@ -11,7 +11,6 @@ Rcpp::List mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                      const Eigen::Map<Eigen::VectorXi> & unique_groups,
                      Eigen::VectorXd & group_weights,
                      Eigen::VectorXd & weights,
-                     const Eigen::Map<Eigen::VectorXd> & offset,
                      Eigen::VectorXd & lambda,
                      const int &nlambda,
                      const double &lambda_min_ratio,
@@ -123,11 +122,10 @@ Rcpp::List mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     if (intercept)
     {
-        xbeta_cur.array() = b0 + offset.array();
+        xbeta_cur.array() = b0;
     } else
     {
-        //xbeta_cur.setZero();
-        xbeta_cur = offset;
+        xbeta_cur.setZero();
     }
 
     VectorXd beta(nvars);
@@ -201,10 +199,10 @@ Rcpp::List mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                         beta_tmp(k) = soft_thresh(U_plus_beta(k), l1);
                     }
 
-                    beta_new = thresh_func(beta_tmp, lgr, lgr, stepsize);
+                    beta_new = thresh_func(beta_tmp, lgr, gamma, lgr, stepsize);
                 } else
                 {
-                    beta_new = thresh_func(U_plus_beta, lgr, lgr, stepsize);
+                    beta_new = thresh_func(U_plus_beta, lgr, gamma, lgr, stepsize);
                 }
 
                 bool anychanged = false;
