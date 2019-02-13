@@ -2,7 +2,7 @@
 
 #include "thresholds.h"
 
-VectorXd block_soft_thresh(VectorXd & a, double & lambda, double &l2, double &denom)
+VectorXd block_soft_thresh(VectorXd & a, double & lambda, double &gamma, double &l2, double &denom)
 {
     double thresh_fact = std::max(0.0, 1.0 - lambda / a.norm());
     VectorXd retval = a.array() * thresh_fact / denom;
@@ -37,7 +37,7 @@ VectorXd phi_j_v(VectorXd & v, int & j)
     return(retvec);
 }
 
-VectorXd coop_block_soft_thresh(VectorXd & a, double & lambda, double &l2, double &denom)
+VectorXd coop_block_soft_thresh(VectorXd & a, double & lambda, double &gamma, double &l2, double &denom)
 {
     int alen = a.size();
 

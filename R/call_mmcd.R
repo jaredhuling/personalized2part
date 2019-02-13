@@ -4,7 +4,6 @@ mmbcd <- function(x, y,
                   groups = NULL,
                   group_weights = NULL,
                   weights = rep(1, NROW(x)),
-                  offset = NULL,
                   penalty = c("grp.lasso", "coop.lasso"),
                   family = c("gaussian", "binomial", "gamma"),
                   algorithm = c("mm", "irls", "gaussian"),
@@ -35,14 +34,8 @@ mmbcd <- function(x, y,
         weights <- rep(1, n)
     }
 
-    if (is.null(offset))
-    {
-        offset <- rep(0, n)
-    }
-
     stopifnot(length(groups) == p)
     stopifnot(length(weights) == n)
-    stopifnot(length(offset) == n)
 
     if (is.null(group_weights))
     {
@@ -66,7 +59,6 @@ mmbcd <- function(x, y,
 
     group_weights    <- as.double(group_weights)
     weights          <- as.double(weights)
-    offset           <- as.double(offset)
     lambda           <- as.double(lambda)
     nlambda          <- as.integer(nlambda)
     maxit            <- as.integer(maxit)
@@ -93,7 +85,7 @@ mmbcd <- function(x, y,
         res <- mmbcd_cpp(X = x, Y = y, groups = groups,
                          unique_groups = unique_groups,
                          group_weights = group_weights,
-                         weights = weights, offset = offset,
+                         weights = weights,
                          lambda = lambda, nlambda = nlambda,
                          lambda_min_ratio = lambda_min_ratio,
                          alpha = alpha, tau = tau,
@@ -104,7 +96,7 @@ mmbcd <- function(x, y,
         res <- irls_mmbcd_cpp(X = x, Y = y, groups = groups,
                               unique_groups = unique_groups,
                               group_weights = group_weights,
-                              weights = weights, offset = offset,
+                              weights = weights,
                               lambda = lambda, nlambda = nlambda,
                               lambda_min_ratio = lambda_min_ratio,
                               alpha = alpha, tau = tau,
