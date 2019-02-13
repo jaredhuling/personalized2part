@@ -167,6 +167,8 @@ hd2part <- function(x, z,
     penalty_factor   <- as.double(penalty_factor)
     weights          <- as.double(weights)
     weights_s        <- as.double(weights_s)
+    offset           <- as.double(offset)
+    offset_s         <- as.double(offset_s)
     lambda           <- as.double(lambda)
     nlambda          <- as.integer(nlambda[1])
     maxit_mm         <- as.integer(maxit_mm[1])
@@ -205,6 +207,8 @@ hd2part <- function(x, z,
                                  group_weights = penalty_factor,
                                  weights = weights,
                                  weights_s = weights_s,
+                                 offset = offset,
+                                 offset_s = offset_s,
                                  lambda = lambda, nlambda = nlambda,
                                  lambda_min_ratio = lambda_min_ratio,
                                  tau = tau,
@@ -221,6 +225,8 @@ hd2part <- function(x, z,
                                       group_weights = penalty_factor,
                                       weights = weights,
                                       weights_s = weights_s,
+                                      offset = offset,
+                                      offset_s = offset_s,
                                       lambda = lambda, nlambda = nlambda,
                                       lambda_min_ratio = lambda_min_ratio,
                                       tau = tau,
