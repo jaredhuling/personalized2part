@@ -54,11 +54,15 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     // END - set up groups
 
+    double H_factor_binom = 0.25;
+    double H_factor = 1.0;
+
     // set up threshold function
     thresh_func_twopart_ptr thresh_func;
     thresh_func = set_twopart_threshold_func(penalty[0]);
 
     std::string family = "binomial";
+    std::string family_s = "gamma";
 
 
     // set up U function
@@ -67,6 +71,9 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 
     U_intercept_func_ptr U_intercept_func;
     U_intercept_func = set_U_intercept_func(family);
+
+    double gamma = 0.0;
+    double alpha = 1.0;
 
 
     //double b0 = Y.sum() / double(nobs);
@@ -106,7 +113,7 @@ Rcpp::List irls_mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     {
         VectorXd lambda_and_adjust = setup_lambda(X, Xs, Z, S, weights, weights_s, group_weights,
                                                   b0, b0_s, U_func,
-                                                  nlambda, lambda_min_ratio, penalty[0]);
+                                                  nlambda, lambda_min_ratio, penalty[0], alpha);
 
 
         penalty_adjustment = lambda_and_adjust.head(2);

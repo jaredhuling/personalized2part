@@ -58,7 +58,7 @@ Rcpp::List mmbcd_gaussian_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                               groups, grp_idx,
                               group_weights, nlambda,
                               lambda_min_ratio,
-                              penalty[0]);
+                              penalty[0], alpha);
     }
     // END - set up default lambda
 

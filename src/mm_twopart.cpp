@@ -107,7 +107,7 @@ Rcpp::List mmbcd_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
     {
         VectorXd lambda_and_adjust = setup_lambda(X, Xs, Z, S, weights, weights_s, group_weights,
                                                   b0, b0_s, U_func,
-                                                  nlambda, lambda_min_ratio, penalty[0]);
+                                                  nlambda, lambda_min_ratio, penalty[0], alpha);
 
         penalty_adjustment = lambda_and_adjust.head(2);
 

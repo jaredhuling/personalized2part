@@ -107,7 +107,7 @@ Rcpp::List mmbcd_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
         lambda = setup_lambda(X, x_list, Y, weights, groups,
                               grp_idx, group_weights,
                               b0, U_func,
-                              nlambda, lambda_min_ratio, penalty[0]);
+                              nlambda, lambda_min_ratio, penalty[0], alpha);
     }
     // END - set up default lambda
 
