@@ -21,3 +21,7 @@ mmbcd_twopart_cpp <- function(X, Z, Xs, S, groups, unique_groups, group_weights,
     .Call(`_personalized2part_mmbcd_twopart_cpp`, X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, lambda, nlambda, lambda_min_ratio, tau, maxit, tol, intercept, penalty, opposite_signs)
 }
 
+fit_twopart_cpp <- function(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, offset, offset_s, lambda, nlambda, lambda_min_ratio, tau, maxit, tol, maxit_irls, tol_irls, intercept, penalty, opposite_signs) {
+    .Call(`_personalized2part_fit_twopart_cpp`, X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, offset, offset_s, lambda, nlambda, lambda_min_ratio, tau, maxit, tol, maxit_irls, tol_irls, intercept, penalty, opposite_signs)
+}
+

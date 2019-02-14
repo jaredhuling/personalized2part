@@ -58,7 +58,7 @@ hd2part <- function(x, z,
                     offset_s         = NULL,
                     penalty          = c("grp.lasso", "coop.lasso"),
                     penalty_factor   = NULL,
-                    algorithm        = c("irls", "mm"),
+                    algorithm        = c("irls", "mm", "new"),
                     nlambda          = 100L,
                     lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
                     lambda           = NULL,
@@ -167,6 +167,8 @@ hd2part <- function(x, z,
     penalty_factor   <- as.double(penalty_factor)
     weights          <- as.double(weights)
     weights_s        <- as.double(weights_s)
+    offset           <- as.double(offset)
+    offset_s         <- as.double(offset_s)
     lambda           <- as.double(lambda)
     nlambda          <- as.integer(nlambda[1])
     maxit_mm         <- as.integer(maxit_mm[1])
@@ -212,7 +214,7 @@ hd2part <- function(x, z,
                                  intercept = intercept,
                                  penalty = penalty,
                                  opposite_signs = opposite_signs)
-    } else
+    } else if (algorithm == "irls")
     {
         res <- irls_mmbcd_twopart_cpp(X = x, Z = z,
                                       Xs = x_s, S = s,
@@ -230,6 +232,26 @@ hd2part <- function(x, z,
                                       intercept = intercept,
                                       penalty = penalty,
                                       opposite_signs = opposite_signs)
+    } else
+    {
+        res <- fit_twopart_cpp(X = x, Z = z,
+                               Xs = x_s, S = s,
+                               groups = groups,
+                               unique_groups = unique_groups,
+                               group_weights = penalty_factor,
+                               weights = weights,
+                               weights_s = weights_s,
+                               offset = offset,
+                               offset_s = offset_s,
+                               lambda = lambda, nlambda = nlambda,
+                               lambda_min_ratio = lambda_min_ratio,
+                               tau = tau,
+                               maxit = maxit_mm, tol = tol_mm,
+                               maxit_irls = maxit_irls,
+                               tol_irls = tol_irls,
+                               intercept = intercept,
+                               penalty = penalty,
+                               opposite_signs = opposite_signs)
     }
 
     if (flip_beta_zero)
