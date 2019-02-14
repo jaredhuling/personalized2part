@@ -179,6 +179,7 @@ VectorXd twopart::coop_block_soft_thresh_tp(VectorXd & a, VectorXd & penalty_fac
     return(retval);
 }
 
+/*
 VectorXd twopart::thresh_func(VectorXd & a, VectorXd & penalty_factor, double & lambda, double &l1, double &denom)
 {
     if (penalty == "grp.lasso")
@@ -188,7 +189,7 @@ VectorXd twopart::thresh_func(VectorXd & a, VectorXd & penalty_factor, double & 
     {
         return(block_soft_thresh_tp(a, penalty_factor, lambda, l1, denom));
     }
-}
+}*/
 
 void twopart::initialize()
 {
@@ -249,7 +250,7 @@ void twopart::initialize()
     // ---    Set up threshold function   ------ //
     // ----------------------------------------- //
 
-    /*
+
     if (penalty == "grp.lasso")
     {
         thresh_func = &twopart::block_soft_thresh_tp;
@@ -260,7 +261,7 @@ void twopart::initialize()
     {
         thresh_func = &twopart::block_soft_thresh_tp;
     }
-     */
+
 
 }
 
@@ -577,8 +578,8 @@ VectorXi twopart::fit_path()
                     double lgr = group_weights(g) * lam * (1.0 - tau);
 
                     // this is how we call a pointer to a member function from within the class
-                    //VectorXd beta_new = (this->*thresh_func)(U_plus_beta, penalty_adjustment, lgr, l1, eigenvals(g));
-                    VectorXd beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, l1, eigenvals(g));
+                    VectorXd beta_new = (this->*thresh_func)(U_plus_beta, penalty_adjustment, lgr, l1, eigenvals(g));
+                    //VectorXd beta_new = thresh_func(U_plus_beta, penalty_adjustment, lgr, l1, eigenvals(g));
 
                     /*
                     if (g == 0)

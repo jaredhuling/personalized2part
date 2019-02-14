@@ -26,7 +26,7 @@ class twopart
 
 
         // pointer we will set to one of the thresholding functions
-        //typedef VectorXd (twopart::*thresh_func_2p_ptr)(VectorXd &value, VectorXd & penalty_factor, double &penalty, double &l1, double &denom);
+        typedef VectorXd (twopart::*thresh_func_2p_ptr)(VectorXd &value, VectorXd & penalty_factor, double &penalty, double &l1, double &denom);
 
 
 
@@ -68,7 +68,8 @@ class twopart
 
         VectorXd penalty_adjustment, ZZ;
 
-        VectorXd thresh_func(VectorXd &value, VectorXd & penalty_factor, double &penalty, double &l1, double &denom);
+        thresh_func_2p_ptr thresh_func;
+        //VectorXd thresh_func(VectorXd &value, VectorXd & penalty_factor, double &penalty, double &l1, double &denom);
 
 
         VectorXd grad_func(const VectorXd &x_col,
