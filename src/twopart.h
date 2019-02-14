@@ -32,8 +32,9 @@ class twopart
 
         const MapMatd X, Xs;
         const MapVecd Z, S;
-        VectorXd weights, weights_s, offset, offset_s, lambda;
-        VectorXi groups, unique_groups;
+        VectorXd weights, weights_s, lambda;
+        const MapVecd offset, offset_s;
+        const MapVeci groups, unique_groups;
         VectorXd group_weights;
         params P;
 
