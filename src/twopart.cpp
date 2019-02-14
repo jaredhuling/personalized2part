@@ -237,12 +237,12 @@ void twopart::initialize()
     // set up linear predictors
     if (intercept)
     {
-        xbeta_cur.array()   = b0;
-        xbeta_s_cur.array() = b0_s;
+        xbeta_cur.array()   += b0;
+        xbeta_s_cur.array() += b0_s;
     } else
     {
-        xbeta_cur.setZero();
-        xbeta_s_cur.setZero();
+        //xbeta_cur.setZero();
+        //xbeta_s_cur.setZero();
     }
 
 

@@ -149,8 +149,8 @@ class twopart
         beta_irls_s_old(VectorXd::Zero(nvars)),
         beta_mat(MatrixXd(nvars+1, nlambda)),
         beta_s_mat(MatrixXd(nvars+1, nlambda)),
-        mu(nobs), mu_s(nobs_s), xbeta_cur(nobs), resid_cur(nobs),
-        xbeta_s_cur(nobs_s), resid_s_cur(nobs_s), W(nobs), W_s(nobs_s),
+        mu(nobs), mu_s(nobs_s), xbeta_cur(offset), resid_cur(nobs),
+        xbeta_s_cur(offset_s), resid_s_cur(nobs_s), W(nobs), W_s(nobs_s),
         deviance_vec(nlambda), deviance_s_vec(nlambda)
         {}
 

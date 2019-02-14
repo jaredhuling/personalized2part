@@ -7,7 +7,7 @@
 hd2part(x, z, x_s, s, weights = rep(1, NROW(x)), weights_s = rep(1,
   NROW(x_s)), offset = NULL, offset_s = NULL,
   penalty = c("grp.lasso", "coop.lasso"), penalty_factor = NULL,
-  algorithm = c("irls", "mm", "new"), nlambda = 100L,
+  algorithm = c("irls", "mm", "old"), nlambda = 100L,
   lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005), lambda = NULL,
   tau = 0, opposite_signs = FALSE, flip_beta_zero = FALSE,
   intercept = TRUE, maxit_irls = 50, tol_irls = 1e-05,

@@ -58,7 +58,7 @@ hd2part <- function(x, z,
                     offset_s         = NULL,
                     penalty          = c("grp.lasso", "coop.lasso"),
                     penalty_factor   = NULL,
-                    algorithm        = c("irls", "mm", "new"),
+                    algorithm        = c("irls", "mm", "old"),
                     nlambda          = 100L,
                     lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
                     lambda           = NULL,
@@ -214,7 +214,7 @@ hd2part <- function(x, z,
                                  intercept = intercept,
                                  penalty = penalty,
                                  opposite_signs = opposite_signs)
-    } else if (algorithm == "irls")
+    } else if (algorithm == "old")
     {
         res <- irls_mmbcd_twopart_cpp(X = x, Z = z,
                                       Xs = x_s, S = s,
