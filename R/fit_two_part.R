@@ -134,7 +134,7 @@ hd2part <- function(x, z,
     }
 
 
-    algorithm <- match.arg(algorithm)
+    #algorithm <- match.arg(algorithm)
     penalty   <- match.arg(penalty)
 
     if (is.null(penalty_factor))
