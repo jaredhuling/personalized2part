@@ -82,8 +82,8 @@ VectorXd twopart::compute_eigs_twopart()
 {
     VectorXd eigvec(nvars);
 
-    VectorXd weights_sqrt = weights.array().sqrt();
-    VectorXd weights_s_sqrt = weights_s.array().sqrt();
+    VectorXd weights_sqrt = W.array().sqrt();
+    VectorXd weights_s_sqrt = W_s.array().sqrt();
 
     for (int c = 0; c < nvars; ++c)
     {
