@@ -7,11 +7,11 @@
 hd2part(x, z, x_s, s, weights = rep(1, NROW(x)), weights_s = rep(1,
   NROW(x_s)), offset = NULL, offset_s = NULL,
   penalty = c("grp.lasso", "coop.lasso"), penalty_factor = NULL,
-  algorithm = c("irls", "mm", "old"), nlambda = 100L,
-  lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005), lambda = NULL,
-  tau = 0, opposite_signs = FALSE, flip_beta_zero = FALSE,
-  intercept = TRUE, maxit_irls = 50, tol_irls = 1e-05,
-  maxit_mm = 500, tol_mm = 1e-05, strongrule = TRUE)
+  nlambda = 100L, lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
+  lambda = NULL, tau = 0, opposite_signs = FALSE,
+  flip_beta_zero = FALSE, intercept = TRUE, maxit_irls = 50,
+  tol_irls = 1e-05, maxit_mm = 500, tol_mm = 1e-05,
+  strongrule = TRUE)
 }
 \arguments{
 \item{x}{an n x p matrix of covariates for the zero part data, where each row is an observation
@@ -40,9 +40,6 @@ cooperative lasso penalty}
 A value of 0 in the jth location indicates no penalization on the jth variable, and any positive value will
 indicate a multiplicative factor on top of the common penalization amount. The default value is 1 for
 all variables}
-
-\item{algorithm}{either \code{"irls"} for an iteratively reweighted least squares type algorithm or
-\code{"mm"} for a majorization minimization type algorithm. \code{"irls"} is recommended and is the default}
 
 \item{nlambda}{the number of lambda values. The default is 100.}
 

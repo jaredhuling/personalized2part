@@ -23,8 +23,6 @@
 #' A value of 0 in the jth location indicates no penalization on the jth variable, and any positive value will
 #' indicate a multiplicative factor on top of the common penalization amount. The default value is 1 for
 #' all variables
-#' @param algorithm either \code{"irls"} for an iteratively reweighted least squares type algorithm or
-#' \code{"mm"} for a majorization minimization type algorithm. \code{"irls"} is recommended and is the default
 #' @param nlambda the number of lambda values. The default is 100.
 #' @param lambda_min_ratio Smallest value for \code{lambda}, as a fraction of lambda.max, the data-derived largest lambda value
 #' The default depends on the sample size relative to the number of variables.
@@ -58,7 +56,6 @@ hd2part <- function(x, z,
                     offset_s         = NULL,
                     penalty          = c("grp.lasso", "coop.lasso"),
                     penalty_factor   = NULL,
-                    algorithm        = c("irls", "mm", "old"),
                     nlambda          = 100L,
                     lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
                     lambda           = NULL,
@@ -198,62 +195,24 @@ hd2part <- function(x, z,
 
     lambda <- rev(sort(lambda))
 
-    if (algorithm == "mm")
-    {
-        res <- mmbcd_twopart_cpp(X = x, Z = z,
-                                 Xs = x_s, S = s,
-                                 groups = groups,
-                                 unique_groups = unique_groups,
-                                 group_weights = penalty_factor,
-                                 weights = weights,
-                                 weights_s = weights_s,
-                                 lambda = lambda, nlambda = nlambda,
-                                 lambda_min_ratio = lambda_min_ratio,
-                                 tau = tau,
-                                 maxit = maxit_mm, tol = tol_mm,
-                                 intercept = intercept,
-                                 penalty = penalty,
-                                 opposite_signs = opposite_signs)
-    } else if (algorithm == "old")
-    {
-        res <- irls_mmbcd_twopart_cpp(X = x, Z = z,
-                                      Xs = x_s, S = s,
-                                      groups = groups,
-                                      unique_groups = unique_groups,
-                                      group_weights = penalty_factor,
-                                      weights = weights,
-                                      weights_s = weights_s,
-                                      lambda = lambda, nlambda = nlambda,
-                                      lambda_min_ratio = lambda_min_ratio,
-                                      tau = tau,
-                                      maxit = maxit_mm, tol = tol_mm,
-                                      maxit_irls = maxit_irls,
-                                      tol_irls = tol_irls,
-                                      intercept = intercept,
-                                      penalty = penalty,
-                                      opposite_signs = opposite_signs)
-    } else
-    {
-        res <- fit_twopart_cpp(X_ = x, Z_ = z,
-                               Xs_ = x_s, S_ = s,
-                               groups_ = groups,
-                               unique_groups_ = unique_groups,
-                               group_weights_ = penalty_factor,
-                               weights_ = weights,
-                               weights_s_ = weights_s,
-                               offset_ = offset,
-                               offset_s_ = offset_s,
-                               lambda_ = lambda, nlambda = nlambda,
-                               lambda_min_ratio = lambda_min_ratio,
-                               tau = tau,
-                               maxit = maxit_mm, tol = tol_mm,
-                               maxit_irls = maxit_irls,
-                               tol_irls = tol_irls,
-                               intercept = intercept,
-                               penalty = penalty,
-                               opposite_signs = opposite_signs)
-    }
-
+    res <- fit_twopart_cpp(X_ = x, Z_ = z,
+                           Xs_ = x_s, S_ = s,
+                           groups_ = groups,
+                           unique_groups_ = unique_groups,
+                           group_weights_ = penalty_factor,
+                           weights_ = weights,
+                           weights_s_ = weights_s,
+                           offset_ = offset,
+                           offset_s_ = offset_s,
+                           lambda_ = lambda, nlambda = nlambda,
+                           lambda_min_ratio = lambda_min_ratio,
+                           tau = tau,
+                           maxit = maxit_mm, tol = tol_mm,
+                           maxit_irls = maxit_irls,
+                           tol_irls = tol_irls,
+                           intercept = intercept,
+                           penalty = penalty,
+                           opposite_signs = opposite_signs)
     if (flip_beta_zero)
     {
         res$beta_z <- -res$beta_z
