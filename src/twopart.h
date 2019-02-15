@@ -30,12 +30,13 @@ class twopart
 
 
 
-        const MapMatd X, Xs;
-        const MapVecd Z, S;
-        VectorXd weights, weights_s, lambda;
-        const MapVecd offset, offset_s;
-        const MapVeci groups, unique_groups;
-        VectorXd group_weights;
+        const cMapMatd X, Xs;
+        const cMapVecd Z, S;
+        const cMapVecd lambda_given;
+        const cMapVecd weights, weights_s;
+        const cMapVecd offset, offset_s;
+        const cMapVeci groups, unique_groups;
+        const cMapVecd group_weights_given;
         params P;
 
         double tau;
@@ -67,7 +68,7 @@ class twopart
 
         double b0, b0_s, b0_old, b0_s_old, deviance, deviance_old, deviance_s, deviance_s_old, mult_1;
 
-        VectorXd penalty_adjustment, ZZ;
+        VectorXd penalty_adjustment, ZZ, lambda, group_weights;
 
         thresh_func_2p_ptr thresh_func;
         //VectorXd thresh_func(VectorXd &value, VectorXd & penalty_factor, double &penalty, double &l1, double &denom);
@@ -99,31 +100,31 @@ class twopart
 
 
     public:
-        twopart(const MapMatd & X_,
-                const MapMatd & Xs_,
-                const MapVecd & Z_,
-                const MapVecd & S_,
-                VectorXd & weights_,
-                VectorXd & weights_s_,
-                const MapVecd & offset_,
-                const MapVecd & offset_s_,
-                VectorXd & lambda_,
-                const MapVeci & groups_,
-                const MapVeci & unique_groups_,
-                VectorXd & group_weights_,
+        twopart(const Eigen::Ref<const MatrixXd> & X_,
+                const Eigen::Ref<const MatrixXd> & Xs_,
+                const Eigen::Ref<const VectorXd> & Z_,
+                const Eigen::Ref<const VectorXd> & S_,
+                const Eigen::Ref<const VectorXd> & weights_,
+                const Eigen::Ref<const VectorXd> & weights_s_,
+                const Eigen::Ref<const VectorXd> & offset_,
+                const Eigen::Ref<const VectorXd> & offset_s_,
+                const Eigen::Ref<const VectorXd> & lambda_given_,
+                const Eigen::Ref<const VectorXi> & groups_,
+                const Eigen::Ref<const VectorXi> & unique_groups_,
+                const Eigen::Ref<const VectorXd> & group_weights_given_,
                 params & P_) :
-        X(X_),
-        Xs(Xs_),
-        Z(Z_),
-        S(S_),
-        weights(weights_),
-        weights_s(weights_s_),
-        offset(offset_),
-        offset_s(offset_s_),
-        lambda(lambda_),
-        groups(groups_),
-        unique_groups(unique_groups_),
-        group_weights(group_weights_),
+        X(X_.data(), X_.rows(), X_.cols()),
+        Xs(Xs_.data(), Xs_.rows(), Xs_.cols()),
+        Z(Z_.data(), Z_.size()),
+        S(S_.data(), S_.size()),
+        lambda_given(lambda_given_.data(), lambda_given_.size()),
+        weights(weights_.data(), weights_.size()),
+        weights_s(weights_s_.data(), weights_s_.size()),
+        offset(offset_.data(), offset_.size()),
+        offset_s(offset_s_.data(), offset_s_.size()),
+        groups(groups_.data(), groups_.size()),
+        unique_groups(unique_groups_.data(), unique_groups_.size()),
+        group_weights_given(group_weights_given_.data(), group_weights_given_.size()),
         P(P_),
         tau(P.tau),
         maxit(P.maxit),
@@ -133,8 +134,8 @@ class twopart
         intercept(P.intercept),
         penalty(P.penalty),
         opposite_signs(P.opposite_signs),
-        need_to_compute_lambda(lambda.size() < 1),
-        nlambda((need_to_compute_lambda) ? P.nlambda : lambda.size()),
+        need_to_compute_lambda(lambda_given.size() < 1),
+        nlambda((need_to_compute_lambda) ? P.nlambda : lambda_given.size()),
         lambda_min_ratio(P.lambda_min_ratio),
         ngroups(unique_groups.size()),
         grp_idx(ngroups),
@@ -148,8 +149,8 @@ class twopart
         beta_s(VectorXd::Zero(nvars)),
         beta_s_old(VectorXd::Zero(nvars)),
         beta_irls_s_old(VectorXd::Zero(nvars)),
-        beta_mat(MatrixXd(nvars+1, nlambda)),
-        beta_s_mat(MatrixXd(nvars+1, nlambda)),
+        beta_mat(MatrixXd::Zero(nvars+1, nlambda)),
+        beta_s_mat(MatrixXd::Zero(nvars+1, nlambda)),
         mu(nobs), mu_s(nobs_s), xbeta_cur(offset), resid_cur(nobs),
         xbeta_s_cur(offset_s), resid_s_cur(nobs_s), W(nobs), W_s(nobs_s),
         deviance_vec(nlambda), deviance_s_vec(nlambda)

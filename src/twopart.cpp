@@ -10,7 +10,7 @@ VectorXd twopart::grad_func(const VectorXd &x_col,
     VectorXd U_vec(2);
 
     // binomial part
-    U_vec(0) = (x_col.array() *
+    U_vec(0) = mult_1 * (x_col.array() *
         (weights.array() * (Z.array() / (1.0 + (Z.array() * xbeta.array()).exp()  )))).matrix().sum() / double(nobs);
 
     // gamma part
@@ -215,7 +215,7 @@ void twopart::initialize()
     }
 
     //b0 = Y.sum() / double(nobs);
-    b0_old = b0;
+    b0_old   = b0;
     b0_s_old = b0_s;
 
 
@@ -286,23 +286,26 @@ void twopart::set_up_lambda()
             // calculate U vector
             VectorXd U_vec = grad_func(X.col(g), Xs.col(g), xbeta_init, xbeta_s_init);
 
-            if (penalty == "grp.lasso")
+            if (group_weights(g) > 0.0)
             {
-                norms_z(g) = std::abs(U_vec(0)) / group_weights(g);
-                norms_p(g) = std::abs(U_vec(1)) / group_weights(g);
-            } else if (penalty == "coop.lasso")
-            {
-                VectorXd norms_phis(2);
-                VectorXd phi_j_vec(2);
-
-                for (int j = 0; j < 2; ++j)
+                if (penalty == "grp.lasso")
                 {
-                    phi_j_vec = phi_j_v(U_vec, j);
-                    norms_phis(j) = phi_j_vec.norm() / group_weights(g);
-                }
+                    norms_z(g) = std::abs(U_vec(0)) / group_weights(g);
+                    norms_p(g) = std::abs(U_vec(1)) / group_weights(g);
+                } else if (penalty == "coop.lasso")
+                {
+                    VectorXd norms_phis(2);
+                    VectorXd phi_j_vec(2);
 
-                norms_z(g) = norms_phis(0);
-                norms_p(g) = norms_phis(1);
+                    for (int j = 0; j < 2; ++j)
+                    {
+                        phi_j_vec = phi_j_v(U_vec, j);
+                        norms_phis(j) = phi_j_vec.norm() / group_weights(g);
+                    }
+
+                    norms_z(g) = norms_phis(0);
+                    norms_p(g) = norms_phis(1);
+                }
             }
 
             U_mat.row(g) = U_vec;
@@ -318,7 +321,7 @@ void twopart::set_up_lambda()
 
         for (int g = 0; g < ngroups; ++g)
         {
-            if (group_weights(g) > 0)
+            if (group_weights(g) > 0.0)
             {
                 norms(g) = U_mat.row(g).norm() / group_weights(g);
             }
@@ -347,6 +350,7 @@ void twopart::set_up_lambda()
         penalty_adjustment.array() /= penalty_adjustment.maxCoeff();
     } else
     {
+        lambda = lambda_given;
         penalty_adjustment.resize(2);
         penalty_adjustment.array() = 1.0;
     }
@@ -356,7 +360,7 @@ void twopart::set_up_lambda()
 
 void twopart::set_up_groups()
 {
-    bool default_group_weights = bool(group_weights.size() < 1);
+    bool default_group_weights = bool(group_weights_given.size() < 1);
 
     // set up groups
     //std::vector<std::vector<int> > grp_idx = get_group_indexes(groups, unique_groups, ngroups, nvars);
@@ -385,6 +389,9 @@ void twopart::set_up_groups()
         {
             group_weights(g) = std::sqrt(double(grp_idx[g].size()));
         }
+    } else
+    {
+        group_weights = group_weights_given;
     }
 }
 
@@ -565,14 +572,14 @@ VectorXi twopart::fit_path()
 
                     VectorXd U_plus_beta(2);
 
-                    U_plus_beta(0) = ( X.col(g).array() * W.array() * resid_cur.array()  ).matrix().sum() /
+                    U_plus_beta(0) = mult_1 * ( X.col(g).array() * W.array() * resid_cur.array()  ).matrix().sum() /
                         double(nobs) + eigenvals(g) * beta_subs(0);
 
                     U_plus_beta(1) = ( Xs.col(g).array() * W_s.array() * resid_s_cur.array()  ).matrix().sum() /
                         double(nobs_s) + eigenvals(g) * beta_subs(1);
 
 
-                    U_plus_beta(0) *= mult_1;
+                    //U_plus_beta(0) *= mult_1;
 
                     double l1  = group_weights(g) * lam * tau;
                     double lgr = group_weights(g) * lam * (1.0 - tau);
@@ -609,8 +616,8 @@ VectorXi twopart::fit_path()
                         //xbeta_cur += (x_list[g] * (beta_new.array() - beta_subs.array()).matrix());
                         //resid_cur -= (x_list[g] * (beta_new.array() - beta_subs.array()).matrix());
 
-                        xbeta_cur.array() += (X.col(g).array() * (beta_new(0) - beta_subs(0)));
-                        resid_cur.array() -= (X.col(g).array() * (beta_new(0) - beta_subs(0)));
+                        xbeta_cur.array() += mult_1 * (X.col(g).array() * (beta_new(0) - beta_subs(0)));
+                        resid_cur.array() -= mult_1 * (X.col(g).array() * (beta_new(0) - beta_subs(0)));
 
                         xbeta_s_cur.array() += (Xs.col(g).array() * (beta_new(1) - beta_subs(1)));
                         resid_s_cur.array() -= (Xs.col(g).array() * (beta_new(1) - beta_subs(1)));

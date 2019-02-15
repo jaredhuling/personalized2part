@@ -3,29 +3,44 @@
 
 
 //[[Rcpp::export]]
-Rcpp::List fit_twopart_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
-                           const Eigen::Map<Eigen::VectorXd> & Z,
-                           const Eigen::Map<Eigen::MatrixXd> & Xs,
-                           const Eigen::Map<Eigen::VectorXd> & S,
-                           const Eigen::Map<Eigen::VectorXi> & groups,
-                           const Eigen::Map<Eigen::VectorXi> & unique_groups,
-                           Eigen::VectorXd & group_weights,
-                           Eigen::VectorXd & weights,
-                           Eigen::VectorXd & weights_s,
-                           const Eigen::Map<Eigen::VectorXd> & offset,
-                           const Eigen::Map<Eigen::VectorXd> & offset_s,
-                           Eigen::VectorXd & lambda,
-                           const int &nlambda,
-                           const double &lambda_min_ratio,
-                           const double &tau,
-                           const int &maxit,
-                           const double &tol,
-                           const int &maxit_irls,
-                           const double &tol_irls,
-                           const bool &intercept,
-                           std::vector<std::string> &penalty,
-                           const bool &opposite_signs)
+Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix &X_,
+                           const Rcpp::NumericVector &Z_,
+                           const Rcpp::NumericMatrix &Xs_,
+                           const Rcpp::NumericVector &S_,
+                           const Rcpp::IntegerVector &groups_,
+                           const Rcpp::IntegerVector &unique_groups_,
+                           const Rcpp::NumericVector &group_weights_,
+                           const Rcpp::NumericVector &weights_,
+                           const Rcpp::NumericVector &weights_s_,
+                           const Rcpp::NumericVector &offset_,
+                           const Rcpp::NumericVector &offset_s_,
+                           const Rcpp::NumericVector &lambda_,
+                           const int nlambda,
+                           const double lambda_min_ratio,
+                           const double tau,
+                           const int maxit,
+                           const double tol,
+                           const int maxit_irls,
+                           const double tol_irls,
+                           const bool intercept,
+                           const std::vector<std::string> penalty,
+                           const bool opposite_signs)
 {
+
+    const MapMatd X  = Rcpp::as<MapMatd>(X_);
+    const MapVecd Z  = Rcpp::as<MapVecd>(Z_);
+    const MapMatd Xs = Rcpp::as<MapMatd>(Xs_);
+    const MapVecd S  = Rcpp::as<MapVecd>(S_);
+
+    const MapVeci groups  = Rcpp::as<MapVeci>(groups_);
+    const MapVeci unique_groups  = Rcpp::as<MapVeci>(unique_groups_);
+
+    const MapVecd group_weights  = Rcpp::as<MapVecd>(group_weights_);
+    const MapVecd weights  = Rcpp::as<MapVecd>(weights_);
+    const MapVecd weights_s  = Rcpp::as<MapVecd>(weights_s_);
+    const MapVecd offset  = Rcpp::as<MapVecd>(offset_);
+    const MapVecd offset_s  = Rcpp::as<MapVecd>(offset_s_);
+    const MapVecd lambda  = Rcpp::as<MapVecd>(lambda_);
 
     // set up object containing key parameters
     params pars;

@@ -142,34 +142,34 @@ BEGIN_RCPP
 END_RCPP
 }
 // fit_twopart_cpp
-Rcpp::List fit_twopart_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Z, const Eigen::Map<Eigen::MatrixXd>& Xs, const Eigen::Map<Eigen::VectorXd>& S, const Eigen::Map<Eigen::VectorXi>& groups, const Eigen::Map<Eigen::VectorXi>& unique_groups, Eigen::VectorXd& group_weights, Eigen::VectorXd& weights, Eigen::VectorXd& weights_s, const Eigen::Map<Eigen::VectorXd>& offset, const Eigen::Map<Eigen::VectorXd>& offset_s, Eigen::VectorXd& lambda, const int& nlambda, const double& lambda_min_ratio, const double& tau, const int& maxit, const double& tol, const int& maxit_irls, const double& tol_irls, const bool& intercept, std::vector<std::string>& penalty, const bool& opposite_signs);
-RcppExport SEXP _personalized2part_fit_twopart_cpp(SEXP XSEXP, SEXP ZSEXP, SEXP XsSEXP, SEXP SSEXP, SEXP groupsSEXP, SEXP unique_groupsSEXP, SEXP group_weightsSEXP, SEXP weightsSEXP, SEXP weights_sSEXP, SEXP offsetSEXP, SEXP offset_sSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP tauSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP maxit_irlsSEXP, SEXP tol_irlsSEXP, SEXP interceptSEXP, SEXP penaltySEXP, SEXP opposite_signsSEXP) {
+Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix& X_, const Rcpp::NumericVector& Z_, const Rcpp::NumericMatrix& Xs_, const Rcpp::NumericVector& S_, const Rcpp::IntegerVector& groups_, const Rcpp::IntegerVector& unique_groups_, const Rcpp::NumericVector& group_weights_, const Rcpp::NumericVector& weights_, const Rcpp::NumericVector& weights_s_, const Rcpp::NumericVector& offset_, const Rcpp::NumericVector& offset_s_, const Rcpp::NumericVector& lambda_, const int nlambda, const double lambda_min_ratio, const double tau, const int maxit, const double tol, const int maxit_irls, const double tol_irls, const bool intercept, const std::vector<std::string> penalty, const bool opposite_signs);
+RcppExport SEXP _personalized2part_fit_twopart_cpp(SEXP X_SEXP, SEXP Z_SEXP, SEXP Xs_SEXP, SEXP S_SEXP, SEXP groups_SEXP, SEXP unique_groups_SEXP, SEXP group_weights_SEXP, SEXP weights_SEXP, SEXP weights_s_SEXP, SEXP offset_SEXP, SEXP offset_s_SEXP, SEXP lambda_SEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP tauSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP maxit_irlsSEXP, SEXP tol_irlsSEXP, SEXP interceptSEXP, SEXP penaltySEXP, SEXP opposite_signsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type Z(ZSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type Xs(XsSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type S(SSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXi>& >::type groups(groupsSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXi>& >::type unique_groups(unique_groupsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type group_weights(group_weightsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights_s(weights_sSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type offset(offsetSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type offset_s(offset_sSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< const int& >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type lambda_min_ratio(lambda_min_ratioSEXP);
-    Rcpp::traits::input_parameter< const double& >::type tau(tauSEXP);
-    Rcpp::traits::input_parameter< const int& >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< const double& >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< const int& >::type maxit_irls(maxit_irlsSEXP);
-    Rcpp::traits::input_parameter< const double& >::type tol_irls(tol_irlsSEXP);
-    Rcpp::traits::input_parameter< const bool& >::type intercept(interceptSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string>& >::type penalty(penaltySEXP);
-    Rcpp::traits::input_parameter< const bool& >::type opposite_signs(opposite_signsSEXP);
-    rcpp_result_gen = Rcpp::wrap(fit_twopart_cpp(X, Z, Xs, S, groups, unique_groups, group_weights, weights, weights_s, offset, offset_s, lambda, nlambda, lambda_min_ratio, tau, maxit, tol, maxit_irls, tol_irls, intercept, penalty, opposite_signs));
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type X_(X_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type Z_(Z_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type Xs_(Xs_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type S_(S_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type groups_(groups_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type unique_groups_(unique_groups_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type group_weights_(group_weights_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type weights_(weights_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type weights_s_(weights_s_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type offset_(offset_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type offset_s_(offset_s_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type lambda_(lambda_SEXP);
+    Rcpp::traits::input_parameter< const int >::type nlambda(nlambdaSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda_min_ratio(lambda_min_ratioSEXP);
+    Rcpp::traits::input_parameter< const double >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< const double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxit_irls(maxit_irlsSEXP);
+    Rcpp::traits::input_parameter< const double >::type tol_irls(tol_irlsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type intercept(interceptSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string> >::type penalty(penaltySEXP);
+    Rcpp::traits::input_parameter< const bool >::type opposite_signs(opposite_signsSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_twopart_cpp(X_, Z_, Xs_, S_, groups_, unique_groups_, group_weights_, weights_, weights_s_, offset_, offset_s_, lambda_, nlambda, lambda_min_ratio, tau, maxit, tol, maxit_irls, tol_irls, intercept, penalty, opposite_signs));
     return rcpp_result_gen;
 END_RCPP
 }
