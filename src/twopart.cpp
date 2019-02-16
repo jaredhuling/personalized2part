@@ -61,7 +61,8 @@ void twopart::update_strongrule(int lam_idx)
 
             for (int g = 0; g < 2; ++g)
             {
-                threshed_grad_cur(g) = soft_thresh(grad_cur(g), individ_thresh);
+                double uval = grad_cur(g) / penalty_adjustment(g);
+                threshed_grad_cur(g) = soft_thresh(uval, individ_thresh);
             }
 
             if (penalty == "grp.lasso")
@@ -136,7 +137,8 @@ void twopart::check_kkt(int lam_idx)
                 grad_cur = grad_func(j);
                 for (int g = 0; g < 2; ++g)
                 {
-                    threshed_grad_cur(g) = soft_thresh(grad_cur(g), l1);
+                    double uval = grad_cur(g) / penalty_adjustment(g);
+                    threshed_grad_cur(g) = soft_thresh(uval, l1);
                 }
 
                 if (penalty == "grp.lasso")
@@ -200,7 +202,7 @@ VectorXd twopart::phi_j_v(VectorXd & v, int & j)
 
 bool twopart::converged(const VectorXd& cur, const VectorXd& prev, const double& tolerance)
 {
-    for (unsigned i = 0; i < cur.rows(); i++)
+    for (int i = 0; i < cur.rows(); i++)
     {
         if ( (std::abs(cur(i)) > 1e-13 && std::abs(prev(i)) <= 1e-13) ||
              (std::abs(cur(i)) <= 1e-13 && std::abs(prev(i)) > 1e-13) ) {
@@ -232,7 +234,7 @@ VectorXd twopart::compute_eigs_twopart()
 {
     VectorXd eigvec(nvars);
 
-    VectorXd weights_sqrt = W.array().sqrt();
+    VectorXd weights_sqrt   = W.array().sqrt();
     VectorXd weights_s_sqrt = W_s.array().sqrt();
 
     for (int c = 0; c < nvars; ++c)
@@ -268,7 +270,8 @@ VectorXd twopart::block_soft_thresh_tp(VectorXd & a, VectorXd & penalty_factor, 
     {
         for (int j = 0; j < alen; ++j)
         {
-            beta_tmp(j) = soft_thresh(a(j), l1);
+            double l1_apply = penalty_factor(j) * l1;
+            beta_tmp(j) = soft_thresh(a(j), l1_apply);
         }
     } else
     {
@@ -282,7 +285,8 @@ VectorXd twopart::block_soft_thresh_tp(VectorXd & a, VectorXd & penalty_factor, 
     {
         for (int j = 0; j < alen; ++j)
         {
-            thresh_fact = std::max(0.0, 1.0 - lambda * penalty_factor(j) / anorm) / denom;
+            //thresh_fact = std::max(0.0, 1.0 - lambda * penalty_factor(j) / anorm) / denom;
+            thresh_fact = std::max(0.0, 1.0 - lambda / anorm) / denom;
             retval(j) = beta_tmp(j) * thresh_fact;
         }
     } else
@@ -304,7 +308,8 @@ VectorXd twopart::coop_block_soft_thresh_tp(VectorXd & a, VectorXd & penalty_fac
     {
         for (int j = 0; j < alen; ++j)
         {
-            beta_tmp(j) = soft_thresh(a(j), l1);
+            double l1_apply = penalty_factor(j) * l1;
+            beta_tmp(j) = soft_thresh(a(j), l1_apply);
         }
     } else
     {
@@ -318,7 +323,8 @@ VectorXd twopart::coop_block_soft_thresh_tp(VectorXd & a, VectorXd & penalty_fac
         for (int j = 0; j < alen; ++j)
         {
             VectorXd phi_j_vec = phi_j_v(beta_tmp, j);
-            thresh_fact = std::max(0.0, 1.0 - lambda * penalty_factor(j) / phi_j_vec.norm());
+            //thresh_fact = std::max(0.0, 1.0 - lambda * penalty_factor(j) / phi_j_vec.norm());
+            thresh_fact = std::max(0.0, 1.0 - lambda / phi_j_vec.norm());
             retval(j) = beta_tmp(j) * thresh_fact / denom;
         }
     } else
@@ -425,6 +431,9 @@ void twopart::set_up_lambda()
         VectorXd norms(ngroups);
         norms.setZero();
 
+        VectorXd norms_coop(ngroups);
+        norms_coop.setZero();
+
         VectorXd norms_z = norms;
         VectorXd norms_p = norms;
 
@@ -438,11 +447,10 @@ void twopart::set_up_lambda()
 
             if (group_weights(g) > 0.0)
             {
-                if (penalty == "grp.lasso")
-                {
-                    norms_z(g) = std::abs(U_vec(0)) / group_weights(g);
-                    norms_p(g) = std::abs(U_vec(1)) / group_weights(g);
-                } else if (penalty == "coop.lasso")
+                norms_z(g) = std::abs(U_vec(0)) / group_weights(g);
+                norms_p(g) = std::abs(U_vec(1)) / group_weights(g);
+
+                if (penalty == "coop.lasso")
                 {
                     VectorXd norms_phis(2);
                     VectorXd phi_j_vec(2);
@@ -453,8 +461,10 @@ void twopart::set_up_lambda()
                         norms_phis(j) = phi_j_vec.norm() / group_weights(g);
                     }
 
-                    norms_z(g) = norms_phis(0);
-                    norms_p(g) = norms_phis(1);
+                    norms_coop(g) = norms_phis.cwiseAbs().maxCoeff();
+
+                    //norms_z(g) = norms_phis(0);
+                    //norms_p(g) = norms_phis(1);
                 }
             }
 
@@ -466,25 +476,35 @@ void twopart::set_up_lambda()
         double lmax_z = norms_z.cwiseAbs().maxCoeff();
         double lmax_p = norms_p.cwiseAbs().maxCoeff();
 
+        double lmax = 0.0;
+
 
         //penalty_adjust.array() /= penalty_adjust.cwiseAbs().minCoeff();
 
-        for (int g = 0; g < ngroups; ++g)
+        if (penalty == "grp.lasso")
         {
-            if (group_weights(g) > 0.0)
+            for (int g = 0; g < ngroups; ++g)
             {
-                norms(g) = U_mat.row(g).norm() / group_weights(g);
+                if (group_weights(g) > 0.0)
+                {
+                    norms(g) = U_mat.row(g).norm() / group_weights(g);
+                }
             }
+            lmax = norms.cwiseAbs().maxCoeff();
+        } else
+        {
+            lmax = norms_coop.cwiseAbs().maxCoeff();
         }
 
-
-        double lmax = norms.cwiseAbs().maxCoeff();
-
         VectorXd penalty_adjust(2);
+
+
 
         penalty_adjust(0) = lmax_z / (lmax_z + lmax_p);
         penalty_adjust(1) = lmax_p / (lmax_z + lmax_p);
 
+        //std::cout << lmax_z  << " " << lmax_p << std::endl;
+        //std::cout << penalty_adjust.transpose() << std::endl;
 
         //double lmax = xty.cwiseAbs().maxCoeff() / double(n);
         double lmin = lambda_min_ratio * lmax;
@@ -499,7 +519,9 @@ void twopart::set_up_lambda()
         penalty_adjustment = penalty_adjust;
         penalty_adjustment.array() /= penalty_adjustment.maxCoeff();
 
-        penalty_adjustment.array() = 1.0;
+        //penalty_adjustment.array() = 1.0;
+
+        //penalty_adjustment(0) = 0.25;
     } else
     {
         lambda = lambda_given;
