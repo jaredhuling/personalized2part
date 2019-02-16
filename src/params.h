@@ -15,6 +15,7 @@ struct params
     bool intercept = true;
     std::string penalty = "grp.lasso";
     bool opposite_signs = false;
+    bool strongrule = true;
 
     int nlambda = 100;
     double lambda_min_ratio = 1e-3;

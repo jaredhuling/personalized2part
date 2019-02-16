@@ -24,7 +24,8 @@ Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix &X_,
                            const double tol_irls,
                            const bool intercept,
                            const std::vector<std::string> penalty,
-                           const bool opposite_signs)
+                           const bool opposite_signs,
+                           const bool strongrule)
 {
 
     const MapMatd X  = Rcpp::as<MapMatd>(X_);
@@ -54,6 +55,7 @@ Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix &X_,
     pars.opposite_signs = opposite_signs;
     pars.nlambda = nlambda;
     pars.lambda_min_ratio = lambda_min_ratio;
+    pars.strongrule = strongrule;
 
 
     twopart tp_obj(X, Xs, Z, S,

@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // fit_twopart_cpp
-Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix& X_, const Rcpp::NumericVector& Z_, const Rcpp::NumericMatrix& Xs_, const Rcpp::NumericVector& S_, const Rcpp::IntegerVector& groups_, const Rcpp::IntegerVector& unique_groups_, const Rcpp::NumericVector& group_weights_, const Rcpp::NumericVector& weights_, const Rcpp::NumericVector& weights_s_, const Rcpp::NumericVector& offset_, const Rcpp::NumericVector& offset_s_, const Rcpp::NumericVector& lambda_, const int nlambda, const double lambda_min_ratio, const double tau, const int maxit, const double tol, const int maxit_irls, const double tol_irls, const bool intercept, const std::vector<std::string> penalty, const bool opposite_signs);
-RcppExport SEXP _personalized2part_fit_twopart_cpp(SEXP X_SEXP, SEXP Z_SEXP, SEXP Xs_SEXP, SEXP S_SEXP, SEXP groups_SEXP, SEXP unique_groups_SEXP, SEXP group_weights_SEXP, SEXP weights_SEXP, SEXP weights_s_SEXP, SEXP offset_SEXP, SEXP offset_s_SEXP, SEXP lambda_SEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP tauSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP maxit_irlsSEXP, SEXP tol_irlsSEXP, SEXP interceptSEXP, SEXP penaltySEXP, SEXP opposite_signsSEXP) {
+Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix& X_, const Rcpp::NumericVector& Z_, const Rcpp::NumericMatrix& Xs_, const Rcpp::NumericVector& S_, const Rcpp::IntegerVector& groups_, const Rcpp::IntegerVector& unique_groups_, const Rcpp::NumericVector& group_weights_, const Rcpp::NumericVector& weights_, const Rcpp::NumericVector& weights_s_, const Rcpp::NumericVector& offset_, const Rcpp::NumericVector& offset_s_, const Rcpp::NumericVector& lambda_, const int nlambda, const double lambda_min_ratio, const double tau, const int maxit, const double tol, const int maxit_irls, const double tol_irls, const bool intercept, const std::vector<std::string> penalty, const bool opposite_signs, const bool strongrule);
+RcppExport SEXP _personalized2part_fit_twopart_cpp(SEXP X_SEXP, SEXP Z_SEXP, SEXP Xs_SEXP, SEXP S_SEXP, SEXP groups_SEXP, SEXP unique_groups_SEXP, SEXP group_weights_SEXP, SEXP weights_SEXP, SEXP weights_s_SEXP, SEXP offset_SEXP, SEXP offset_s_SEXP, SEXP lambda_SEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP tauSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP maxit_irlsSEXP, SEXP tol_irlsSEXP, SEXP interceptSEXP, SEXP penaltySEXP, SEXP opposite_signsSEXP, SEXP strongruleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -34,13 +34,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< const std::vector<std::string> >::type penalty(penaltySEXP);
     Rcpp::traits::input_parameter< const bool >::type opposite_signs(opposite_signsSEXP);
-    rcpp_result_gen = Rcpp::wrap(fit_twopart_cpp(X_, Z_, Xs_, S_, groups_, unique_groups_, group_weights_, weights_, weights_s_, offset_, offset_s_, lambda_, nlambda, lambda_min_ratio, tau, maxit, tol, maxit_irls, tol_irls, intercept, penalty, opposite_signs));
+    Rcpp::traits::input_parameter< const bool >::type strongrule(strongruleSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_twopart_cpp(X_, Z_, Xs_, S_, groups_, unique_groups_, group_weights_, weights_, weights_s_, offset_, offset_s_, lambda_, nlambda, lambda_min_ratio, tau, maxit, tol, maxit_irls, tol_irls, intercept, penalty, opposite_signs, strongrule));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_personalized2part_fit_twopart_cpp", (DL_FUNC) &_personalized2part_fit_twopart_cpp, 22},
+    {"_personalized2part_fit_twopart_cpp", (DL_FUNC) &_personalized2part_fit_twopart_cpp, 23},
     {NULL, NULL, 0}
 };
 

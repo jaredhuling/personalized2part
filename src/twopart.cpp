@@ -20,6 +20,141 @@ VectorXd twopart::grad_func(const VectorXd &x_col,
     return(U_vec);
 }
 
+
+VectorXd twopart::grad_func(int col_idx)
+{
+    VectorXd U_vec(2);
+
+    // binomial part
+    U_vec(0) = mult_1 * (X.col(col_idx).array() *
+        (weights.array() * (Z.array() / (1.0 + (Z.array() * xbeta_cur.array()).exp()  )))).matrix().sum() / double(nobs);
+
+    // gamma part
+    U_vec(1) = (Xs.col(col_idx).array() *
+        (weights_s.array() * (S.array() * (-1.0 * xbeta_s_cur.array()).exp() - 1.0  ))).matrix().sum() / double(nobs_s);
+
+    return(U_vec);
+}
+
+void twopart::update_strongrule(int lam_idx)
+{
+    double lam_prev = 0.0;
+    double lam_cur = lambda(lam_idx);
+    if (lam_idx > 0)
+    {
+        lam_prev = lambda(lam_idx - 1);
+    }
+
+    active_set.setZero();
+
+    VectorXd grad_cur(2);
+    for (int j = 0; j < nvars; ++j)
+    {
+        if (group_weights(j) > 0.0)
+        {
+            grad_cur = grad_func(j);
+
+            double grp_thresh = (1.0 - tau) * group_weights(j) * (2.0 * lam_cur - lam_prev);
+            double individ_thresh = tau * group_weights(j) * (2.0 * lam_cur - lam_prev);
+
+            if (penalty == "grp.lasso")
+            {
+                if (grad_cur.norm() >= grp_thresh)
+                {
+                    //std::cout << "grp norm: " << grad_cur.norm() << " thresh: " << grp_thresh << " actset: " << active_set(j) << std::endl;
+                    active_set(j) = 1;
+                } else
+                {
+                    if (tau > 0.0)
+                    {
+                        for (int g = 0; g < grad_cur.size(); ++g)
+                        {
+                            if (std::abs(grad_cur(g)) >= individ_thresh)
+                            {
+                                active_set(j) = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else
+            {
+                for (int g = 0; g < grad_cur.size(); ++g)
+                {
+                    if (std::abs(grad_cur(g)) >= individ_thresh)
+                    {
+                        active_set(j) = 1;
+                        break;
+                    }
+                    VectorXd phi_j_vec = phi_j_v(grad_cur, g);
+                    if (phi_j_vec.norm() >= grp_thresh)
+                    {
+                        active_set(j) = 1;
+                        break;
+                    }
+                }
+            }
+        } else
+        {
+            active_set(j) = 1;
+        }
+    }
+
+    //std::cout << "lam " << lam_idx << " num active init: " << active_set.sum() << std::endl;
+}
+
+void twopart::check_kkt(int lam_idx)
+{
+    any_violations = false;
+    double lam = lambda(lam_idx);
+    VectorXd grad_cur(2);
+    VectorXd threshed_grad_cur(2);
+
+    int num_violations = 0;
+
+    for (int j = 0; j < nvars; ++j)
+    {
+        if (group_weights(j) > 0.0)
+        {
+            double l1  = group_weights(j) * lam * tau;
+            double lgr = group_weights(j) * lam * (1.0 - tau);
+
+            grad_cur = grad_func(j);
+            for (int g = 0; g < 2; ++g)
+            {
+                threshed_grad_cur(g) = soft_thresh(grad_cur(g), l1);
+            }
+
+            if (penalty == "grp.lasso")
+            {
+                if (threshed_grad_cur.norm() >= lgr)
+                {
+                    any_violations = true;
+                    active_set(j) = 1;
+                    ++num_violations;
+                }
+            } else
+            {
+                for (int g = 0; g < 2; ++g)
+                {
+                    VectorXd phi_j_vec = phi_j_v(threshed_grad_cur, g);
+                    if (phi_j_vec.norm() >= lgr)
+                    {
+                        any_violations = true;
+                        active_set(j) = 1;
+                        ++num_violations;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    //std::cout << "lam " << lam_idx << " num violations: " << num_violations << " num active: " << active_set.sum() << std::endl;
+}
+
+
+
 // phi_j(v) function for cooperative lasso
 VectorXd twopart::phi_j_v(VectorXd & v, int & j)
 {
@@ -348,6 +483,8 @@ void twopart::set_up_lambda()
 
         penalty_adjustment = penalty_adjust;
         penalty_adjustment.array() /= penalty_adjustment.maxCoeff();
+
+        penalty_adjustment.array() = 1.0;
     } else
     {
         lambda = lambda_given;

@@ -45,7 +45,7 @@ class twopart
 
         bool intercept;
         std::string penalty;
-        bool opposite_signs;
+        bool opposite_signs, strongrule;
 
         bool need_to_compute_lambda;
         int nlambda;
@@ -63,8 +63,9 @@ class twopart
 
         VectorXd mu, mu_s, xbeta_cur, resid_cur, xbeta_s_cur, resid_s_cur, W, W_s;
         VectorXd deviance_vec, deviance_s_vec;
+        VectorXi active_set;
 
-
+        bool any_violations = false;
 
         double b0, b0_s, b0_old, b0_s_old, deviance, deviance_old, deviance_s, deviance_s_old, mult_1;
 
@@ -81,6 +82,9 @@ class twopart
 
         virtual void set_up_lambda();
         virtual void set_up_groups();
+        virtual VectorXd grad_func(int col_idx);
+        virtual void update_strongrule(int lam_idx);
+        virtual void check_kkt(int lam_idx);
 
         // phi_j(v) function for cooperative lasso
         VectorXd phi_j_v(VectorXd & v, int & j);
@@ -134,6 +138,7 @@ class twopart
         intercept(P.intercept),
         penalty(P.penalty),
         opposite_signs(P.opposite_signs),
+        strongrule(P.strongrule),
         need_to_compute_lambda(lambda_given.size() < 1),
         nlambda((need_to_compute_lambda) ? P.nlambda : lambda_given.size()),
         lambda_min_ratio(P.lambda_min_ratio),
@@ -153,7 +158,8 @@ class twopart
         beta_s_mat(MatrixXd::Zero(nvars+1, nlambda)),
         mu(nobs), mu_s(nobs_s), xbeta_cur(offset), resid_cur(nobs),
         xbeta_s_cur(offset_s), resid_s_cur(nobs_s), W(nobs), W_s(nobs_s),
-        deviance_vec(nlambda), deviance_s_vec(nlambda)
+        deviance_vec(nlambda), deviance_s_vec(nlambda),
+        active_set(VectorXi::Zero(nvars))
         {}
 
 

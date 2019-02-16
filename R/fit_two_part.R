@@ -63,11 +63,11 @@ hd2part <- function(x, z,
                     opposite_signs   = FALSE,
                     flip_beta_zero   = FALSE,
                     intercept        = TRUE,
+                    strongrule       = TRUE,
                     maxit_irls       = 50,
                     tol_irls         = 1e-5,
                     maxit_mm         = 500,
-                    tol_mm           = 1e-5,
-                    strongrule       = TRUE)
+                    tol_mm           = 1e-5)
 {
     p   <- NCOL(x)
     n   <- NROW(x)
@@ -212,7 +212,8 @@ hd2part <- function(x, z,
                            tol_irls = tol_irls,
                            intercept = intercept,
                            penalty = penalty,
-                           opposite_signs = opposite_signs)
+                           opposite_signs = opposite_signs,
+                           strongrule = strongrule)
     if (flip_beta_zero)
     {
         res$beta_z <- -res$beta_z
