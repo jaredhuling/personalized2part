@@ -48,6 +48,8 @@ void twopart::update_strongrule(int lam_idx)
     active_set.setZero();
 
     VectorXd grad_cur(2);
+    VectorXd threshed_grad_cur(2);
+
     for (int j = 0; j < nvars; ++j)
     {
         if (group_weights(j) > 0.0)
@@ -57,13 +59,19 @@ void twopart::update_strongrule(int lam_idx)
             double grp_thresh = (1.0 - tau) * group_weights(j) * (2.0 * lam_cur - lam_prev);
             double individ_thresh = tau * group_weights(j) * (2.0 * lam_cur - lam_prev);
 
+            for (int g = 0; g < 2; ++g)
+            {
+                threshed_grad_cur(g) = soft_thresh(grad_cur(g), individ_thresh);
+            }
+
             if (penalty == "grp.lasso")
             {
-                if (grad_cur.norm() >= grp_thresh)
+                if (threshed_grad_cur.norm() >= grp_thresh)
                 {
                     //std::cout << "grp norm: " << grad_cur.norm() << " thresh: " << grp_thresh << " actset: " << active_set(j) << std::endl;
                     active_set(j) = 1;
-                } else
+                }
+                /*else
                 {
                     if (tau > 0.0)
                     {
@@ -76,11 +84,12 @@ void twopart::update_strongrule(int lam_idx)
                             }
                         }
                     }
-                }
+                }*/
             } else
             {
                 for (int g = 0; g < grad_cur.size(); ++g)
                 {
+                    /*
                     if (tau > 0.0)
                     {
                         if (std::abs(grad_cur(g)) >= individ_thresh)
@@ -88,8 +97,8 @@ void twopart::update_strongrule(int lam_idx)
                             active_set(j) = 1;
                             break;
                         }
-                    }
-                    VectorXd phi_j_vec = phi_j_v(grad_cur, g);
+                    }*/
+                    VectorXd phi_j_vec = phi_j_v(threshed_grad_cur, g);
                     if (phi_j_vec.norm() >= grp_thresh)
                     {
                         active_set(j) = 1;
