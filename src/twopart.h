@@ -190,6 +190,7 @@ class twopart
         virtual VectorXd get_dev_s()   { return deviance_s_vec; }
         virtual VectorXd get_pen_adj() { return penalty_adjustment; }
         virtual VectorXd get_eigs()    { return eigenvals; }
+        virtual double get_scale()     { return scale_pos; }
 
 
 };

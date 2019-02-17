@@ -79,6 +79,7 @@ Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix &X_,
     VectorXd deviance_s_vec     = tp_obj.get_dev_s();
     VectorXd penalty_adjustment = tp_obj.get_pen_adj();
     VectorXd eigenvals          = tp_obj.get_eigs();
+    double scale_pos            = tp_obj.get_scale();
 
 
     return List::create(Named("beta_z")      = beta_z,
@@ -89,6 +90,7 @@ Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix &X_,
                         Named("deviance_z")  = deviance_z_vec,
                         Named("deviance_s")  = deviance_s_vec,
                         Named("penalty_adjustment") = penalty_adjustment,
+                        Named("likelihood_scale_factor") = scale_pos,
                         Named("eigenvals") = eigenvals,
                         Named("penalty")   = penalty[0]);
 }
