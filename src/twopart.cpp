@@ -14,7 +14,7 @@ VectorXd twopart::grad_func(const VectorXd &x_col,
         (weights.array() * (Z.array() / (1.0 + (Z.array() * xbeta.array()).exp()  )))).matrix().sum() / double(nobs);
 
     // gamma part
-    U_vec(1) = (x_col_s.array() *
+    U_vec(1) = scale_pos * (x_col_s.array() *
         (weights_s.array() * (S.array() * (-1.0 * xbeta_s.array()).exp() - 1.0  ))).matrix().sum() / double(nobs_s);
 
     return(U_vec);
@@ -30,7 +30,7 @@ VectorXd twopart::grad_func(int col_idx)
         (weights.array() * (Z.array() / (1.0 + (Z.array() * xbeta_cur.array()).exp()  )))).matrix().sum() / double(nobs);
 
     // gamma part
-    U_vec(1) = (Xs.col(col_idx).array() *
+    U_vec(1) = scale_pos * (Xs.col(col_idx).array() *
         (weights_s.array() * (S.array() * (-1.0 * xbeta_s_cur.array()).exp() - 1.0  ))).matrix().sum() / double(nobs_s);
 
     return(U_vec);
@@ -355,6 +355,10 @@ void twopart::initialize()
         mult_1 = -1.0;
     }
 
+    scale_set = false;
+
+    scale_pos = 1.0;
+
     ZZ.resize(nobs);
     ZZ = (Z.array() + 1) / 2;
 
@@ -386,6 +390,10 @@ void twopart::initialize()
     // ----------------------------------------- //
     // ------        Set up lambda        ------ //
     // ----------------------------------------- //
+
+    // run once to set scale of likelihoods, again to double check
+    set_up_lambda();
+
 
     set_up_lambda();
 
@@ -502,6 +510,13 @@ void twopart::set_up_lambda()
 
         penalty_adjust(0) = lmax_z / (lmax_z + lmax_p);
         penalty_adjust(1) = lmax_p / (lmax_z + lmax_p);
+
+
+        if (!scale_set)
+        {
+            scale_pos = penalty_adjust(0) / penalty_adjust(1);
+            scale_set = true;
+        }
 
         //std::cout << lmax_z  << " " << lmax_p << std::endl;
         //std::cout << penalty_adjust.transpose() << std::endl;
@@ -670,7 +685,7 @@ VectorXi twopart::fit_path()
                 /////// ----------------
 
                 mu_s = S.array() * (-1.0 * xbeta_s_cur.array()).exp();
-                W_s = weights_s.array() * mu_s.array();
+                W_s = scale_pos * weights_s.array() * mu_s.array();
 
                 resid_s_cur = (mu_s.array() - 1.0) / mu_s.array();
 

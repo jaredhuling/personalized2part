@@ -67,7 +67,9 @@ class twopart
 
         bool any_violations = false;
 
-        double b0, b0_s, b0_old, b0_s_old, deviance, deviance_old, deviance_s, deviance_s_old, mult_1;
+        double b0, b0_s, b0_old, b0_s_old, deviance, deviance_old, deviance_s, deviance_s_old, mult_1, scale_pos;
+
+        bool scale_set = false;
 
         VectorXd penalty_adjustment, ZZ, lambda, group_weights;
 
