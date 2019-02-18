@@ -43,7 +43,7 @@ class twopart
         int maxit, maxit_irls;
         double tol, tol_irls;
 
-        bool intercept;
+        bool intercept_z, intercept_s;
         std::string penalty;
         bool opposite_signs, strongrule;
 
@@ -137,7 +137,8 @@ class twopart
         maxit_irls(P.maxit_irls),
         tol(P.tol),
         tol_irls(P.tol_irls),
-        intercept(P.intercept),
+        intercept_z(P.intercept_z),
+        intercept_s(P.intercept_s),
         penalty(P.penalty),
         opposite_signs(P.opposite_signs),
         strongrule(P.strongrule),

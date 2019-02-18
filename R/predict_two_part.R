@@ -197,6 +197,7 @@ predict.cv.hd2part <- function(object, newx,
     }
     predict(object$hd2part.fit,
             newx,
+            model = model,
             s = lambda,
             type = type, ...)
 }

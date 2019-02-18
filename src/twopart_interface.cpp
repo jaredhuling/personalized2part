@@ -22,7 +22,8 @@ Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix &X_,
                            const double tol,
                            const int maxit_irls,
                            const double tol_irls,
-                           const bool intercept,
+                           const bool intercept_z,
+                           const bool intercept_s,
                            const std::vector<std::string> penalty,
                            const bool opposite_signs,
                            const bool strongrule)
@@ -50,7 +51,8 @@ Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix &X_,
     pars.maxit_irls = maxit_irls;
     pars.tol = tol;
     pars.tol_irls = tol_irls;
-    pars.intercept = intercept;
+    pars.intercept_z = intercept_z;
+    pars.intercept_s = intercept_s;
     pars.penalty = penalty[0];
     pars.opposite_signs = opposite_signs;
     pars.nlambda = nlambda;

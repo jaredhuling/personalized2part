@@ -364,11 +364,13 @@ void twopart::initialize()
 
     b0   = 0.0;
     b0_s = 0.0;
-    if (intercept)
+    if (intercept_z)
     {
         double zbar = ( (ZZ.array() * weights.array()) ).matrix().sum() /  weights.sum(); // double(nobs);
         b0 = log(zbar / (1.0 - zbar));
-
+    }
+    if (intercept_s)
+    {
         double sbar = (S.array() * weights_s.array()).matrix().sum() / weights_s.sum(); // double(nobs_s);
         //double sbar = S.sum() / double(nobs_s);
         b0_s = log(sbar);
@@ -399,14 +401,17 @@ void twopart::initialize()
 
 
     // set up linear predictors
-    if (intercept)
+    if (intercept_z)
     {
         xbeta_cur.array()   += b0;
-        xbeta_s_cur.array() += b0_s;
     } else
     {
         //xbeta_cur.setZero();
         //xbeta_s_cur.setZero();
+    }
+    if (intercept_s)
+    {
+        xbeta_s_cur.array() += b0_s;
     }
 
 
@@ -734,23 +739,29 @@ VectorXi twopart::fit_path()
                 for (int i = 0; i < maxit; ++i)
                 {
                     // update intercept
-                    if (intercept)
+                    if (intercept_z)
                     {
 
                         b0_old   = b0;
-                        b0_s_old = b0_s;
 
                         double Upb   = (W.array() * resid_cur.array()     ).matrix().sum() / double(nobs)   + b0; //  / ;
-                        double Upb_s = (W_s.array() * resid_s_cur.array() ).matrix().sum() / double(nobs_s) + b0_s; //  / ;
 
                         // double total_penalty = 0.0;
                         b0   = Upb; //soft_thresh(Upb, total_penalty);
-                        b0_s = Upb_s; //soft_thresh(Upb_s, total_penalty);
 
                         //std::cout << "int U " << Upb << " int " << b0 << std::endl;
 
                         xbeta_cur.array() += (b0 - b0_old);
                         resid_cur.array() -= (b0 - b0_old);
+                    }
+                    if (intercept_s)
+                    {
+                        b0_s_old = b0_s;
+
+                        double Upb_s = (W_s.array() * resid_s_cur.array() ).matrix().sum() / double(nobs_s) + b0_s; //  / ;
+
+                        // double total_penalty = 0.0;
+                        b0_s = Upb_s; //soft_thresh(Upb_s, total_penalty);
 
                         xbeta_s_cur.array() += (b0_s - b0_s_old);
                         resid_s_cur.array() -= (b0_s - b0_s_old);
@@ -869,9 +880,12 @@ VectorXi twopart::fit_path()
 
         beta_mat.col(l).tail(nvars)   = beta;
         beta_s_mat.col(l).tail(nvars) = beta_s;
-        if (intercept)
+        if (intercept_z)
         {
             beta_mat(0, l)   = b0;
+        }
+        if (intercept_s)
+        {
             beta_s_mat(0, l) = b0_s;
         }
     }

@@ -12,7 +12,8 @@ struct params
     double tol = 1e-5;
     double tol_irls = 1e-5;
 
-    bool intercept = true;
+    bool intercept_z = true;
+    bool intercept_s = true;
     std::string penalty = "grp.lasso";
     bool opposite_signs = false;
     bool strongrule = true;

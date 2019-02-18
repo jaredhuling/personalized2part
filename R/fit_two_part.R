@@ -34,7 +34,8 @@
 #' opposite signs instead of the same signs. Default is \code{FALSE}. This variable has no effect for group lasso.
 #' @param flip_beta_zero should we flip the signs of the parameters for the zero part model? Defaults to \code{FALSE}. Should only
 #' be used for good reason
-#' @param intercept whether or not to include an intercept in the model. Default is \code{TRUE}.
+#' @param intercept_z whether or not to include an intercept in the zero part model. Default is \code{TRUE}.
+#' @param intercept_s whether or not to include an intercept in the positive part model. Default is \code{TRUE}.
 #' @param maxit_irls maximum number of IRLS iterations
 #' @param tol_irls convergence tolerance for IRLS iterations
 #' @param maxit_mm maximum number of MM iterations. Note that for \code{algorithm = "irls"}, MM is used within
@@ -62,7 +63,8 @@ hd2part <- function(x, z,
                     tau              = 0,
                     opposite_signs   = FALSE,
                     flip_beta_zero   = FALSE,
-                    intercept        = TRUE,
+                    intercept_z      = TRUE,
+                    intercept_s      = TRUE,
                     strongrule       = TRUE,
                     maxit_irls       = 50,
                     tol_irls         = 1e-5,
@@ -173,7 +175,8 @@ hd2part <- function(x, z,
     maxit_irls       <- as.integer(maxit_irls[1])
     tol_irls         <- as.double(tol_irls[1])
     lambda_min_ratio <- as.double(lambda_min_ratio[1])
-    intercept        <- as.logical(intercept[1])
+    intercept_z      <- as.logical(intercept_z[1])
+    intercept_s      <- as.logical(intercept_s[1])
     tau              <- as.double(tau[1])
     opposite_signs   <- as.logical(opposite_signs[1])
     strongrule       <- as.logical(strongrule[1])
@@ -210,7 +213,8 @@ hd2part <- function(x, z,
                            maxit = maxit_mm, tol = tol_mm,
                            maxit_irls = maxit_irls,
                            tol_irls = tol_irls,
-                           intercept = intercept,
+                           intercept_z = intercept_z,
+                           intercept_s = intercept_s,
                            penalty = penalty,
                            opposite_signs = opposite_signs,
                            strongrule = strongrule)
