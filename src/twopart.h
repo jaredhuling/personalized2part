@@ -45,7 +45,7 @@ class twopart
 
         bool intercept_z, intercept_s;
         std::string penalty;
-        bool opposite_signs, strongrule;
+        bool opposite_signs, strongrule, balance_likelihoods;
 
         bool need_to_compute_lambda;
         int nlambda;
@@ -142,6 +142,7 @@ class twopart
         penalty(P.penalty),
         opposite_signs(P.opposite_signs),
         strongrule(P.strongrule),
+        balance_likelihoods(P.balance_likelihoods),
         need_to_compute_lambda(lambda_given.size() < 1),
         nlambda((need_to_compute_lambda) ? P.nlambda : lambda_given.size()),
         lambda_min_ratio(P.lambda_min_ratio),

@@ -69,7 +69,8 @@ hd2part <- function(x, z,
                     maxit_irls       = 50,
                     tol_irls         = 1e-5,
                     maxit_mm         = 500,
-                    tol_mm           = 1e-5)
+                    tol_mm           = 1e-5,
+                    balance_likelihoods = TRUE)
 {
     p   <- NCOL(x)
     n   <- NROW(x)
@@ -181,6 +182,8 @@ hd2part <- function(x, z,
     opposite_signs   <- as.logical(opposite_signs[1])
     strongrule       <- as.logical(strongrule[1])
 
+    balance_likelihoods <- as.logical(balance_likelihoods[1])
+
     if (nlambda <= 0)     stop("'nlambda' must be a positive integer")
     if (maxit_mm <= 0)    stop("'maxit_mm' must be a positive integer")
     if (maxit_irls <= 0)  stop("'maxit_irls' must be a positive integer")
@@ -217,7 +220,8 @@ hd2part <- function(x, z,
                            intercept_s = intercept_s,
                            penalty = penalty,
                            opposite_signs = opposite_signs,
-                           strongrule = strongrule)
+                           strongrule = strongrule,
+                           balance_likelihoods = balance_likelihoods)
     if (flip_beta_zero)
     {
         res$beta_z <- -res$beta_z

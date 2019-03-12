@@ -17,6 +17,7 @@ struct params
     std::string penalty = "grp.lasso";
     bool opposite_signs = false;
     bool strongrule = true;
+    bool balance_likelihoods = true;
 
     int nlambda = 100;
     double lambda_min_ratio = 1e-3;

@@ -519,7 +519,13 @@ void twopart::set_up_lambda()
 
         if (!scale_set)
         {
-            scale_pos = penalty_adjust(0) / penalty_adjust(1);
+            if (balance_likelihoods)
+            {
+                scale_pos = penalty_adjust(0) / penalty_adjust(1);
+            } else
+            {
+                scale_pos = 1.0;
+            }
             scale_set = true;
         }
 
