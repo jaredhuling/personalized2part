@@ -9,7 +9,7 @@ hd2part(x, z, x_s, s, weights = rep(1, NROW(x)), weights_s = rep(1,
   penalty = c("grp.lasso", "coop.lasso"), penalty_factor = NULL,
   nlambda = 100L, lambda_min_ratio = ifelse(n_s < p, 0.05, 0.005),
   lambda = NULL, tau = 0, opposite_signs = FALSE,
-  flip_beta_zero = FALSE, intercept_z = TRUE, intercept_s = TRUE,
+  flip_beta_zero = FALSE, intercept_z = FALSE, intercept_s = FALSE,
   strongrule = TRUE, maxit_irls = 50, tol_irls = 1e-05,
   maxit_mm = 500, tol_mm = 1e-05, balance_likelihoods = TRUE)
 }

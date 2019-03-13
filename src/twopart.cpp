@@ -521,7 +521,8 @@ void twopart::set_up_lambda()
         {
             if (balance_likelihoods)
             {
-                scale_pos = penalty_adjust(0) / penalty_adjust(1);
+                //scale_pos = std::sqrt(penalty_adjust(0) / penalty_adjust(1));
+                scale_pos = (penalty_adjust(0) / penalty_adjust(1)) ;
             } else
             {
                 scale_pos = 1.0;
