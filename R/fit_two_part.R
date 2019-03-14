@@ -195,7 +195,7 @@ hd2part <- function(x, z,
         stop("tau must be between 0 and 1")
     }
 
-    if (length(lambda) > 0 && any(lambda) <= 0) stop("every value in 'lambda' must be a strictly positive number")
+    if (length(lambda) > 0 && any(lambda <= 0)) stop("every value in 'lambda' must be a strictly positive number")
 
     if (lambda_min_ratio <= 0 || lambda_min_ratio >= 1) stop("'lambda_min_ratio' must be strictly positive and less than 1")
 
@@ -237,5 +237,175 @@ hd2part <- function(x, z,
     res$nonzero_s <- colSums(res$beta_s[-1,] != 0)
 
     class(res)    <- "hd2part"
+    res
+}
+
+
+
+#' Fitting function for lasso penalized GLMs
+#'
+#' @description This function fits penalized gamma GLMs
+#'
+#' @param x an n x p matrix of covariates for the zero part data, where each row is an observation
+#' and each column is a predictor
+#' @param y a length n vector of responses taking strictly positive values.
+#' @param weights a length n vector of observation weights
+#' @param offset a length n vector of offset terms
+#' @param penalty_factor a length p vector of penalty adjustment factors corresponding to each covariate.
+#' A value of 0 in the jth location indicates no penalization on the jth variable, and any positive value will
+#' indicate a multiplicative factor on top of the common penalization amount. The default value is 1 for
+#' all variables
+#' @param nlambda the number of lambda values. The default is 100.
+#' @param lambda_min_ratio Smallest value for \code{lambda}, as a fraction of lambda.max, the data-derived largest lambda value
+#' The default depends on the sample size relative to the number of variables.
+#' @param lambda a user supplied sequence of penalization tuning parameters. By default, the program automatically
+#' chooses a sequence of lambda values based on \code{nlambda} and \code{lambda_min_ratio}
+#' @param intercept whether or not to include an intercept. Default is \code{TRUE}.
+#' @param maxit_irls maximum number of IRLS iterations
+#' @param tol_irls convergence tolerance for IRLS iterations
+#' @param maxit_mm maximum number of MM iterations. Note that for \code{algorithm = "irls"}, MM is used within
+#' each IRLS iteration, so \code{maxit_mm} applies to the convergence of the inner iterations in this case.
+#' @param tol_mm convergence tolerance for MM iterations. Note that for \code{algorithm = "irls"}, MM is used within
+#' each IRLS iteration, so \code{tol_mm} applies to the convergence of the inner iterations in this case.
+#' @param strongrule should a strong rule be used?
+#' @export
+#'
+#' @examples
+#'
+#' library(personalized2part)
+#'
+hdgamma <- function(x, y,
+                    weights          = rep(1, NROW(x)),
+                    offset           = NULL,
+                    penalty_factor   = NULL,
+                    nlambda          = 100L,
+                    lambda_min_ratio = ifelse(n < p, 0.05, 0.005),
+                    lambda           = NULL,
+                    tau              = 0,
+                    intercept        = TRUE,
+                    strongrule       = TRUE,
+                    maxit_irls       = 50,
+                    tol_irls         = 1e-5,
+                    maxit_mm         = 500,
+                    tol_mm           = 1e-5)
+{
+    p   <- NCOL(x)
+    n   <- NROW(x)
+
+    if (length(weights) != n)
+    {
+        stop("'weights' must be same length as number of observations in 'x'")
+    }
+
+
+    weights   <- weights / mean(weights)
+
+    is.offset   <- !is.null(offset)
+
+    if (is.offset)
+    {
+        offset <- drop(as.double(offset))
+    } else
+    {
+        offset <- rep(0, n)
+    }
+
+    if (length(offset) != n)
+    {
+        stop("'offset' must be same length as number of observations in 'x'")
+    }
+
+    vnames <- colnames(x)
+
+    if (is.null(vnames))
+    {
+        vnames <- paste0("V", 1:p)
+    }
+
+
+    #algorithm <- match.arg(algorithm)
+    #penalty   <- match.arg(penalty)
+
+    penalty <- "grp.lasso"
+
+    if (is.null(penalty_factor))
+    {
+        penalty_factor <- numeric(0)
+    }
+    if (is.null(lambda))
+    {
+        lambda <- numeric(0)
+    }
+
+    if (length(penalty_factor) > 0)
+    {
+        if (length(penalty_factor) != p)
+        {
+            stop("'penalty_factor' must be same length as the number of observations")
+        }
+    }
+
+    tau <- 0
+
+    ## run checks on outcomes
+    y <- setup_y(y, "gamma")
+
+    groups           <- as.integer(rep(1:NCOL(x), 2))
+    unique_groups    <- unique(groups)
+
+    penalty_factor   <- as.double(penalty_factor)
+    weights          <- as.double(weights)
+    offset           <- as.double(offset)
+    lambda           <- as.double(lambda)
+    nlambda          <- as.integer(nlambda[1])
+    maxit_mm         <- as.integer(maxit_mm[1])
+    tol_mm           <- as.double(tol_mm[1])
+    maxit_irls       <- as.integer(maxit_irls[1])
+    tol_irls         <- as.double(tol_irls[1])
+    lambda_min_ratio <- as.double(lambda_min_ratio[1])
+    intercept        <- as.logical(intercept[1])
+    tau              <- as.double(tau[1])
+    strongrule       <- as.logical(strongrule[1])
+
+    if (nlambda <= 0)     stop("'nlambda' must be a positive integer")
+    if (maxit_mm <= 0)    stop("'maxit_mm' must be a positive integer")
+    if (maxit_irls <= 0)  stop("'maxit_irls' must be a positive integer")
+    if (tol_irls <= 0)    stop("'tol_irls' must be a strictly positive number")
+    if (tol_mm <= 0)      stop("'tol_mm' must be a strictly positive number")
+
+    if (tau < 0 | tau > 1)
+    {
+        stop("tau must be between 0 and 1")
+    }
+
+    if (length(lambda) > 0 && any(lambda <= 0)) stop("every value in 'lambda' must be a strictly positive number")
+
+    if (lambda_min_ratio <= 0 || lambda_min_ratio >= 1) stop("'lambda_min_ratio' must be strictly positive and less than 1")
+
+    lambda <- rev(sort(lambda))
+
+    res <- fit_gamma_cpp(X_ = x, Y_ = y,
+                         groups_ = groups,
+                         unique_groups_ = unique_groups,
+                         group_weights_ = penalty_factor,
+                         weights_ = weights,
+                         offset_ = offset,
+                         lambda_ = lambda, nlambda = nlambda,
+                         lambda_min_ratio = lambda_min_ratio,
+                         tau = tau,
+                         maxit = maxit_mm, tol = tol_mm,
+                         maxit_irls = maxit_irls,
+                         tol_irls = tol_irls,
+                         intercept = intercept,
+                         penalty = penalty,
+                         strongrule = strongrule)
+
+    rownames(res$beta) <- c("(Intercept)", vnames)
+
+    res$offset    <- is.offset
+
+    res$nonzero <- colSums(res$beta[-1,] != 0)
+
+    class(res)    <- "hdgamma"
     res
 }
