@@ -42,7 +42,9 @@
 #' each IRLS iteration, so \code{maxit_mm} applies to the convergence of the inner iterations in this case.
 #' @param tol_mm convergence tolerance for MM iterations. Note that for \code{algorithm = "irls"}, MM is used within
 #' each IRLS iteration, so \code{tol_mm} applies to the convergence of the inner iterations in this case.
-#' @param strongrule should a strong rule be used?
+#' @param strongrule should a strong rule be used? Defaults to \code{TRUE}
+#' @param balance_likelihoods should the likelihoods be balanced so variables would enter both models at the same value of lambda
+#' if the penalty were a lasso penalty? Recommended to keep at the default, \code{TRUE}
 #' @export
 #'
 #' @examples

@@ -62,7 +62,7 @@ be used for good reason}
 
 \item{intercept_s}{whether or not to include an intercept in the positive part model. Default is \code{TRUE}.}
 
-\item{strongrule}{should a strong rule be used?}
+\item{strongrule}{should a strong rule be used? Defaults to \code{TRUE}}
 
 \item{maxit_irls}{maximum number of IRLS iterations}
 
@@ -73,6 +73,9 @@ each IRLS iteration, so \code{maxit_mm} applies to the convergence of the inner 
 
 \item{tol_mm}{convergence tolerance for MM iterations. Note that for \code{algorithm = "irls"}, MM is used within
 each IRLS iteration, so \code{tol_mm} applies to the convergence of the inner iterations in this case.}
+
+\item{balance_likelihoods}{should the likelihoods be balanced so variables would enter both models at the same value of lambda
+if the penalty were a lasso penalty? Recommended to keep at the default, \code{TRUE}}
 }
 \description{
 This function fits penalized two part models with a logistic regression model
