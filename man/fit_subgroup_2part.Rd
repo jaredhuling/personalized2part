@@ -4,7 +4,8 @@
 \alias{fit_subgroup_2part}
 \title{Fitting subgroup identification models for semicontinuous positive outcomes}
 \usage{
-fit_subgroup_2part(x, y, trt, propensity.func = NULL, match.id = NULL,
+fit_subgroup_2part(x, y, trt, propensity.func = NULL,
+  propensity.func.positive = NULL, match.id = NULL,
   augment.func.zero = NULL, augment.func.positive = NULL,
   cutpoint = 1, larger.outcome.better = TRUE, y_eps = 1e-06, ...)
 }
@@ -18,6 +19,13 @@ treatment status is active.}
 
 \item{propensity.func}{function that inputs the design matrix x and the treatment vector trt and outputs
 the propensity score, ie Pr(trt = 1 | X = x). Function should take two arguments 1) x and 2) trt. See example below.
+For a randomized controlled trial this can simply be a function that returns a constant equal to the proportion
+of patients assigned to the treatment group, i.e.:
+\code{propensity.func = function(x, trt) 0.5}.}
+
+\item{propensity.func.positive}{function that inputs the design matrix x and the treatment vector trt and outputs
+the propensity score for units with positive outcome values, ie Pr(trt = 1 | X = x, Z = 1). Function should take
+two arguments 1) x and 2) trt. See example below.
 For a randomized controlled trial this can simply be a function that returns a constant equal to the proportion
 of patients assigned to the treatment group, i.e.:
 \code{propensity.func = function(x, trt) 0.5}.}
@@ -79,6 +87,27 @@ Fits subgroup identification models
 }
 \examples{
 
-set.seed(1)
+set.seed(42)
+
+dat <- gen_semicontinuous_data(250, n.vars = 15)
+x <- dat$x
+y <- dat$y
+trt <- dat$trt
+
+prop_func <- function(x, trt)
+{
+    propensmod <- glm(trt ~ x, family = binomial())
+
+    propens <- unname(fitted(propensmod))
+    propens
+}
+
+fitted_model <- fit_subgroup_2part(x, y, trt, prop_func, prop_func)
+
+fitted_model
+
+## correlation of estimated covariate-conditional risk ratio and truth
+cor(fitted_model$benefit.scores, dat$treatment_risk_ratio, method = "spearman")
+
 
 }

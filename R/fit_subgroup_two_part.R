@@ -12,6 +12,12 @@
 #' For a randomized controlled trial this can simply be a function that returns a constant equal to the proportion
 #' of patients assigned to the treatment group, i.e.:
 #' \code{propensity.func = function(x, trt) 0.5}.
+#' @param propensity.func.positive function that inputs the design matrix x and the treatment vector trt and outputs
+#' the propensity score for units with positive outcome values, ie Pr(trt = 1 | X = x, Z = 1). Function should take
+#' two arguments 1) x and 2) trt. See example below.
+#' For a randomized controlled trial this can simply be a function that returns a constant equal to the proportion
+#' of patients assigned to the treatment group, i.e.:
+#' \code{propensity.func = function(x, trt) 0.5}.
 #' @param match.id a (character, factor, or integer) vector with length equal to the number of observations in \code{x}
 #' indicating using integers or levels of a factor vector which patients are
 #' in which matched groups. Defaults to \code{NULL} and assumes the samples are not from a matched cohort. Matched
@@ -63,12 +69,34 @@
 #'
 #' @examples
 #'
-#' set.seed(1)
+#' set.seed(42)
+#'
+#' dat <- gen_semicontinuous_data(250, n.vars = 15)
+#' x <- dat$x
+#' y <- dat$y
+#' trt <- dat$trt
+#'
+#' prop_func <- function(x, trt)
+#' {
+#'     propensmod <- glm(trt ~ x, family = binomial())
+#'
+#'     propens <- unname(fitted(propensmod))
+#'     propens
+#' }
+#'
+#' fitted_model <- fit_subgroup_2part(x, y, trt, prop_func, prop_func)
+#'
+#' fitted_model
+#'
+#' ## correlation of estimated covariate-conditional risk ratio and truth
+#' cor(fitted_model$benefit.scores, dat$treatment_risk_ratio, method = "spearman")
+#'
 #'
 fit_subgroup_2part <- function(x,
                                y,
                                trt,
                                propensity.func = NULL,
+                               propensity.func.positive = NULL,
                                match.id = NULL,
                                augment.func.zero = NULL,
                                augment.func.positive = NULL,
@@ -226,6 +254,35 @@ fit_subgroup_2part <- function(x,
     }
 
 
+    which_pos <- y > y_eps
+
+    if (is.null(propensity.func.positive))
+    {
+        if (n.trts == 2)
+        {
+            mean.trt <- mean(trt[which_pos] == 1)
+            propensity.func.positive <- function(trt, x) rep(mean.trt, length(trt))
+        } else
+        {
+            mean.trt <- numeric(n.trts)
+            for (t in 1:n.trts)
+            {
+                mean.trt[t] <- mean(trt[which_pos] == unique.trts[t])
+            }
+            propensity.func <- function(trt, x)
+            {
+                pi.x <- numeric(length(trt))
+                for (t in 1:n.trts)
+                {
+                    which.t       <- trt == unique.trts[t]
+                    pi.x[which.t] <- mean(which.t)
+                }
+                pi.x
+            }
+        }
+    }
+
+
 
     larger.outcome.better <- as.logical(larger.outcome.better[1])
 
@@ -234,80 +291,8 @@ fit_subgroup_2part <- function(x,
     this.call     <- c(this.call, list(...))
 
 
-    # check to make sure arguments of propensity.func are correct
-    propfunc.names <- sort(names(formals(propensity.func)))
-    if (length(propfunc.names) == 3)
-    {
-        if (any(propfunc.names != c("match.id", "trt", "x")))
-        {
-            stop("arguments of propensity.func() should be 'trt','x', and (optionally) 'match.id'")
-        }
-    } else if (length(propfunc.names) == 2)
-    {
-        if (any(propfunc.names != c("trt", "x")))
-        {
-            stop("arguments of propensity.func() should be 'trt','x', and (optionally) 'match.id'")
-        }
-    } else
-    {
-        stop("propensity.func() should only have two or three arguments: 'trt' and 'x', or: 'trt', 'x', and 'match.id'")
-    }
-
-    # compute propensity scores
-    if (is.null(match.id) | length(propfunc.names) == 2)
-    {
-        pi.x <- drop(propensity.func(x = x, trt = trt))
-    } else
-    {
-        pi.x <- drop(propensity.func(x = x, trt = trt, match.id = match.id))
-    }
-
-    # make sure the resulting propensity scores are in the
-    # acceptable range (ie 0-1)
-    rng.pi <- range(pi.x)
-
-    if (rng.pi[1] <= 0 | rng.pi[2] >= 1) stop("propensity.func() should return values between 0 and 1")
-
-    ## if returned propensity score
-    ## is a matrix, then pick out the
-    ## right column for each row so we
-    ## always get Pr(T = T_i | X = x)
-
-    dim.pi.x <- dim(pi.x)
-    if (!is.null(dim.pi.x))
-    {
-        if (length(dim.pi.x) == 1)
-        {
-            pi.x <- as.vector(pi.x)
-        } else if (length(dim.pi.x) == 2)
-        {
-            if (ncol(pi.x) != n.trts)
-            {
-                stop("Number of columns in the matrix returned by propensity.func() is not the same
-                     as the number of levels of 'trt'.")
-            }
-            if (is.factor(trt))
-            {
-                values <- levels(trt)[trt]
-            } else
-            {
-                values <- trt
-            }
-
-            levels.pi.mat <- colnames(pi.x)
-            if (is.null(levels.pi.mat))
-            {
-                levels.pi.mat <- unique.trts
-            }
-
-            # return the probability corresponding to the
-            # treatment that was observed
-            pi.x <- pi.x[cbind(1:nrow(pi.x), match(values, levels.pi.mat))]
-        } else
-        {
-            stop("propensity.func() returns a multidimensional array; it can only return a vector or matrix.")
-        }
-    }
+    pi.x <- check_compute_propensity_func(x, trt, match.id, propensity.func,
+                                          "propensity.func()", n.trts, unique.trts)
 
 
     ## indicator of zero
@@ -323,7 +308,10 @@ fit_subgroup_2part <- function(x,
     s      <- y[is_nz]
     x_s    <- x[is_nz,]
     trt_s  <- trt[is_nz]
-    pi.x_s <- pi.x[is_nz]
+    #pi.x_s <- pi.x[is_nz]
+
+    pi.x_s <- check_compute_propensity_func(x_s, trt_s, NULL, propensity.func.positive,
+                                            "propensity.func.positive()", n.trts, unique.trts)
 
     # construct design matrix to be passed to fitting function
     x.tilde.s <- create.design.matrix(x             = x_s,
@@ -410,9 +398,9 @@ fit_subgroup_2part <- function(x,
                                      x.tilde.s, s,  ## positive part data
                                      weights   = wts * (abs(resid_outcome)), ## observation weights for zero part
                                      weights_s = wts_s, ## observation weights for positive part
-                                     algorithm = "irls",
                                      opposite_signs = !larger.outcome.better,
-                                     intercept = FALSE, ...)
+                                     intercept_z = FALSE,
+                                     intercept_s = FALSE, ...)
 
     if (!larger.outcome.better)
     {
