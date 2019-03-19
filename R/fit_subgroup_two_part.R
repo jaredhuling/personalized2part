@@ -71,7 +71,7 @@
 #'
 #' set.seed(42)
 #'
-#' dat <- gen_semicontinuous_data(250, n.vars = 15)
+#' dat <- sim_semicontinuous_data(250, n.vars = 15)
 #' x <- dat$x
 #' y <- dat$y
 #' trt <- dat$trt
@@ -361,9 +361,9 @@ fit_subgroup_2part <- function(x,
     {
         B.x   <- unname(drop(augment.func.positive(trt = trt_s, x = x_s, y = s)))
 
-        if (NROW(B.x) != NROW(y))
+        if (NROW(B.x) != NROW(s))
         {
-            stop("augment.func.positive() should return the same number of predictions as observations in y")
+            stop("augment.func.positive() should return the same number of predictions as observations in y's with positive values")
         }
 
         extra.args.pos <- list(offset = B.x)

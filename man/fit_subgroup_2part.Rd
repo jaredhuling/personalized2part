@@ -89,7 +89,7 @@ Fits subgroup identification models
 
 set.seed(42)
 
-dat <- gen_semicontinuous_data(250, n.vars = 15)
+dat <- sim_semicontinuous_data(250, n.vars = 15)
 x <- dat$x
 y <- dat$y
 trt <- dat$trt

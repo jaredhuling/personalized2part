@@ -12,7 +12,7 @@
 #' for positive model, \code{treatment_risk_ratio} for the true covariate-conditional treatment effect risk ratio for
 #' each observation, \code{pi.x} for the true underlying propensity score
 #' @export
-gen_semicontinuous_data <- function(n.obs = 1000, n.vars = 25)
+sim_semicontinuous_data <- function(n.obs = 1000, n.vars = 25)
 {
 
     if (n.vars < 10) stop("n.vars must be at least 10")
