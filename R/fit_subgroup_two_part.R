@@ -253,9 +253,6 @@ fit_subgroup_2part <- function(x,
         }
     }
 
-
-    which_pos <- y > y_eps
-
     if (is.null(propensity.func.positive))
     {
         if (n.trts == 2)
@@ -280,6 +277,32 @@ fit_subgroup_2part <- function(x,
                 pi.x
             }
         }
+    }
+
+
+    which_pos <- y > y_eps
+
+
+    if (sum(which_pos) == 0)
+    {
+        stop("no observations are larger than zero")
+    }
+    if (sum(!which_pos) == 0)
+    {
+        stop("no observations are zero")
+    }
+
+    ## reorder observations so positive responses are first
+    reorder.idx <- c(which(which_pos),
+                     which(!which_pos))
+
+    x <- x[reorder.idx,]
+    y <- y[reorder.idx]
+    trt <- trt[reorder.idx]
+
+    if (!is.null(match.id))
+    {
+        match.id <- match.id[reorder.idx]
     }
 
 

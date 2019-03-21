@@ -89,7 +89,11 @@ cv.hd2part <- function (x,   z,
     nz_s <- sapply(predict(hd2part.object, type = "nonzero", model = "positive"), length)
     if (is.null(foldid))
     {
-        foldid <- sample(rep(seq(nfolds), length = n))
+        ## make sure sampling is stratified within the positive part of the population
+        foldid_s     <- sample(rep(seq(nfolds), length = n_s))
+        foldid_not_s <- sample(rep(seq(nfolds), length = n - n_s))
+
+        foldid <- c(foldid_s, foldid_not_s)
     } else
     {
         nfolds <- max(foldid)
@@ -104,7 +108,7 @@ cv.hd2part <- function (x,   z,
         outlist = foreach(i = seq(nfolds), .packages = c("personalized2part")) %dopar%
         {
             which   <- foldid == i
-            which_s <- which[1:n_s]
+            which_s <- foldid_s == i #which[1:n_s]
 
             if (length(dim(z))>1)
             {
@@ -152,7 +156,7 @@ cv.hd2part <- function (x,   z,
         for (i in seq(nfolds))
         {
             which   <- foldid == i
-            which_s <- which[1:n_s]
+            which_s <- foldid_s == i #which[1:n_s]
 
             if (length(dim(z))>1)
             {
