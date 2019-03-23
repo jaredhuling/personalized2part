@@ -106,9 +106,6 @@ sim_semicontinuous_data <- function(n.obs = 1000, n.vars = 25)
          betanonzero = betanonzero,
          betapos     = beta,
          treatment_risk_ratio = treatment_risk_ratio,          ### Gamma(X)
-         pi.x = trtprob,                                       ### Pr(T=1|X)
-         prob_ratio = (nonzeroprob_t1 / nonzeroprob_tn1),
-         pos_ratio = (exp((xbeta_1 - xbeta_n1) )),
-         prob_diff = nonzeroprob_t1 - nonzeroprob_tn1,
-         log_prob_diff = log(nonzeroprob_t1) - log(nonzeroprob_tn1))
+         pi.x = trtprob                                        ### Pr(T=1|X)
+         )
 }
