@@ -2,7 +2,7 @@
 
 #' Generates data from a two part distribution with a point mass at zero and heterogeneous treatment effects
 #'
-#' @description Generates semicontinuous data with HTE
+#' @description Generates semicontinuous data with heterogeneity of treatment effect
 #'
 #' @param n.obs number of observations
 #' @param n.vars number of variables. Must be at least 10

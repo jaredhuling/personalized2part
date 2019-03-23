@@ -19,5 +19,5 @@ for positive model, \code{treatment_risk_ratio} for the true covariate-condition
 each observation, \code{pi.x} for the true underlying propensity score
 }
 \description{
-Generates semicontinuous data with HTE
+Generates semicontinuous data with heterogeneity of treatment effect
 }
