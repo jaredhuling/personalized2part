@@ -4,11 +4,23 @@
 \alias{hdgamma}
 \title{Fitting function for lasso penalized GLMs}
 \usage{
-hdgamma(x, y, weights = rep(1, NROW(x)), offset = NULL,
-  penalty_factor = NULL, nlambda = 100L, lambda_min_ratio = ifelse(n
-  < p, 0.05, 0.005), lambda = NULL, tau = 0, intercept = TRUE,
-  strongrule = TRUE, maxit_irls = 50, tol_irls = 1e-05,
-  maxit_mm = 500, tol_mm = 1e-05)
+hdgamma(
+  x,
+  y,
+  weights = rep(1, NROW(x)),
+  offset = NULL,
+  penalty_factor = NULL,
+  nlambda = 100L,
+  lambda_min_ratio = ifelse(n < p, 0.05, 0.005),
+  lambda = NULL,
+  tau = 0,
+  intercept = TRUE,
+  strongrule = TRUE,
+  maxit_irls = 50,
+  tol_irls = 1e-05,
+  maxit_mm = 500,
+  tol_mm = 1e-05
+)
 }
 \arguments{
 \item{x}{an n x p matrix of covariates for the zero part data, where each row is an observation

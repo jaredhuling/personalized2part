@@ -4,11 +4,24 @@
 \alias{cv.hd2part}
 \title{Cross validation for hd2part models}
 \usage{
-cv.hd2part(x, z, x_s, s, weights = rep(1, NROW(x)), weights_s = rep(1,
-  NROW(x_s)), offset = NULL, offset_s = NULL, lambda = NULL,
+cv.hd2part(
+  x,
+  z,
+  x_s,
+  s,
+  weights = rep(1, NROW(x)),
+  weights_s = rep(1, NROW(x_s)),
+  offset = NULL,
+  offset_s = NULL,
+  lambda = NULL,
   type.measure = c("mae", "mse", "sep-auc-mse", "sep-auc-mae"),
-  nfolds = 10, foldid = NULL, grouped = TRUE, keep = FALSE,
-  parallel = FALSE, ...)
+  nfolds = 10,
+  foldid = NULL,
+  grouped = TRUE,
+  keep = FALSE,
+  parallel = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{an n x p matrix of covariates for the zero part data, where each row is an observation

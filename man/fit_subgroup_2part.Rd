@@ -4,10 +4,20 @@
 \alias{fit_subgroup_2part}
 \title{Fitting subgroup identification models for semicontinuous positive outcomes}
 \usage{
-fit_subgroup_2part(x, y, trt, propensity.func = NULL,
-  propensity.func.positive = NULL, match.id = NULL,
-  augment.func.zero = NULL, augment.func.positive = NULL,
-  cutpoint = 1, larger.outcome.better = TRUE, y_eps = 1e-06, ...)
+fit_subgroup_2part(
+  x,
+  y,
+  trt,
+  propensity.func = NULL,
+  propensity.func.positive = NULL,
+  match.id = NULL,
+  augment.func.zero = NULL,
+  augment.func.positive = NULL,
+  cutpoint = 1,
+  larger.outcome.better = TRUE,
+  y_eps = 1e-06,
+  ...
+)
 }
 \arguments{
 \item{x}{The design matrix (not including intercept term)}

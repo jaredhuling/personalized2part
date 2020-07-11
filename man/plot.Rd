@@ -5,9 +5,16 @@
 \alias{plot.cv.hd2part}
 \title{Plot method for hd2part fitted objects}
 \usage{
-\method{plot}{hd2part}(x, model = c("zero", "positive"),
-  xvar = c("loglambda", "norm", "lambda"), labsize = 0.6,
-  xlab = iname, ylab = NULL, main = paste(model, "model"), ...)
+\method{plot}{hd2part}(
+  x,
+  model = c("zero", "positive"),
+  xvar = c("loglambda", "norm", "lambda"),
+  labsize = 0.6,
+  xlab = iname,
+  ylab = NULL,
+  main = paste(model, "model"),
+  ...
+)
 
 \method{plot}{cv.hd2part}(x, sign.lambda = 1, ...)
 }

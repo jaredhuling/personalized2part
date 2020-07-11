@@ -4,9 +4,15 @@
 \alias{predict.hd2part}
 \title{Prediction method for two part fitted objects}
 \usage{
-\method{predict}{hd2part}(object, newx, s = NULL, model = c("zero",
-  "positive"), type = c("link", "model_response", "response",
-  "coefficients", "nonzero"), newoffset = NULL, ...)
+\method{predict}{hd2part}(
+  object,
+  newx,
+  s = NULL,
+  model = c("zero", "positive"),
+  type = c("link", "model_response", "response", "coefficients", "nonzero"),
+  newoffset = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{fitted "hd2part" model object}

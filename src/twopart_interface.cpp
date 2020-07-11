@@ -68,7 +68,7 @@ Rcpp::List fit_twopart_cpp(const Rcpp::NumericMatrix &X_,
                    group_weights,
                    pars);
 
-    // initialization steop
+    // initialization step
     tp_obj.initialize();
 
     // compute solution path

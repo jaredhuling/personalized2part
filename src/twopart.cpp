@@ -393,10 +393,10 @@ void twopart::initialize()
     // ------        Set up lambda        ------ //
     // ----------------------------------------- //
 
-    // run once to set scale of likelihoods, again to double check
+    // run once to set scale of likelihoods,
     set_up_lambda();
 
-
+    // run again to double check
     set_up_lambda();
 
 
@@ -608,7 +608,7 @@ VectorXi twopart::fit_path()
         active_set.array() = 1;
     }
 
-    // loop over lamba values
+    // loop over lambda values
     for (int l = 0; l < nlambda; ++l)
     {
         double lam = lambda(l);
@@ -778,6 +778,7 @@ VectorXi twopart::fit_path()
 
                     for (int g = 0; g < ngroups; ++g)
                     {
+                        // only loop over the active set
                         if (active_set(g) == 1)
                         {
                             VectorXd beta_subs(2);
@@ -830,7 +831,7 @@ VectorXi twopart::fit_path()
                             }
 
 
-                            // update residual if any estimate changed
+                            // update residual only if any estimate changed
                             if (anychanged)
                             {
                                 //xbeta_cur += (x_list[g] * (beta_new.array() - beta_subs.array()).matrix());
@@ -868,6 +869,11 @@ VectorXi twopart::fit_path()
                 }
             } // end irls loop
 
+            // if we're using the strong rule, make sure to check
+            // for any kkt condition violations. if there are any violations,
+            // the check_kkt function adds those to the active set and thus
+            // we need to go back and run another set of irls iterations
+            // over the updated set
             if (strongrule)
             {
                 check_kkt(l);

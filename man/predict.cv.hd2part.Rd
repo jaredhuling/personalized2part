@@ -4,9 +4,14 @@
 \alias{predict.cv.hd2part}
 \title{Prediction function for fitted cross validation hd2part objects}
 \usage{
-\method{predict}{cv.hd2part}(object, newx, model = c("zero", "positive"),
-  s = c("lambda.min", "lambda.1se"), type = c("link", "model_response",
-  "response", "coefficients", "nonzero"), ...)
+\method{predict}{cv.hd2part}(
+  object,
+  newx,
+  model = c("zero", "positive"),
+  s = c("lambda.min", "lambda.1se"),
+  type = c("link", "model_response", "response", "coefficients", "nonzero"),
+  ...
+)
 }
 \arguments{
 \item{object}{fitted \code{"cv.hd2part"} model object}
