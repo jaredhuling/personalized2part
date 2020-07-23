@@ -88,7 +88,7 @@ fitted_2part_subgrp_model
 
 We can plot the coefficient curves for the two models as the following:
 
-```{r, fig.height=3}
+```{r, fig.height=4}
 par(mfrow = c(1,2))
 plot(fitted_2part_subgrp_model$model$hd2part.fit, "zero")
 plot(fitted_2part_subgrp_model$model$hd2part.fit, "positive")
