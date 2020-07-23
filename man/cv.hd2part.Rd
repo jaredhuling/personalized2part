@@ -66,7 +66,7 @@ fold omitted. The folid vector is also returned. Default is \code{keep = FALSE}}
 
 \item{parallel}{If TRUE, use parallel foreach to fit each fold. Must register parallel before hand, such as \pkg{doMC}.}
 
-\item{...}{other parameters to be passed to \code{"oem"} function}
+\item{...}{other parameters to be passed to \code{\link[personalized2part]{hd2part}} function}
 }
 \description{
 Cross validation for hd2part models

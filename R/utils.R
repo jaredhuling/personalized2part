@@ -1,4 +1,28 @@
 
+## estimate value function
+computeValue <- function(y, bene, trt, pi.x, wts = NULL, cutoff = 1, larger.outcome.better = TRUE)
+{
+
+    if (is.null(wts))
+    {
+        ## inverse propensity score weights
+        wts <- drop(1 / (pi.x * (trt == 1) + (1 - pi.x) * (trt != 1)))
+    }
+
+    if (larger.outcome.better)
+    {
+        agree1 <- bene > cutoff & trt == 1
+        agree0 <- bene <= cutoff & trt != 1
+    } else
+    {
+        agree1 <- bene < cutoff & trt == 1
+        agree0 <- bene >= cutoff & trt != 1
+    }
+
+    weighted.mean(y[agree1 | agree0], w = wts[agree1 | agree0], na.rm  = TRUE)
+}
+
+
 setup_y <- function(y, family)
 {
     if (family == "binomial")

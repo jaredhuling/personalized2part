@@ -68,6 +68,7 @@
 #'  will be recommended to be in the treatment group. Defaults to 1, since the benefit score is a risk ratio
 #' @param larger.outcome.better boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
 #'  if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.
+#'  @param penalize.ate should the treatment main effect (ATE) be penalized too?
 #' @param y_eps positive value above which observations in \code{y} will be considered positive
 #' @param ... options to be passed to \code{\link[personalized2part]{cv.hd2part}}
 #' @export
@@ -107,6 +108,7 @@ fit_subgroup_2part <- function(x,
                                augment.func.positive = NULL,
                                cutpoint              = 1,
                                larger.outcome.better = TRUE,
+                               penalize.ate = TRUE,
                                y_eps = 1e-6,
                                ...)
 {
@@ -372,7 +374,7 @@ fit_subgroup_2part <- function(x,
     # check to make sure arguments of augment.func are correct
     if (!is.null(augment.func.zero))
     {
-        B.x   <- unname(drop(augment.func.zero(trt = trt, x = x_z, y = z)))
+        B.x   <- unname(drop(augment.func.zero(trt = 2 * trt - 1, x = x_z, y = z)))
 
         if (NROW(B.x) != NROW(y))
         {
@@ -387,7 +389,7 @@ fit_subgroup_2part <- function(x,
     }
     if (!is.null(augment.func.positive))
     {
-        B.x   <- unname(drop(augment.func.positive(trt = trt_s, x = x_s, y = s)))
+        B.x   <- unname(drop(augment.func.positive(trt = 2 * trt_s - 1, x = x_s, y = s)))
 
         if (NROW(B.x) != NROW(s))
         {
@@ -422,10 +424,19 @@ fit_subgroup_2part <- function(x,
     resid_outcome <- z - extra.args.zero$offset
     trt_aug <- ifelse(resid_outcome >= 0, trt, 1 - trt)
 
+    if (!penalize.ate)
+    {
+        pf <- c(0, rep(1, ncol(x_z) - 1))
+    } else
+    {
+        pf <- rep(1, ncol(x_z))
+    }
+
     fitted.model$model <- cv.hd2part(x_z, trt_aug,  ## zero part data
                                      x.tilde.s, s,  ## positive part data
                                      weights   = wts * (abs(resid_outcome)), ## observation weights for zero part
                                      weights_s = wts_s, ## observation weights for positive part
+                                     penalty_factor = pf,
                                      opposite_signs = !larger.outcome.better,
                                      intercept_z = FALSE,
                                      intercept_s = FALSE, ...)

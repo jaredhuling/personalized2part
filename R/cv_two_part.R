@@ -28,7 +28,7 @@
 #' and each value of lambda for each model. This means these fits are computed with this observation and the rest of its
 #' fold omitted. The folid vector is also returned. Default is \code{keep = FALSE}
 #' @param parallel If TRUE, use parallel foreach to fit each fold. Must register parallel before hand, such as \pkg{doMC}.
-#' @param ... other parameters to be passed to \code{"oem"} function
+#' @param ... other parameters to be passed to \code{\link[personalized2part]{hd2part}} function
 #' @export
 #' @examples
 #' set.seed(1)

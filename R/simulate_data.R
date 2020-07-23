@@ -36,7 +36,7 @@ sim_semicontinuous_data <- function(n.obs = 1000, n.vars = 25)
     deltazero <- drop(cbind(1, x) %*% betanonzero)
 
     ## main effects
-    xbeta <- x[,1] + 0.25 * x[,10] - 0.15 * x[,9]^2 + 0.25 * x[,8] + 0.15 * x[,7] ^ 2 + 0.5 * x[,2] - 0.5 * x[,5]
+    xbeta <- x[,1] + 0.5 * x[,10] + 0.5 * x[,9] + 0.25 * x[,8] + 0.5 * x[,7] + 0.15 * x[,7] ^ 2 + 0.5 * x[,2] - 0.5 * x[,5]
 
     ## add main effects to interactions
     xbeta <- 1 * xbeta + delta * trt
@@ -48,8 +48,7 @@ sim_semicontinuous_data <- function(n.obs = 1000, n.vars = 25)
     ## now repeat the same for the positive part
 
     ## main effects
-    xbetazero <- 0.25 * x[,1] + 0.75 * x[,10] - 0.25 * x[,9]^2 - 0.25 * x[,7] + 0.25 * x[,6] ^ 2 + 0.5 * x[,2] - 0.75 * x[,5]
-    #xbeta <- x[,1] + 0.75 * x[,11] - 0.5 * x[,12] + 0.25 * x[,13] + 0.25 * x[,15] + 0.5 * x[,2] - 0.75 * x[,5]
+    xbetazero <- 0.15 * x[,1] - 0.5 * x[,10] - 0.5 * x[,9] - 0.25 * x[,7] + 0.25 * x[,6] ^ 2 + 0.2 * x[,2] + 0.2 * x[,5]
 
     zero_int <- -1
     xbetazero <- zero_int + 0.5 * xbetazero + deltazero * trt

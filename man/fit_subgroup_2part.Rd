@@ -15,6 +15,7 @@ fit_subgroup_2part(
   augment.func.positive = NULL,
   cutpoint = 1,
   larger.outcome.better = TRUE,
+  penalize.ate = TRUE,
   y_eps = 1e-06,
   ...
 )
@@ -91,7 +92,8 @@ a function of \code{x} and \code{y}. This function is used for efficiency augmen
 will be recommended to be in the treatment group. Defaults to 1, since the benefit score is a risk ratio}
 
 \item{larger.outcome.better}{boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
-if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.}
+if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.
+@param penalize.ate should the treatment main effect (ATE) be penalized too?}
 
 \item{y_eps}{positive value above which observations in \code{y} will be considered positive}
 
