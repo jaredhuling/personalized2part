@@ -58,8 +58,8 @@
 #'  the covariates \code{x}, and \code{trt} and outputs predicted values (on the link scale) for the response using a model
 #'  constructed with \code{x}. \code{augment.func.positive()} can also be simply
 #'  a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
-#'  @param augment.func.zero (similar to augment.func.positive) function which inputs the
-#'  indicators oof whether each response is positive (\code{1*(y > 0)}),
+#' @param augment.func.zero (similar to augment.func.positive) function which inputs the
+#'  indicators of whether each response is positive (\code{1*(y > 0)}),
 #'  the covariates \code{x}, and \code{trt} for all samples and outputs predicted values (on the link scale) for the response using a model
 #'  constructed with \code{x}. \code{augment.func.positive()} can also be simply
 #'  a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
@@ -68,7 +68,7 @@
 #'  will be recommended to be in the treatment group. Defaults to 1, since the benefit score is a risk ratio
 #' @param larger.outcome.better boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
 #'  if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.
-#'  @param penalize.ate should the treatment main effect (ATE) be penalized too?
+#' @param penalize.ate should the treatment main effect (ATE) be penalized too?
 #' @param y_eps positive value above which observations in \code{y} will be considered positive
 #' @param ... options to be passed to \code{\link[personalized2part]{cv.hd2part}}
 #' @export

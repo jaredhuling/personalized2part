@@ -76,14 +76,15 @@ augment.func <- function(x, y, trt) {
 }
 }}
 
+\item{augment.func.zero}{(similar to augment.func.positive) function which inputs the
+indicators of whether each response is positive (\code{1*(y > 0)}),
+the covariates \code{x}, and \code{trt} for all samples and outputs predicted values (on the link scale) for the response using a model
+constructed with \code{x}. \code{augment.func.positive()} can also be simply
+a function of \code{x} and \code{y}. This function is used for efficiency augmentation.}
+
 \item{augment.func.positive}{(similar to augment.func.zero) function which inputs the positive part response
 (ie all observations in \code{y} which are strictly positive),
 the covariates \code{x}, and \code{trt} and outputs predicted values (on the link scale) for the response using a model
-constructed with \code{x}. \code{augment.func.positive()} can also be simply
-a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
-@param augment.func.zero (similar to augment.func.positive) function which inputs the
-indicators oof whether each response is positive (\code{1*(y > 0)}),
-the covariates \code{x}, and \code{trt} for all samples and outputs predicted values (on the link scale) for the response using a model
 constructed with \code{x}. \code{augment.func.positive()} can also be simply
 a function of \code{x} and \code{y}. This function is used for efficiency augmentation.}
 
@@ -92,8 +93,9 @@ a function of \code{x} and \code{y}. This function is used for efficiency augmen
 will be recommended to be in the treatment group. Defaults to 1, since the benefit score is a risk ratio}
 
 \item{larger.outcome.better}{boolean value of whether a larger outcome is better/preferable. Set to \code{TRUE}
-if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.
-@param penalize.ate should the treatment main effect (ATE) be penalized too?}
+if a larger outcome is better/preferable and set to \code{FALSE} if a smaller outcome is better/preferable. Defaults to \code{TRUE}.}
+
+\item{penalize.ate}{should the treatment main effect (ATE) be penalized too?}
 
 \item{y_eps}{positive value above which observations in \code{y} will be considered positive}
 

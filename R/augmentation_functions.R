@@ -16,6 +16,7 @@
 #' @param interactions boolean variable of whether or not to fit model with interactions. For predictions,
 #' interactions will be integrated out
 #' @export
+#' @importFrom HDtweedie cv.HDtweedie
 HDtweedie_kfold_aug <- function(x, y, trt, wts = NULL, K = 10, p = 1.5, interactions = FALSE)
 {
 
@@ -60,10 +61,10 @@ HDtweedie_kfold_aug <- function(x, y, trt, wts = NULL, K = 10, p = 1.5, interact
         which <- foldid == i
 
         ## full model for nonzeroness
-        gamfit_pos_main  <- cv.HDtweedie(y = y[!which], x = mm_all[!which,,drop = FALSE],
-                                         weights = wts[!which],
-                                         p = p, eps = 1e-5,
-                                         pred.loss = "mae")
+        gamfit_pos_main  <- HDtweedie::cv.HDtweedie(y = y[!which], x = mm_all[!which,,drop = FALSE],
+                                                    weights = wts[!which],
+                                                    p = p, eps = 1e-5,
+                                                    pred.loss = "mae")
 
         if (interactions)
         {

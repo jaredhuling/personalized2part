@@ -3,7 +3,8 @@
 
 # personalized2part
 
-The `personalized2part` package allows for subgroup identification for
+The `personalized2part` package implements the methodology of Huling and
+Chen (2020), which allows for subgroup identification for
 semi-continuous outcomes by estimating individualized treatment rules.
 It uses a two part modeling (or hurdle modeling) framework to handle
 semi-continuous data by modeling separately the positive part of the
