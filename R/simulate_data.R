@@ -27,7 +27,7 @@ sim_semicontinuous_data <- function(n.obs = 1000, n.vars = 25)
 
     betanonzero <- 0.5 * c(0.5, 0.35, 0.85, -0.5, -1.45, 0.75, 0, 0, 0, 0, 0, rep(0, n.vars - 10))
 
-    beta     <- 0.5 * c(0.35, 0.5, 0.65, -0.95, -1.25, 1.05, 0.5, 0, 0, 0, 0, rep(0, n.vars - 10))
+    beta     <- 0.5 * c(0.35, -0.5, 0.65, -0.95, -1.25, 1.05, 0.5, 0, 0, 0, 0, rep(0, n.vars - 10))
 
     ######## simulate response
 

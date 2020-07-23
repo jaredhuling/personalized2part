@@ -15,10 +15,7 @@ knitr::opts_chunk$set(
 
 # personalized2part
 
-<!-- badges: start -->
-<!-- badges: end -->
-
-The goal of personalized2part is to ...
+The `personalized2part` package allows for subgroup identification for semi-continuous outcomes by estimating individualized treatment rules. It uses a two part modeling (or hurdle modeling) framework to handle semi-continuous data by modeling separately the positive part of the outcome and an indicator of whether each outcome is positive, but still results in a single treatment rule. High dimensional data is handled with a cooperative lasso penalty, which encourages the coefficients in the two models to have the same sign. 
 
 ## Installation
 
@@ -120,14 +117,24 @@ mean(dat.test$y)
 
 Now let's compare with simply using a squared error loss under the framework of Chen, et al (2017) to estimate an ITR:
 ```{r compare}
-fsm <- fit.subgroup(x, log(y+1), trt, propensity.func = propens_func, 
+
+
+fsm_log <- fit.subgroup(x, log(y+0.1), trt, propensity.func = propens_func, 
                     augment.func = create.augmentation.function(family="gaussian"),
                     loss = "sq_loss_lasso")
 
+fsm <- fit.subgroup(x, y, trt, propensity.func = propens_func, 
+                    augment.func = create.augmentation.function(family="gaussian"),
+                    loss = "sq_loss_lasso")
+
+pred_hte_sqloss_log <- predict(fsm_log, x.test)
 pred_hte_sqloss <- predict(fsm, x.test)
 
 ## the value function is smaller than for the 2 part model
 personalized2part:::computeValue(y.test, pred_hte_sqloss, dat.test$trt,
+                                 pi.x = dat.test$pi.x, cutoff = 0)
+
+personalized2part:::computeValue(y.test, pred_hte_sqloss_log, dat.test$trt,
                                  pi.x = dat.test$pi.x, cutoff = 0)
 
 ```

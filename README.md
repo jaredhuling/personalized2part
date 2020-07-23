@@ -3,11 +3,14 @@
 
 # personalized2part
 
-<!-- badges: start -->
-
-<!-- badges: end -->
-
-The goal of personalized2part is to …
+The `personalized2part` package allows for subgroup identification for
+semi-continuous outcomes by estimating individualized treatment rules.
+It uses a two part modeling (or hurdle modeling) framework to handle
+semi-continuous data by modeling separately the positive part of the
+outcome and an indicator of whether each outcome is positive, but still
+results in a single treatment rule. High dimensional data is handled
+with a cooperative lasso penalty, which encourages the coefficients in
+the two models to have the same sign.
 
 ## Installation
 
@@ -97,14 +100,14 @@ fitted_2part_subgrp_model
 #> 
 #> Average Outcomes:
 #>               Recommended 0     Recommended 1
-#> Received 0 12.2773 (n = 84)   0.5271 (n = 58)
-#> Received 1  1.5767 (n = 53) 16.1494 (n = 105)
+#> Received 0 20.1019 (n = 82)   0.5407 (n = 60)
+#> Received 1  1.0492 (n = 51) 11.2566 (n = 107)
 #> 
 #> Treatment effects conditional on subgroups:
 #> Est of E[Y|T=0,Recom=0]-E[Y|T=/=0,Recom=0] 
-#>                          10.7006 (n = 137) 
+#>                          19.0527 (n = 133) 
 #> Est of E[Y|T=1,Recom=1]-E[Y|T=/=1,Recom=1] 
-#>                          15.6223 (n = 163) 
+#>                          10.7159 (n = 167) 
 #> 
 #> NOTE: The above average outcomes are biased estimates of
 #>       the expected outcomes conditional on subgroups. 
@@ -113,8 +116,8 @@ fitted_2part_subgrp_model
 #> ---------------------------------------------------
 #> 
 #> Benefit score quantiles (f(X) for 1 vs 0): 
-#>       0%      25%      50%      75%     100% 
-#>  0.02208  0.48245  1.11358  2.88182 38.58048 
+#>        0%       25%       50%       75%      100% 
+#> 4.668e-03 3.223e-01 1.257e+00 4.588e+00 2.827e+02 
 #> 
 #> ---------------------------------------------------
 #> 
@@ -126,8 +129,8 @@ fitted_2part_subgrp_model
 #> where g() is a monotone increasing function of Y, 
 #> the survival time
 #> 
-#>     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-#>  0.02208  0.48245  1.11358  2.54981  2.88182 38.58048
+#>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+#>   0.00467   0.32230   1.25687   7.27565   4.58799 282.74366
 ```
 
 We can plot the coefficient curves for the two models as the following:
@@ -160,11 +163,11 @@ predicted_hte <- predict(fitted_2part_subgrp_model, x.test)
 ## estmated test set value function:
 personalized2part:::computeValue(y.test, predicted_hte, dat.test$trt,
                                  pi.x = dat.test$pi.x, cutoff = 1)
-#> [1] 15.84828
+#> [1] 13.23841
 
 ## average outcome in the test set:
 mean(dat.test$y)
-#> [1] 12.36627
+#> [1] 8.43557
 
 # We can see that the estimated treatment rule results in better outcomes for the test set
 ```
@@ -173,14 +176,25 @@ Now let’s compare with simply using a squared error loss under the
 framework of Chen, et al (2017) to estimate an ITR:
 
 ``` r
-fsm <- fit.subgroup(x, log(y+1), trt, propensity.func = propens_func, 
+
+
+fsm_log <- fit.subgroup(x, log(y+0.1), trt, propensity.func = propens_func, 
                     augment.func = create.augmentation.function(family="gaussian"),
                     loss = "sq_loss_lasso")
 
+fsm <- fit.subgroup(x, y, trt, propensity.func = propens_func, 
+                    augment.func = create.augmentation.function(family="gaussian"),
+                    loss = "sq_loss_lasso")
+
+pred_hte_sqloss_log <- predict(fsm_log, x.test)
 pred_hte_sqloss <- predict(fsm, x.test)
 
 ## the value function is smaller than for the 2 part model
 personalized2part:::computeValue(y.test, pred_hte_sqloss, dat.test$trt,
                                  pi.x = dat.test$pi.x, cutoff = 0)
-#> [1] 14.65437
+#> [1] 7.476902
+
+personalized2part:::computeValue(y.test, pred_hte_sqloss_log, dat.test$trt,
+                                 pi.x = dat.test$pi.x, cutoff = 0)
+#> [1] 11.218
 ```
