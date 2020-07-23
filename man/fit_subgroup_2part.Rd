@@ -79,6 +79,11 @@ augment.func <- function(x, y, trt) {
 (ie all observations in \code{y} which are strictly positive),
 the covariates \code{x}, and \code{trt} and outputs predicted values (on the link scale) for the response using a model
 constructed with \code{x}. \code{augment.func.positive()} can also be simply
+a function of \code{x} and \code{y}. This function is used for efficiency augmentation.
+@param augment.func.zero (similar to augment.func.positive) function which inputs the
+indicators oof whether each response is positive (\code{1*(y > 0)}),
+the covariates \code{x}, and \code{trt} for all samples and outputs predicted values (on the link scale) for the response using a model
+constructed with \code{x}. \code{augment.func.positive()} can also be simply
 a function of \code{x} and \code{y}. This function is used for efficiency augmentation.}
 
 \item{cutpoint}{numeric value for patients with benefit scores above which

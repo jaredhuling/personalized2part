@@ -45,6 +45,9 @@ The default depends on the sample size relative to the number of variables.}
 \item{lambda}{a user supplied sequence of penalization tuning parameters. By default, the program automatically
 chooses a sequence of lambda values based on \code{nlambda} and \code{lambda_min_ratio}}
 
+\item{tau}{a scalar numeric value between 0 and 1 (included) which is a mixing parameter for sparse group lasso penalty.
+0 indicates group lasso and 1 indicates lasso, values in between reflect different emphasis on group and lasso penalties}
+
 \item{intercept}{whether or not to include an intercept. Default is \code{TRUE}.}
 
 \item{strongrule}{should a strong rule be used?}
