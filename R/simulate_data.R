@@ -25,9 +25,9 @@ sim_semicontinuous_data <- function(n.obs = 1000, n.vars = 25)
 
     trt <- 2 * rbinom(n.obs, 1, trtprob) - 1
 
-    betanonzero <- 0.5 * c(0.5, 0.35, 0.85, -0.5, -1.45, 0.75, 0, 0, 0, 0, 0, rep(0, n.vars - 10))
+    betanonzero <- 0.5 * c(0.5, 0.1, 0.9, -0.1, -1.45, 0.2, 0.1, -0.1, 0, 0, 0, rep(0, n.vars - 10))
 
-    beta     <- 0.5 * c(0.35, -0.5, 0.65, -0.95, -1.25, 1.05, 0.5, 0, 0, 0, 0, rep(0, n.vars - 10))
+    beta     <- 0.5 * c(0.35, 0.5, 0.15, -0.95, -0.25, 1.05, 0.5, -0.5, 0, 0, 0, rep(0, n.vars - 10))
 
     ######## simulate response
 
@@ -82,7 +82,7 @@ sim_semicontinuous_data <- function(n.obs = 1000, n.vars = 25)
 
 
     nu <- 25
-    gam_mean <- 1
+    gam_mean <- 0.5
     yg_t1  <- rgamma(n.obs, shape = nu, rate = nu / exp(gam_mean + xbetazero_1) )
     yg_tn1 <- rgamma(n.obs, shape = nu, rate = nu / exp(gam_mean + xbetazero_n1) )
 
