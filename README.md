@@ -1,5 +1,6 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+[![Build
+Status](https://travis-ci.org/jaredhuling/personalized2part.svg?branch=master)](https://travis-ci.org/jaredhuling/personalized2part)
 
 # personalized2part
 
@@ -100,15 +101,15 @@ fitted_2part_subgrp_model
 #> Trt recom = 1*I(f(x)>c)+0*I(f(x)<=c) where c is 'cutpoint'
 #> 
 #> Average Outcomes:
-#>               Recommended 0     Recommended 1
-#> Received 0 20.1019 (n = 82)   0.5407 (n = 60)
-#> Received 1  1.0492 (n = 51) 11.2566 (n = 107)
+#>              Recommended 0    Recommended 1
+#> Received 0 7.1015 (n = 93)  0.3277 (n = 49)
+#> Received 1 0.4653 (n = 47) 6.4159 (n = 111)
 #> 
 #> Treatment effects conditional on subgroups:
 #> Est of E[Y|T=0,Recom=0]-E[Y|T=/=0,Recom=0] 
-#>                          19.0527 (n = 133) 
+#>                           6.6363 (n = 140) 
 #> Est of E[Y|T=1,Recom=1]-E[Y|T=/=1,Recom=1] 
-#>                          10.7159 (n = 167) 
+#>                           6.0882 (n = 160) 
 #> 
 #> NOTE: The above average outcomes are biased estimates of
 #>       the expected outcomes conditional on subgroups. 
@@ -118,7 +119,7 @@ fitted_2part_subgrp_model
 #> 
 #> Benefit score quantiles (f(X) for 1 vs 0): 
 #>        0%       25%       50%       75%      100% 
-#> 4.668e-03 3.223e-01 1.257e+00 4.588e+00 2.827e+02 
+#> 4.414e-03 3.333e-01 1.220e+00 5.312e+00 2.131e+02 
 #> 
 #> ---------------------------------------------------
 #> 
@@ -131,7 +132,7 @@ fitted_2part_subgrp_model
 #> the survival time
 #> 
 #>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#>   0.00467   0.32230   1.25687   7.27565   4.58799 282.74366
+#>   0.00441   0.33333   1.21976  10.03182   5.31193 213.08937
 ```
 
 We can plot the coefficient curves for the two models as the following:
@@ -164,11 +165,11 @@ predicted_hte <- predict(fitted_2part_subgrp_model, x.test)
 ## estmated test set value function:
 personalized2part:::computeValue(y.test, predicted_hte, dat.test$trt,
                                  pi.x = dat.test$pi.x, cutoff = 1)
-#> [1] 13.23841
+#> [1] 4.708711
 
 ## average outcome in the test set:
 mean(dat.test$y)
-#> [1] 8.43557
+#> [1] 3.854057
 
 # We can see that the estimated treatment rule results in better outcomes for the test set
 ```
@@ -193,9 +194,9 @@ pred_hte_sqloss <- predict(fsm, x.test)
 ## the value function is smaller than for the 2 part model
 personalized2part:::computeValue(y.test, pred_hte_sqloss, dat.test$trt,
                                  pi.x = dat.test$pi.x, cutoff = 0)
-#> [1] 7.476902
+#> [1] 1.763163
 
 personalized2part:::computeValue(y.test, pred_hte_sqloss_log, dat.test$trt,
                                  pi.x = dat.test$pi.x, cutoff = 0)
-#> [1] 11.218
+#> [1] 4.172806
 ```
