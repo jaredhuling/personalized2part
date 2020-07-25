@@ -4,7 +4,7 @@ Status](https://travis-ci.org/jaredhuling/personalized2part.svg?branch=master)](
 
 # personalized2part
 
-The `personalized2part` package implements the methodology of Huling and
+The `personalized2part` package implements the methodology of Huling, Smith, and
 Chen (2020), which allows for subgroup identification for
 semi-continuous outcomes by estimating individualized treatment rules.
 It uses a two part modeling (or hurdle modeling) framework to handle
