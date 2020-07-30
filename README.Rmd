@@ -51,7 +51,7 @@ propens_func <- create.propensity.function(crossfit = TRUE,
                                            cv.glmnet.args = list(type.measure = "auc"))
 ```
 
-Use the built-in function `create.propensity.function` from the [personalized](https://cran.r-project.org/web/packages/personalized/index.html) package to construct outcome augmentation functions for the zero part model using 10-fold cross fitting:
+Use the built-in function `create.augmentation.function` from the [personalized](https://cran.r-project.org/web/packages/personalized/index.html) package to construct outcome augmentation functions for the zero part model using 10-fold cross fitting:
 
 ```{r augbin}
 aug_func_binary <- create.augmentation.function(family = "binomial",
@@ -138,3 +138,8 @@ personalized2part:::computeValue(y.test, pred_hte_sqloss_log, dat.test$trt,
                                  pi.x = dat.test$pi.x, cutoff = 0)
 
 ```
+
+## Reference
+[1] Huling J, Smith M, Chen G (2020). A two-part framework for estimating individualized treatment rules from semi-continuous outcomes. Journal of the American Statistical Association, in press.
+
+[2] Chen S, Tian L, Cai T, Yu M (2017). A general statistical framework for subgroup identification and comparative treatment scoring. Biometrics, 73(4):1199-209.

@@ -4,8 +4,8 @@ Status](https://travis-ci.org/jaredhuling/personalized2part.svg?branch=master)](
 
 # personalized2part
 
-The `personalized2part` package implements the methodology of Huling, Smith, and
-Chen (2020), which allows for subgroup identification for
+The `personalized2part` package implements the methodology of Huling,
+Smith, and Chen (2020), which allows for subgroup identification for
 semi-continuous outcomes by estimating individualized treatment rules.
 It uses a two part modeling (or hurdle modeling) framework to handle
 semi-continuous data by modeling separately the positive part of the
@@ -54,7 +54,7 @@ propens_func <- create.propensity.function(crossfit = TRUE,
                                            cv.glmnet.args = list(type.measure = "auc"))
 ```
 
-Use the built-in function `create.propensity.function` from the
+Use the built-in function `create.augmentation.function` from the
 [personalized](https://cran.r-project.org/web/packages/personalized/index.html)
 package to construct outcome augmentation functions for the zero part
 model using 10-fold cross fitting:
@@ -200,3 +200,13 @@ personalized2part:::computeValue(y.test, pred_hte_sqloss_log, dat.test$trt,
                                  pi.x = dat.test$pi.x, cutoff = 0)
 #> [1] 4.172806
 ```
+
+## Reference
+
+\[1\] Huling J, Smith M, Chen G (2020). A two-part framework for
+estimating individualized treatment rules from semi-continuous outcomes.
+Journal of the American Statistical Association, in press.
+
+\[2\] Chen S, Tian L, Cai T, Yu M (2017). A general statistical
+framework for subgroup identification and comparative treatment scoring.
+Biometrics, 73(4):1199-209.
