@@ -1,0 +1,17 @@
+citHeader("To cite personalized2part in publications use:")
+
+citEntry(,
+  entry        = "Article",
+  author       = "Jared Huling and Maureen Smith and Guanhua Chen",
+  title        = "A two-part framework for estimating individualized treatment rules from semi-continuous outcomes",
+  journal      = "Journal of the American Statistical Association",
+  year         = "2020",
+  doi          = "10.1080/01621459.2020.1801449",
+  url          = "https://doi.org/10.1080/01621459.2020.1801449",
+  textVersion  = paste("Huling, J.D., Smith, M.A., Chen, G. (2020)",
+      "A two-part framework for estimating individualized treatment rules from semi-continuous outcomes, ",
+      "Journal of the American Statistical Association, in press,",
+      "https://doi.org/10.1080/01621459.2020.1801449.")
+)
+
+
