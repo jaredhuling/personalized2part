@@ -1,6 +1,6 @@
 Package: personalized2part
 Type: Package
-Title: Two-part Estimation of Individualized Treatment Rules for Semi-continuous Data
+Title: Two-Part Estimation of Individualized Treatment Rules for Semi-Continuous Data
 Version: 0.0.1
 Authors@R: c(
     person("Jared", "Huling",  role = c("aut", "cre"), email = "jaredhuling@gmail.com",
