@@ -44,7 +44,7 @@ trt <- dat$trt
 ```
 
 Use the built-in function `create.propensity.function` from the
-[personalized](https://cran.r-project.org/web/packages/personalized/index.html)
+[personalized](https://cran.r-project.org/package=personalized)
 package to construct a function that fits a propensity score model using
 10-fold cross fitting:
 
@@ -55,7 +55,7 @@ propens_func <- create.propensity.function(crossfit = TRUE,
 ```
 
 Use the built-in function `create.augmentation.function` from the
-[personalized](https://cran.r-project.org/web/packages/personalized/index.html)
+[personalized](https://cran.r-project.org/package=personalized)
 package to construct outcome augmentation functions for the zero part
 model using 10-fold cross fitting:
 
