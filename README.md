@@ -140,10 +140,15 @@ We can plot the coefficient curves for the two models as the following:
 ``` r
 par(mfrow = c(1,2))
 plot(fitted_2part_subgrp_model$model$hd2part.fit, "zero")
-plot(fitted_2part_subgrp_model$model$hd2part.fit, "positive")
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+``` r
+plot(fitted_2part_subgrp_model$model$hd2part.fit, "positive")
+```
+
+<img src="man/figures/README-unnamed-chunk-2-2.png" width="100%" />
 
 Now evaluate value function on test set based on the estimated
 individualized treatment rule and compare with average outcome (a value
