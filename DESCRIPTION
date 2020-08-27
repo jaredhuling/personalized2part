@@ -1,13 +1,12 @@
 Package: personalized2part
 Type: Package
-Title: Two-Part Estimation of Individualized Treatment Rules for Semi-Continuous Data
+Title: Two-Part Estimation of Treatment Rules for Semi-Continuous Data
 Version: 0.0.1
 Authors@R: c(
     person("Jared", "Huling",  role = c("aut", "cre"), email = "jaredhuling@gmail.com",
-            comment = c(ORCID = "0000-0003-0670-4845")),
-    person("Yixuan", "Qiu", , , c("cph"))
+            comment = c(ORCID = "0000-0003-0670-4845"))
     )
-Description: The personalized2part package implements the methodology of Huling, Smith, and 
+Description: Implements the methodology of Huling, Smith, and 
     Chen (2020) <doi:10.1080/01621459.2020.1801449>, which allows for subgroup identification 
     for semi-continuous outcomes by estimating individualized treatment rules. It uses a two-part 
     modeling framework to handle semi-continuous data by separately modeling the positive part 

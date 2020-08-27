@@ -105,6 +105,10 @@ plot.hd2part <- function(x,
 
     # Adjust the margins to make sure the labels fit
     labwidth <- ifelse(labsize > 0, max(strwidth(rownames(nbeta[!remove,]), "inches", labsize)), 0)
+
+    oldpar <- par(no.readonly = TRUE)
+    on.exit(par(oldpar))
+
     margins <- par("mai")
     par("mai" = c(margins[1:3], max(margins[4], labwidth*1.4)))
     if ( labsize > 0 && !is.null(rownames(nbeta)) )
