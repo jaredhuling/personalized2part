@@ -1,7 +1,8 @@
 
 ## First CRAN submission for 'personalized2part'
 
-* This is the first submission to CRAN
+* fixed title length
+* removed code dependencies that involved any copyrighted information, as it was not being used
 
 ## Test environments
 
