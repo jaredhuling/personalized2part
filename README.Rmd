@@ -51,7 +51,7 @@ propens_func <- create.propensity.function(crossfit = TRUE,
                                            cv.glmnet.args = list(type.measure = "auc"))
 ```
 
-Use the built-in function `create.augmentation.function` from the [personalized](https://cran.r-project.org/package=personalizeds) package to construct outcome augmentation functions for the zero part model using 10-fold cross fitting:
+Use the built-in function `create.augmentation.function` from the [personalized](https://cran.r-project.org/package=personalized) package to construct outcome augmentation functions for the zero part model using 10-fold cross fitting:
 
 ```{r augbin}
 aug_func_binary <- create.augmentation.function(family = "binomial",

@@ -55,7 +55,7 @@ propens_func <- create.propensity.function(crossfit = TRUE,
 ```
 
 Use the built-in function `create.augmentation.function` from the
-[personalized](https://cran.r-project.org/package=personalizeds) package
+[personalized](https://cran.r-project.org/package=personalized) package
 to construct outcome augmentation functions for the zero part model
 using 10-fold cross fitting:
 
