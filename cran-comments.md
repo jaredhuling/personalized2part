@@ -1,8 +1,7 @@
 
 ## First CRAN submission for 'personalized2part'
 
-* fixed title length
-* removed code dependencies that involved any copyrighted information, as it was not being used
+* fixed link issue in readme
 
 ## Test environments
 
@@ -14,7 +13,7 @@
 
 
 ── R CMD check results ──────────────────────────── personalized2part 0.0.1 ────
-Duration: 1m 47.5s
+Duration: 2m 1.9s
 
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
