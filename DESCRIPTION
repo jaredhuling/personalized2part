@@ -1,7 +1,7 @@
 Package: personalized2part
 Type: Package
 Title: Two-Part Estimation of Treatment Rules for Semi-Continuous Data
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: c(
     person("Jared", "Huling",  role = c("aut", "cre"), email = "jaredhuling@gmail.com",
             comment = c(ORCID = "0000-0003-0670-4845"))
