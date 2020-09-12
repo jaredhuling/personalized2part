@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_two_part.R
 \name{hdgamma}
 \alias{hdgamma}
-\title{Fitting function for lasso penalized GLMs}
+\title{Fitting function for lasso penalized gamma GLMs}
 \usage{
 hdgamma(
   x,

@@ -244,7 +244,7 @@ hd2part <- function(x, z,
 
 
 
-#' Fitting function for lasso penalized GLMs
+#' Fitting function for lasso penalized gamma GLMs
 #'
 #' @description This function fits penalized gamma GLMs
 #'
