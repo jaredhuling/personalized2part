@@ -1,0 +1,31 @@
+template:
+  params:
+    bootswatch: cerulean
+
+
+reference:
+  - title: Main Functions
+    contents:
+    - fit_subgroup_2part
+
+  - title: Plotting
+    contents:
+    - starts_with("plot")
+
+  - title: Predicting
+    contents:
+    - starts_with("predict")
+
+  - title: Simulating Data
+    contents:
+    - sim_semicontinuous_data
+
+  - title: Raw functions to optimize penalized loss functions
+    contents:
+    - cv.hd2part
+    - hd2part
+    - hdgamma
+
+  - title: Utilities
+    contents:
+    - HDtweedie_kfold_aug
