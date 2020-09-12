@@ -12,8 +12,8 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
@@ -121,7 +121,120 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <h2 id="section-main-functions" class="hasAnchor"><a href="#section-main-functions" class="anchor"></a>Main Functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="fit_subgroup_2part.html">fit_subgroup_2part()</a></code> </p>
+        </td>
+        <td><p>Fitting subgroup identification models for semicontinuous positive outcomes</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-plotting" class="hasAnchor"><a href="#section-plotting" class="anchor"></a>Plotting</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="plot.html">plot(<i>&lt;hd2part&gt;</i>)</a></code> <code><a href="plot.html">plot(<i>&lt;cv.hd2part&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plot method for hd2part fitted objects</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-predicting" class="hasAnchor"><a href="#section-predicting" class="anchor"></a>Predicting</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="predict.cv.hd2part.html">predict(<i>&lt;cv.hd2part&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Prediction function for fitted cross validation hd2part objects</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="predict.hd2part.html">predict(<i>&lt;hd2part&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Prediction method for two part fitted objects</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-simulating-data" class="hasAnchor"><a href="#section-simulating-data" class="anchor"></a>Simulating Data</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="sim_semicontinuous_data.html">sim_semicontinuous_data()</a></code> </p>
+        </td>
+        <td><p>Generates data from a two part distribution with a point mass at zero and heterogeneous treatment effects</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-raw-functions-to-optimize-penalized-loss-functions" class="hasAnchor"><a href="#section-raw-functions-to-optimize-penalized-loss-functions" class="anchor"></a>Raw functions to optimize penalized loss functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="cv.hd2part.html">cv.hd2part()</a></code> </p>
+        </td>
+        <td><p>Cross validation for hd2part models</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="hd2part.html">hd2part()</a></code> </p>
+        </td>
+        <td><p>Main fitting function for group lasso and cooperative lasso penalized two part models</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="hdgamma.html">hdgamma()</a></code> </p>
+        </td>
+        <td><p>Fitting function for lasso penalized gamma GLMs</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-utilities" class="hasAnchor"><a href="#section-utilities" class="anchor"></a>Utilities</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -136,54 +249,6 @@
           <p><code><a href="HDtweedie_kfold_aug.html">HDtweedie_kfold_aug()</a></code> </p>
         </td>
         <td><p>Fit a penalized gamma augmentation model via cross fitting</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="cv.hd2part.html">cv.hd2part()</a></code> </p>
-        </td>
-        <td><p>Cross validation for hd2part models</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="fit_subgroup_2part.html">fit_subgroup_2part()</a></code> </p>
-        </td>
-        <td><p>Fitting subgroup identification models for semicontinuous positive outcomes</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="hd2part.html">hd2part()</a></code> </p>
-        </td>
-        <td><p>Main fitting function for group lasso and cooperative lasso penalized two part models</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="hdgamma.html">hdgamma()</a></code> </p>
-        </td>
-        <td><p>Fitting function for lasso penalized GLMs</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.html">plot(<i>&lt;hd2part&gt;</i>)</a></code> <code><a href="plot.html">plot(<i>&lt;cv.hd2part&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plot method for hd2part fitted objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="predict.cv.hd2part.html">predict(<i>&lt;cv.hd2part&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Prediction function for fitted cross validation hd2part objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="predict.hd2part.html">predict(<i>&lt;hd2part&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Prediction method for two part fitted objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sim_semicontinuous_data.html">sim_semicontinuous_data()</a></code> </p>
-        </td>
-        <td><p>Generates data from a two part distribution with a point mass at zero and heterogeneous treatment effects</p></td>
       </tr>
     </tbody>
     </table>
