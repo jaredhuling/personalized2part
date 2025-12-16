@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // fit_gamma_cpp
 Rcpp::List fit_gamma_cpp(const Rcpp::NumericMatrix& X_, const Rcpp::NumericVector& Y_, const Rcpp::IntegerVector& groups_, const Rcpp::IntegerVector& unique_groups_, const Rcpp::NumericVector& group_weights_, const Rcpp::NumericVector& weights_, const Rcpp::NumericVector& offset_, const Rcpp::NumericVector& lambda_, const int nlambda, const double lambda_min_ratio, const double tau, const int maxit, const double tol, const int maxit_irls, const double tol_irls, const bool intercept, const std::vector<std::string> penalty, const bool strongrule);
 RcppExport SEXP _personalized2part_fit_gamma_cpp(SEXP X_SEXP, SEXP Y_SEXP, SEXP groups_SEXP, SEXP unique_groups_SEXP, SEXP group_weights_SEXP, SEXP weights_SEXP, SEXP offset_SEXP, SEXP lambda_SEXP, SEXP nlambdaSEXP, SEXP lambda_min_ratioSEXP, SEXP tauSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP maxit_irlsSEXP, SEXP tol_irlsSEXP, SEXP interceptSEXP, SEXP penaltySEXP, SEXP strongruleSEXP) {
