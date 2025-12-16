@@ -1,6 +1,6 @@
 citHeader("To cite personalized2part in publications use:")
 
-citEntry(,
+bibentry(,
   entry        = "Article",
   author       = "Jared Huling and Maureen Smith and Guanhua Chen",
   title        = "A two-part framework for estimating individualized treatment rules from semi-continuous outcomes",
