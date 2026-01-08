@@ -1,5 +1,5 @@
 
-## First CRAN submission for 'personalized2part'
+## CRAN submission update for 'personalized2part'
 
 * fixed link issue in readme
 
