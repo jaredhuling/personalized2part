@@ -239,14 +239,13 @@ auc.mat <- function(y,prob,weights=rep(1,nrow(y)))
     auc(Y,Prob,Weights)
 }
 
-#' @export deviance.2part
-#' @export
-deviance.2part <- function(object,...)
-{
-    dev     <- object$deviance
-    nulldev <- object$deviance[1]
-    (1 - dev) * nulldev
-}
+
+# deviance.2part <- function(object,...)
+# {
+#     dev     <- object$deviance
+#     nulldev <- object$deviance[1]
+#     (1 - dev) * nulldev
+# }
 
 
 ## taken from glmnet
