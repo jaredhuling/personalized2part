@@ -5,17 +5,19 @@
 
 ## Test environments
 
-* Debian Linux - x86_64-pc-linux-gnu (64-bit) - (unstable) (2020-08-08 r78985)
-* local Mac OSX Sierra (R 4.0.2)
-* Ubuntu 16.04.6 LTS (on travis-ci), (R 4.0.0)
+* local Mac OSX Sequoia (R 4.5.1)
+* Rhub max-arm64, m1-san
+* R-devel (2025-12-24 r89227)           Ubuntu 22.04.5 LTS
 
 ## R CMD check results
 
+* DONE
+Status: OK
 
-── R CMD check results ──────────────────────────── personalized2part 0.0.1 ────
-Duration: 2m 1.9s
 
-0 errors ✓ | 0 warnings ✓ | 0 notes ✓
+
+R CMD check results
+0 errors | 0 warnings | 0 notes
 
 R CMD check succeeded
 
