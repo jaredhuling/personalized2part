@@ -1,6 +1,5 @@
 
-[![Build
-Status](https://travis-ci.org/jaredhuling/personalized2part.svg?branch=master)](https://travis-ci.org/jaredhuling/personalized2part)
+
 [![version](http://www.r-pkg.org/badges/version/personalized2part)](https://cran.r-project.org/package=personalized2part)
 
 # personalized2part
